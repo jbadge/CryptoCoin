@@ -33,16 +33,47 @@ export function App() {
       price: 16125.0,
       graph: { src: stock_growth },
     },
+    {
+      id: 1,
+      icon: { src: eth },
+      name: 'etherium',
+      symbol: 'ETH',
+      change: 0,
+      changeDifference: 0.35,
+      price: 16125.0,
+      graph: { src: stock_growth },
+    },
+    {
+      id: 1,
+      icon: { src: apt },
+      name: 'Aptos',
+      symbol: 'ATP',
+      change: 1,
+      changeDifference: 0.35,
+      price: 16125.0,
+      graph: { src: stock_growth },
+    },
+    {
+      id: 1,
+      icon: { src: hft },
+      name: 'Hashflow',
+      symbol: 'HFT',
+      change: 1,
+      changeDifference: 0.35,
+      price: 16125.0,
+      graph: { src: stock_growth },
+    },
+    {
+      id: 1,
+      icon: { src: idia },
+      name: 'International Finance Launchpad',
+      symbol: 'IDIA',
+      change: 0,
+      changeDifference: 0.35,
+      price: 16125.0,
+      graph: { src: stock_growth },
+    },
   ])
-
-  // function upOrDown() {
-  //   console.log(cryptItems.icon)
-  //   if (cryptoItems.change === 0) {
-  //     return 'red_triangle'
-  //   } else if (cryptoItems.change === 1) {
-  //     return 'green_triangle'
-  //   }
-  // }
 
   return (
     <div>
@@ -70,14 +101,17 @@ export function App() {
                     </div>
                     <div className="info">
                       <div className="ticker-symbol">{cryptoItem.symbol}</div>
-                      {/* may need change to be 1/0, true/false */}
                       <img
                         className="change-direction"
                         src={changeArray[cryptoItem.change]}
                         alt="change of direction"
                       />
-                      {/* Classname needs to have positive/negative be dynamic */}
-                      <div className="change-amount positive">
+                      <div
+                        className={
+                          'change-amount ' +
+                          (cryptoItem.change ? 'positive' : 'negative')
+                        }
+                      >
                         {cryptoItem.changeDifference}
                       </div>
                     </div>
@@ -97,148 +131,6 @@ export function App() {
                   </div>
                 </li>
               ))}
-
-              <li className="crypto-container bitcoin">
-                <div className="item-container">
-                  <img className="icon" src={btc} alt="image of bitcoin icon" />
-                </div>
-                <div className="item-container">
-                  <div className="name">Bitcoin</div>
-                  <div className="info">
-                    <div className="ticker-symbol">BTC</div>
-                    <img
-                      className="change-direction"
-                      src={green_triangle}
-                      alt="change of direction"
-                    />
-                    <div className="change-amount positive">0.35%</div>
-                  </div>
-                </div>
-                <div className="item-container line-graph">
-                  <img
-                    className="graph"
-                    src={stock_growth}
-                    alt="static pic of stocks"
-                  />
-                  <div className="graph-price">$16,125.00</div>
-                </div>
-              </li>
-
-              <li className="crypto-container etherium">
-                <div className="item-container">
-                  <img
-                    className="icon"
-                    src={eth}
-                    alt="image of etherium icon"
-                  />
-                </div>
-                <div className="item-container">
-                  <div className="name">Etherium</div>
-                  <div className="info">
-                    <div className="ticker-symbol">ETH</div>
-                    <img
-                      className="change-direction"
-                      src={red_triangle}
-                      alt="change of direction"
-                    />
-                    <div className="change-amount negative">0.35%</div>
-                  </div>
-                </div>
-                <div className="item-container line-graph">
-                  <img
-                    className="graph"
-                    src={stock_growth}
-                    alt="static pic of stocks"
-                  />
-                  <div className="graph-price">$1,380.00</div>
-                </div>
-              </li>
-
-              <li className="crypto-container aptos">
-                <div className="item-container">
-                  <img className="icon" src={apt} alt="image of aptos icon" />
-                </div>
-                <div className="item-container">
-                  <div className="name">Aptos</div>
-                  <div className="info">
-                    <div className="ticker-symbol">APT</div>
-                    <img
-                      className="change-direction"
-                      src={green_triangle}
-                      alt="change of direction"
-                    />
-                    <div className="change-amount positive">0.35%</div>
-                  </div>
-                </div>
-                <div className="item-container line-graph">
-                  <img
-                    className="graph"
-                    src={stock_growth}
-                    alt="static pic of stocks"
-                  />
-                  <div className="graph-price">$1,380.00</div>
-                </div>
-              </li>
-
-              <li className="crypto-container hashflow">
-                <div className="item-container">
-                  <img
-                    className="icon"
-                    src={hft}
-                    alt="image of hashflow icon"
-                  />
-                </div>
-                <div className="item-container">
-                  <div className="name">Hashflow</div>
-                  <div className="info">
-                    <div className="ticker-symbol">HFT</div>
-                    <img
-                      className="change-direction"
-                      src={green_triangle}
-                      alt="change of direction"
-                    />
-                    <div className="change-amount positive">0.35%</div>
-                  </div>
-                </div>
-                <div className="item-container line-graph">
-                  <img
-                    className="graph"
-                    src={stock_growth}
-                    alt="static pic of stocks"
-                  />
-                  <div className="graph-price">$1,380.00</div>
-                </div>
-              </li>
-
-              <li className="crypto-container impossible">
-                <div className="item-container">
-                  <img
-                    className="icon"
-                    src={idia}
-                    alt="image of impossible icon"
-                  />
-                </div>
-                <div className="item-container">
-                  <div className="name">Impossible Finance Launchpad</div>
-                  <div className="info">
-                    <div className="ticker-symbol">IADA</div>
-                    <img
-                      className="change-direction"
-                      src={red_triangle}
-                      alt="change of direction"
-                    />
-                    <div className="change-amount negative">0.35%</div>
-                  </div>
-                </div>
-                <div className="item-container line-graph">
-                  <img
-                    className="graph"
-                    src={stock_growth}
-                    alt="static pic of stocks"
-                  />
-                  <div className="graph-price">$1,380.00</div>
-                </div>
-              </li>
             </ul>
           </div>
           <div className="change-direction"></div>
