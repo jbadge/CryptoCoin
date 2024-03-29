@@ -1,32 +1,31 @@
 import React, { useEffect, useState } from 'react'
-
-import axios from 'axios'
-import {
-  CryptoCurrencyProps,
-  CryptoCurrency,
-} from './components/CryptoCurrency'
-
-//  Need to handle these?
-// icon: { src: btc },
-// change: 1,
-// graph: { src: stock_growth },
+import { HeadingLabels } from './components/HeadingLabels'
+import { Coins, CryptoCurrency } from './components/CryptoCurrency'
 
 export function App() {
-  const [cryptoItems, setCryptoItems] = useState<CryptoCurrencyProps[]>([])
+  const [coins, setCoins] = useState<Coins[]>([])
 
-  function loadAllCurrencies() {
-    async function fetchListOfCurrencies() {
-      const response = await axios.get('https://api.coincap.io/v2/assets')
-
-      if (response.status === 200) {
-        setCryptoItems(response.data.data)
+  function loadAllCoins() {
+    async function fetchCoins() {
+      const response = await fetch('https://api.coincap.io/v2/assets')
+      if (response.ok) {
+        const { data } = await response.json()
+        setCoins(data)
       }
     }
-    fetchListOfCurrencies()
+    fetchCoins()
   }
 
   useEffect(() => {
-    loadAllCurrencies()
+    const interval = setInterval(() => {
+      loadAllCoins()
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    loadAllCoins()
   }, [])
 
   return (
@@ -36,12 +35,8 @@ export function App() {
         <section className="tracker-area">
           <div className="cryptos">
             <ul className="crypto-list">
-              <li className="crypto-container column-headers">
-                <div className="col-header">Coin</div>
-                <div className="col-header">Price</div>
-                <div className="col-header">Prior 7 Days</div>
-              </li>
-              {cryptoItems.map((cryptoItem) => (
+              <HeadingLabels />
+              {coins.map((cryptoItem) => (
                 <CryptoCurrency
                   key={cryptoItem.rank}
                   id={cryptoItem.id}
@@ -50,8 +45,8 @@ export function App() {
                   symbol={cryptoItem.symbol}
                   priceUsd={cryptoItem.priceUsd}
                   changePercent24Hr={cryptoItem.changePercent24Hr}
-                  marketCapUsd={''}
-                  volumeUsd24Hr={''}
+                  marketCapUsd={cryptoItem.marketCapUsd}
+                  volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
                   explorer={null}
                 />
               ))}

@@ -10,8 +10,7 @@
   --sea: #5a9090;
   --sun: #d5562b;
   --tangerine: #f99d1b;
-  background-color: #2c2c2c;
-  color: #ffffff;
+  color-scheme: light dark;
 }
 
 html {
@@ -26,6 +25,8 @@ html {
 body {
   margin: 0;
   min-height: 100%;
+  color: light-dark(#000000, #ffffff);
+  background-color: light-dark(#ffffff, #2c2c2c);
 }
 
 h1 {
@@ -39,18 +40,18 @@ li {
   padding: 10px;
 }
 
-.column-headers {
-  text-align: center;
-  // margin-left: 1rem;
-  margin-right: 2rem;
-}
-
 .crypto-container {
   display: grid;
   grid-template-columns: repeat(2, minmax(2rem, 1fr)) 0.5fr;
   padding: 5px;
-  border-top: 2px solid #313131;
-  border-bottom: 2px solid #313131;
+
+  border-top: 0.5px solid #313131;
+  &.column-headers {
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1.5rem repeat(8, minmax(2rem, 1fr)) 0.5fr;
+    margin-right: 2rem;
+  }
 }
 
 .item-container {
@@ -60,7 +61,7 @@ li {
 
 .coin-info {
   display: grid;
-  grid-template-columns: 1rem repeat(3, minmax(2rem, 1fr));
+  grid-template-columns: 1.5rem repeat(3, minmax(2rem, 1fr));
   align-items: center;
   .icon {
     min-height: 40px;
@@ -73,6 +74,33 @@ li {
   .ticker-symbol {
     padding: 1rem;
   }
+}
+
+.rank-heading,
+.icon-heading {
+  align-self: center;
+}
+
+.name-heading,
+.symbol-heading,
+.price-heading {
+  align-self: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.change-24hr-heading {
+  padding-left: 1rem;
+  align-self: center;
+  justify-self: center;
+}
+
+.graph-heading {
+  align-self: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-right: 2rem;
+  justify-self: center;
 }
 
 .data-info {
@@ -106,9 +134,6 @@ li {
 .graph-info {
   display: grid;
   grid-template-columns: repeat(2, minmax(2rem, 1fr));
-}
-
-.graph {
 }
 
 .line-graph {

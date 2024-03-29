@@ -1,21 +1,18 @@
 import React from 'react'
-import BasicSparkLineCustomization from './Sparkline'
+import SparkLine from './Sparkline'
 import green_triangle from '../../images/green_triangle.png'
 import red_triangle from '../../images/red_triangle.png'
 import { Icon } from './Icon'
 
-export type CryptoCurrencyProps = {
+export type Coins = {
   id: string
   rank: string | number
   symbol: string
   name: string
-  // supply: string
-  // maxSupply: string
   marketCapUsd: string
   volumeUsd24Hr: string
   priceUsd: string
   changePercent24Hr: string
-  // vwap24Hr: string
   explorer: string | null
 }
 
@@ -24,9 +21,11 @@ export function CryptoCurrency({
   rank,
   name,
   symbol,
+  // marketCapUsd,
+  // volumeUsd24Hr,
   priceUsd,
   changePercent24Hr,
-}: CryptoCurrencyProps) {
+}: Coins) {
   const changeArray = [red_triangle, green_triangle]
 
   return (
@@ -37,7 +36,6 @@ export function CryptoCurrency({
         <div className="ticker-symbol">{name}</div>
         <div className="ticker-symbol">{symbol}</div>
       </div>
-
       <div className="item-container data-info">
         <div className="price">
           {new Intl.NumberFormat('en-US', {
@@ -61,7 +59,7 @@ export function CryptoCurrency({
           </div>
         </div>
       </div>
-      <BasicSparkLineCustomization />
+      <SparkLine />
     </li>
   )
 }
