@@ -13,7 +13,8 @@ export function HeadingLabels() {
         <div className="col-header price-heading">Price</div>
         <div className="col-header change-24hr-heading">24h</div>
       </div>
-      <div className="col-header graph-heading">Prior 7 Days</div>
+      <div className="col-header graph-heading">Price per 10 seconds</div>
+      {/* <div className="col-header graph-heading">Prior 7 Days</div> */}
     </li>
   )
 }

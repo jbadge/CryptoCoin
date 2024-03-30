@@ -1,0 +1,153 @@
+// import React, { useEffect, useState } from 'react'
+// import SparkLine from './Sparkline'
+// import green_triangle from '../../images/green_triangle.png'
+// import red_triangle from '../../images/red_triangle.png'
+// import { Icon } from './Icon'
+// import Decimal from 'decimal.js'
+
+// export type Coins = {
+//   id: string
+//   rank: string | number
+//   symbol: string
+//   name: string
+//   marketCapUsd: string
+//   volumeUsd24Hr: string
+//   priceUsd: string
+//   changePercent24Hr: string
+//   // dataSet: number[]
+//   data: Coins[]
+//   explorer: string | null
+// }
+
+// export function CryptoCurrency({
+//   id,
+//   rank,
+//   name,
+//   symbol,
+//   // marketCapUsd,
+//   // volumeUsd24Hr,
+//   // dataSet,
+//   data,
+//   priceUsd,
+//   changePercent24Hr,
+// }: Coins) {
+//   const [dataSet, setDataSet] = useState<Coins[]>([])
+//   const changeArray = [red_triangle, green_triangle]
+//   // if (symbol === 'BTC') {
+//   //   console.log('hiiii')
+//   //   console.log(dataSet)
+//   // }
+//   // if (symbol === 'BTC') {
+//   //   console.log(`this is the raw priceUsd from API, ${priceUsd}`)
+//   //   // console.log(parseFloat(priceUsd))
+//   //   let tempPriceUsd = new Intl.NumberFormat('en-US', {
+//   //     style: 'currency',
+//   //     currency: 'USD',
+//   //   }).format(parseFloat(priceUsd))
+//   //   console.log(`this is the priceUsd after formatting, ${tempPriceUsd}`)
+//   // }
+
+//   // function test1(priceUsd: string) {
+//   //   if (symbol === 'BTC') {
+//   //     console.log(`this is the raw priceUsd from API, ${priceUsd}`)
+//   //     // console.log(parseFloat(priceUsd))
+//   //     let tempPriceUsd = new Intl.NumberFormat('en-US', {
+//   //       style: 'currency',
+//   //       currency: 'USD',
+//   //     }).format(parseFloat(priceUsd))
+//   //     console.log(`this is the priceUsd after formatting, ${tempPriceUsd}`)
+//   //   }
+//   // }
+
+//   // const dataSet: string[] = []
+
+//   // if (symbol === 'BTC') {
+//   //   // console.log(
+//   //   //   `this is priceUsd as being passed from cryptoCurrency, ${priceUsd}`
+//   //   // )
+//   //   console.log(priceUsd)
+//   // }
+
+//   // function holdData(dataSet: Array<string>, newPieceOfData: string) {
+//   //   if (symbol === 'BTC') {
+//   //     // console.log(priceUsd)
+//   //     if (dataSet.length < 10) {
+//   //       dataSet.push(newPieceOfData)
+//   //       console.log(dataSet)
+//   //     } else if (dataSet.length >= 10) {
+//   //       dataSet.shift()
+//   //       dataSet.push(newPieceOfData)
+//   //       console.log(dataSet)
+//   //     }
+//   //   }
+//   // }
+
+//   // useEffect(() => {
+//   //   const interval = setInterval(async () => {
+//   //     if (symbol === 'BTC') {
+//   //       console.log(priceUsd)
+//   //       setDataValue(priceUsd)
+//   //       console.log(dataValue)
+//   //       holdData(dataSet, dataValue)
+//   //     }
+//   //   }, 1000)
+//   //   return () => clearInterval(interval)
+//   // }, [priceUsd])
+
+//   let transformData = data
+
+//   function holdData(transformData: string | any[]) {
+//     for (let i = 0; i < transformData.length; i++) {
+//       let tempDecimal = new Decimal(transformData[i].priceUsd)
+//       let lastDigits = tempDecimal.toString().slice(-16)
+//       transformData[i].priceUsd = parseFloat(lastDigits)
+//     }
+//     setDataSet(dataSet)
+//   }
+
+//   useEffect(() => {
+//     holdData(transformData)
+//     console.log(transformData)
+//   }, [])
+
+//   return (
+//     <li key={rank} className={`crypto-container ${id}`}>
+//       <div className="item-container coin-info">
+//         <div className="crypto-rank">{rank}</div>
+//         <Icon key={rank} name={name} symbol={symbol} />
+//         <div className="ticker-symbol">{name}</div>
+//         <div className="ticker-symbol">{symbol}</div>
+//       </div>
+//       <div className="item-container data-info">
+//         <div className="price">
+//           {new Intl.NumberFormat('en-US', {
+//             style: 'currency',
+//             currency: 'USD',
+//           }).format(parseFloat(priceUsd))}
+//         </div>
+//         <div className="change-24hr">
+//           <img
+//             className="change-direction"
+//             src={changeArray[parseFloat(changePercent24Hr) > 0 ? 1 : 0]}
+//             alt="change of direction"
+//           />
+//           <div
+//             className={
+//               'change-amount ' +
+//               (parseFloat(changePercent24Hr) > 0 ? 'positive' : 'negative')
+//             }
+//           >
+//             {parseFloat(changePercent24Hr).toFixed(2)}
+//           </div>
+//         </div>
+//       </div>
+//       <SparkLine
+//         key={rank}
+//         // priceUsd={priceUsd}
+//         // symbol={symbol}
+//         // dataSet={dataSet}
+//         data={dataSet}
+//       />
+//     </li>
+//   )
+// }

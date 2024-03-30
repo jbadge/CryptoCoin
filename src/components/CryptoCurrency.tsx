@@ -12,7 +12,9 @@ export type Coins = {
   marketCapUsd: string
   volumeUsd24Hr: string
   priceUsd: string
+  transformedPriceUsd: number
   changePercent24Hr: string
+  data: Coins[]
   explorer: string | null
 }
 
@@ -23,6 +25,10 @@ export function CryptoCurrency({
   symbol,
   // marketCapUsd,
   // volumeUsd24Hr,
+  // dataSet,
+  transformedPriceUsd,
+  // transformData,
+  // data,
   priceUsd,
   changePercent24Hr,
 }: Coins) {
@@ -59,7 +65,7 @@ export function CryptoCurrency({
           </div>
         </div>
       </div>
-      <SparkLine />
+      <SparkLine key={rank} transformedPriceUsd={transformedPriceUsd} />
     </li>
   )
 }
