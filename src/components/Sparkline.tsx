@@ -1,25 +1,23 @@
+// @ts-ignore
 import React, { useEffect, useState } from 'react'
 import Stack from '@mui/material/Stack'
 import Box from '@mui/material/Box'
 import { SparkLineChart } from '@mui/x-charts/SparkLineChart'
+import { CoinChartProps } from '../types/CoinTypes'
 
-type SparkLineProps = {
-  transformedPriceUsd: number
-}
-
-export default function SparkLine({ transformedPriceUsd }: SparkLineProps) {
+export default function SparkLine({
+  transformedPriceUsd,
+  sparkline,
+}: CoinChartProps) {
   const [newDataSet, setNewDataSet] = useState<number[]>([])
-  // console.log(newDataSet)
-
+  console.log(sparkline)
   function makeDataArray() {
     const tempArray = [...newDataSet]
-    // console.log(`${symbol} is ${transformedPriceUsd}`)
-    // data.map((coin) => coin.transformedPriceUsd)
     // for (let i = 0; i < data.length; i++) {
-    if (newDataSet.length < 100) {
+    if (newDataSet.length < 1000) {
       tempArray.push(transformedPriceUsd)
       setNewDataSet([...tempArray])
-    } else if (newDataSet.length >= 100) {
+    } else if (newDataSet.length >= 1000) {
       tempArray.shift()
       tempArray.push(transformedPriceUsd)
       setNewDataSet([...tempArray])

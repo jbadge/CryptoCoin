@@ -5,9 +5,5 @@ dist-ssr
 *.local
 
 src/scratchpad.md
-src/components/App.bak.tsx
-src/components/CryptoCurrency.bak.tsx
-src/components/Sparkline.bak.tsx
-backup_files/App.bak.tsx
-backup_files/CryptoCurrency.bak.tsx
-backup_files/Sparkline.bak.tsx
+
+

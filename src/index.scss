@@ -1,5 +1,5 @@
 :root {
-  font: 16px / 1 sans-serif;
+  font: 12px / 1 sans-serif;
 
   // SDG brand colors
   --asphalt: #2f3737;
@@ -23,8 +23,8 @@ html {
 }
 
 body {
-  margin: 0;
-  min-height: 100%;
+  margin: 2rem;
+  // min-height: 100%;
   color: light-dark(#000000, #ffffff);
   background-color: light-dark(#ffffff, #2c2c2c);
 }
@@ -37,90 +37,105 @@ h1 {
 ul,
 li {
   list-style: none;
-  padding: 10px;
+  // padding: 10px;
 }
 
 .crypto-container {
   display: grid;
-  grid-template-columns: repeat(2, minmax(2rem, 1fr)) 0.5fr;
-  padding: 5px;
-
+  grid-template-columns: 3fr 4fr 3fr;
+  grid-template-rows: 5rem;
+  // padding: 5px;
   border-top: 0.5px solid #313131;
-  &.column-headers {
-    text-align: center;
-    display: grid;
-    grid-template-columns: 1.5rem repeat(8, minmax(2rem, 1fr)) 0.5fr;
-    margin-right: 2rem;
-  }
+  // &.column-headers {
+  //   text-align: center;
+  //   display: grid;
+  //   grid-template-columns: 1.5rem repeat(8, minmax(2rem, 1fr)) 0.5fr;
+  //   margin-right: 2rem;
+  // }
 }
 
 .item-container {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin: 1rem;
+  // margin-right: 1rem;
 }
 
 .coin-info {
   display: grid;
-  grid-template-columns: 1.5rem repeat(3, minmax(2rem, 1fr));
+  grid-template-columns: 1.5fr 2.5fr 4fr 3fr;
+  // padding: 8px 4px;
+  // 1.5rem repeat(3, minmax(2rem, 1fr));
   align-items: center;
   .icon {
     min-height: 40px;
     max-height: 40px;
-    justify-self: center;
+    // justify-self: center;
   }
   .name {
-    padding: 1rem;
+    // padding: 1rem;
   }
   .ticker-symbol {
-    padding: 1rem;
+    // padding: 1rem;
   }
 }
 
 .rank-heading,
-.icon-heading {
-  align-self: center;
-}
-
+.icon-heading,
 .name-heading,
-.symbol-heading,
-.price-heading {
+.symbol-heading {
   align-self: center;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  justify-self: left;
 }
-
-.change-24hr-heading {
-  padding-left: 1rem;
+.price-heading,
+.change-24Hr-heading,
+.volumeUsd24Hr-heading,
+.market-cap-heading {
   align-self: center;
-  justify-self: center;
+  justify-self: right;
+  // padding-left: 1rem;
+  // padding-right: 1rem;
 }
-
 .graph-heading {
   align-self: center;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  text-align: right;
   margin-right: 2rem;
-  justify-self: center;
 }
-
 .data-info {
   display: grid;
-  grid-template-columns: repeat(3, minmax(2rem, 1fr));
+  grid-template-columns: 1fr 1fr 2fr 2fr;
   .price {
     align-self: center;
-    padding: 1rem;
+    // padding: 1rem;
+    justify-self: right;
+
+    &.no-change {
+      color: light-dark(#000000, #ffffff);
+    }
+    &.positive {
+      color: #47954a;
+    }
+    &.negative {
+      color: #b23b32;
+    }
   }
-  .change-24hr {
+  .change-24Hr {
     display: grid;
-    grid-template-columns: repeat(2, minmax(2rem, 1fr));
+    grid-template-columns: 1fr 3fr;
     align-items: center;
+    justify-self: right;
+
     .change-direction {
-      width: 20%;
+      max-height: 10px;
       align-self: center;
       justify-self: right;
+
+      &.no-change {
+        visibility: hidden;
+      }
     }
     .change-amount {
-      text-align: center;
+      &.no-change {
+        color: light-dark(#000000, #ffffff);
+      }
       &.positive {
         color: #47954a;
       }
@@ -129,54 +144,22 @@ li {
       }
     }
   }
+  .volumeUsd24Hr {
+    align-self: center;
+    justify-self: right;
+  }
+  .market-cap {
+    align-self: center;
+    justify-self: right;
+  }
 }
 
 .graph-info {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(2rem, 1fr));
-}
-
-.line-graph {
-  width: 600px;
-}
-.graph {
-  height: 60px;
-  width: 100%;
-}
-
-.sparklineChart {
-  width: 300px;
-  height: 30px;
-}
-
-/* just the line */
-.sparkline {
-  stroke: red;
-  fill: none;
-}
-
-/* line with highlight area */
-.sparkline {
-  stroke: red;
-  fill: rgba(255, 0, 0, 0.3);
-}
-
-/* change the spot color */
-.sparkline--spot {
-  stroke: blue;
-  fill: blue;
-}
-
-/* change the cursor color */
-.sparkline--cursor {
-  stroke: orange;
-}
-
-/* style fill area and line colors using specific class name */
-.sparkline--fill {
-  fill: rgba(255, 0, 0, 0.3);
-}
-
-.sparkline--line {
-  stroke: red;
+  align-self: center;
+  margin: 0;
+  padding: 0;
+  .graph {
+    height: 100%;
+    width: 100%;
+  }
 }

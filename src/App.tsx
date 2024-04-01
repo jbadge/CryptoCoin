@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { HeadingLabels } from './components/HeadingLabels'
-import { Coins, CryptoCurrency } from './components/CryptoCurrency'
-import Decimal from 'decimal.js'
+import { CryptoCurrency } from './components/CryptoCurrency'
+import { Coins } from './types/CoinTypes'
+import { holdData } from './lib/functions'
 
 export function App() {
   const [coins, setCoins] = useState<Coins[]>([])
@@ -17,16 +18,6 @@ export function App() {
       }
     }
     fetchCoins()
-  }
-
-  function holdData(data: Coins[]) {
-    for (let i = 0; i < data.length; i++) {
-      let tempDecimal = new Decimal(data[i].priceUsd)
-      // let lastDigits = tempDecimal.toString().slice(-16)
-      let lastDigits = tempDecimal.toString()
-      let tempPriceUsd = parseFloat(lastDigits)
-      data[i].transformedPriceUsd = tempPriceUsd
-    }
   }
 
   useEffect(() => {
@@ -48,7 +39,7 @@ export function App() {
           <div className="cryptos">
             <ul className="crypto-list">
               <HeadingLabels />
-              {coins.map((cryptoItem, index, data) => (
+              {coins.map((cryptoItem, _index, data) => (
                 <CryptoCurrency
                   key={cryptoItem.rank}
                   id={cryptoItem.id}
@@ -58,10 +49,12 @@ export function App() {
                   priceUsd={cryptoItem.priceUsd}
                   transformedPriceUsd={cryptoItem.transformedPriceUsd}
                   changePercent24Hr={cryptoItem.changePercent24Hr}
+                  transformed24Hr={cryptoItem.transformed24Hr}
                   marketCapUsd={cryptoItem.marketCapUsd}
                   volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
                   data={data}
                   explorer={null}
+                  sparkline={[]}
                 />
               ))}
             </ul>
