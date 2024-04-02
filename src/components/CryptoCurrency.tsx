@@ -29,8 +29,7 @@ export function CryptoCurrency({
     if (newPriceToCompare === 0) {
       setNewPriceToCompare(transformedPriceUsd)
       setPosOrNegPrice('no-change')
-    }
-    if (transformedPriceUsd === newPriceToCompare) {
+    } else if (transformedPriceUsd === newPriceToCompare) {
       setPosOrNegPrice('no-change')
       return
     } else if (transformedPriceUsd < newPriceToCompare) {
@@ -47,8 +46,7 @@ export function CryptoCurrency({
     if (new24HrToCompare === 0) {
       setNew24HrToCompare(transformed24Hr)
       setPosOrNeg24Hr('no-change')
-    }
-    if (transformed24Hr === new24HrToCompare) {
+    } else if (transformed24Hr === new24HrToCompare) {
       setPosOrNeg24Hr('no-change')
       return
     } else if (transformed24Hr < new24HrToCompare) {
@@ -61,7 +59,7 @@ export function CryptoCurrency({
       setPosOrNeg24Hr('negative')
       setCheckPosOrNeg(0)
     }
-  }, [changePercent24Hr])
+  }, [transformed24Hr])
 
   useEffect(() => {
     // setNewPriceToCompare(transformedPriceUsd)

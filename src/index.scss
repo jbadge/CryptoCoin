@@ -1,5 +1,5 @@
 :root {
-  font: 12px / 1 sans-serif;
+  font: 14px / 1 sans-serif;
 
   // SDG brand colors
   --asphalt: #2f3737;
@@ -24,142 +24,187 @@ html {
 
 body {
   margin: 2rem;
-  // min-height: 100%;
   color: light-dark(#000000, #ffffff);
   background-color: light-dark(#ffffff, #2c2c2c);
 }
 
 h1 {
-  margin: 3rem;
+  margin: 5rem;
   text-align: center;
 }
 
 ul,
 li {
   list-style: none;
-  // padding: 10px;
 }
 
 .crypto-container {
   display: grid;
-  grid-template-columns: 3fr 4fr 3fr;
+  grid-template-columns: 3fr 4.5fr 2.5fr;
   grid-template-rows: 5rem;
-  // padding: 5px;
-  border-top: 0.5px solid #313131;
-  // &.column-headers {
-  //   text-align: center;
-  //   display: grid;
-  //   grid-template-columns: 1.5rem repeat(8, minmax(2rem, 1fr)) 0.5fr;
-  //   margin-right: 2rem;
-  // }
-}
-
-.item-container {
-  margin: 1rem;
-  // margin-right: 1rem;
-}
-
-.coin-info {
-  display: grid;
-  grid-template-columns: 1.5fr 2.5fr 4fr 3fr;
-  // padding: 8px 4px;
-  // 1.5rem repeat(3, minmax(2rem, 1fr));
-  align-items: center;
-  .icon {
-    min-height: 40px;
-    max-height: 40px;
-    // justify-self: center;
-  }
-  .name {
-    // padding: 1rem;
-  }
-  .ticker-symbol {
-    // padding: 1rem;
-  }
-}
-
-.rank-heading,
-.icon-heading,
-.name-heading,
-.symbol-heading {
-  align-self: center;
-  justify-self: left;
-}
-.price-heading,
-.change-24Hr-heading,
-.volumeUsd24Hr-heading,
-.market-cap-heading {
-  align-self: center;
-  justify-self: right;
-  // padding-left: 1rem;
-  // padding-right: 1rem;
-}
-.graph-heading {
-  align-self: center;
-  text-align: right;
-  margin-right: 2rem;
-}
-.data-info {
-  display: grid;
-  grid-template-columns: 1fr 1fr 2fr 2fr;
-  .price {
-    align-self: center;
-    // padding: 1rem;
-    justify-self: right;
-
-    &.no-change {
-      color: light-dark(#000000, #ffffff);
+  gap: 1rem;
+  border-top: 1px solid #313131;
+  &.heading-info {
+    grid-template-rows: 3rem;
+    .coin-info-heading {
+      display: grid;
+      grid-template-columns: 1.5fr 2fr 4fr 1fr;
+      gap: 0.5rem;
+      align-items: center;
+      .col-heading {
+        &.rank-heading,
+        &.name-heading,
+        &.symbol-heading {
+          justify-self: left;
+        }
+      }
     }
-    &.positive {
-      color: #47954a;
+    .data-info-heading {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 2fr 2fr;
+      gap: 1rem;
+      align-items: center;
+      margin-right: 1rem;
+      .col-heading {
+        &.price-heading {
+          align-self: center;
+          justify-self: right;
+          &.no-change {
+            color: light-dark(#000000, #ffffff);
+          }
+          &.positive {
+            color: #47954a;
+          }
+          &.negative {
+            color: #b23b32;
+          }
+        }
+        &.change-24Hr-heading {
+          align-items: center;
+          justify-self: right;
+          .change-direction {
+            max-height: 10px;
+            align-self: center;
+            justify-self: right;
+            &.no-change {
+              visibility: hidden;
+            }
+          }
+          .change-amount {
+            &.no-change {
+              color: light-dark(#000000, #ffffff);
+            }
+            &.positive {
+              color: #47954a;
+            }
+            &.negative {
+              color: #b23b32;
+            }
+          }
+        }
+        &.volumeUsd24Hr-heading {
+          align-self: center;
+          justify-self: right;
+        }
+        &.market-cap-heading {
+          align-self: center;
+          justify-self: right;
+        }
+      }
     }
-    &.negative {
-      color: #b23b32;
+    .graph-info-heading {
+      display: grid;
+      align-items: center;
+      justify-self: center;
+      margin: 0;
+      .col-heading {
+        text-align: center;
+        &.graph-heading {
+          text-align: right;
+        }
+      }
     }
   }
-  .change-24Hr {
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    align-items: center;
-    justify-self: right;
+  .item-container {
+    &.coin-info {
+      display: grid;
+      grid-template-columns: 1.5fr 2fr 4fr 1fr;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: left;
+      .icon {
+        min-height: 40px;
+        max-height: 40px;
+      }
+      .name {
+        justify-self: left;
+      }
+      .ticker-symbol {
+        justify-self: left;
+        text-align: left;
+      }
+    }
+    &.data-info {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 2fr 2fr;
+      align-items: center;
+      gap: 1rem;
+      .price {
+        align-self: center;
+        justify-self: right;
+        &.no-change {
+          color: light-dark(#000000, #ffffff);
+        }
+        &.positive {
+          color: #47954a;
+        }
+        &.negative {
+          color: #b23b32;
+        }
+      }
+      .change-24Hr {
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+        align-items: center;
+        justify-self: right;
 
-    .change-direction {
-      max-height: 10px;
+        .change-direction {
+          max-height: 10px;
+          align-self: center;
+          justify-self: right;
+
+          &.no-change {
+            visibility: hidden;
+          }
+        }
+        .change-amount {
+          &.no-change {
+            color: light-dark(#000000, #ffffff);
+          }
+          &.positive {
+            color: #47954a;
+          }
+          &.negative {
+            color: #b23b32;
+          }
+        }
+      }
+      .volumeUsd24Hr {
+        align-self: center;
+        justify-self: right;
+      }
+      .market-cap {
+        align-self: center;
+        justify-self: right;
+      }
+    }
+    &.graph-info {
       align-self: center;
-      justify-self: right;
-
-      &.no-change {
-        visibility: hidden;
+      margin: 0;
+      .graph {
+        height: 100%;
+        width: 100%;
       }
     }
-    .change-amount {
-      &.no-change {
-        color: light-dark(#000000, #ffffff);
-      }
-      &.positive {
-        color: #47954a;
-      }
-      &.negative {
-        color: #b23b32;
-      }
-    }
-  }
-  .volumeUsd24Hr {
-    align-self: center;
-    justify-self: right;
-  }
-  .market-cap {
-    align-self: center;
-    justify-self: right;
-  }
-}
-
-.graph-info {
-  align-self: center;
-  margin: 0;
-  padding: 0;
-  .graph {
-    height: 100%;
-    width: 100%;
   }
 }
