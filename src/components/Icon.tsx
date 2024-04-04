@@ -15,6 +15,8 @@ export function Icon({ name, symbol }: IconProps) {
       className="icon"
       src={`/node_modules/cryptocurrency-icons/svg/color/${symbol}.svg`}
       onError={handleEvent}
+      height="40px"
+      width="40px"
       alt={`image of ${name} icon`}
     />
   )

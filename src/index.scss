@@ -1,20 +1,11 @@
 :root {
   font: 14px / 1 sans-serif;
-
-  // SDG brand colors
-  --asphalt: #2f3737;
-  --bright-sky: #80ced2;
-  --lime: #b1d133;
-  --night-sky: #85577e;
-  --sand: #f7f0da;
-  --sea: #5a9090;
-  --sun: #d5562b;
-  --tangerine: #f99d1b;
   color-scheme: light dark;
 }
 
 html {
   height: 100%;
+  width: 100%;
 }
 
 * {
@@ -28,183 +19,112 @@ body {
   background-color: light-dark(#ffffff, #2c2c2c);
 }
 
-h1 {
-  margin: 5rem;
-  text-align: center;
-}
+table {
+  border-collapse: collapse;
+  // width: 100%;
+  th {
+    top: 0;
+    padding: 1rem;
+    position: sticky;
+    border-radius: 5px;
+    box-shadow: 0px 0px 0px 0px black, 0px 0px 0px 0px black;
+    background-color: light-dark(#ffffff, #2c2c2c);
+  }
 
-ul,
-li {
-  list-style: none;
-}
+  td {
+    padding: 0 1rem;
+    white-space: nowrap;
+  }
 
-.crypto-container {
-  display: grid;
-  grid-template-columns: 3fr 4.5fr 2.5fr;
-  grid-template-rows: 5rem;
-  gap: 1rem;
-  border-top: 1px solid #313131;
-  &.heading-info {
-    grid-template-rows: 3rem;
-    .coin-info-heading {
-      display: grid;
-      grid-template-columns: 1.5fr 2fr 4fr 1fr;
-      gap: 0.5rem;
-      align-items: center;
-      .col-heading {
-        &.rank-heading,
-        &.name-heading,
-        &.symbol-heading {
-          justify-self: left;
-        }
-      }
-    }
-    .data-info-heading {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 2fr 2fr;
-      gap: 1rem;
-      align-items: center;
-      margin-right: 1rem;
-      .col-heading {
-        &.price-heading {
-          align-self: center;
-          justify-self: right;
-          &.no-change {
-            color: light-dark(#000000, #ffffff);
-          }
-          &.positive {
-            color: #47954a;
-          }
-          &.negative {
-            color: #b23b32;
-          }
-        }
-        &.change-24Hr-heading {
-          align-items: center;
-          justify-self: right;
-          .change-direction {
-            max-height: 10px;
-            align-self: center;
-            justify-self: right;
-            &.no-change {
-              visibility: hidden;
-            }
-          }
-          .change-amount {
-            &.no-change {
-              color: light-dark(#000000, #ffffff);
-            }
-            &.positive {
-              color: #47954a;
-            }
-            &.negative {
-              color: #b23b32;
-            }
-          }
-        }
-        &.volumeUsd24Hr-heading {
-          align-self: center;
-          justify-self: right;
-        }
-        &.market-cap-heading {
-          align-self: center;
-          justify-self: right;
-        }
-      }
-    }
-    .graph-info-heading {
-      display: grid;
-      align-items: center;
-      justify-self: center;
-      margin: 0;
-      .col-heading {
-        text-align: center;
-        &.graph-heading {
-          text-align: right;
-        }
+  caption {
+    padding: 5rem;
+    text-align: center;
+    border-spacing: 0 15px;
+    font-family: 'Catamaran', sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 200;
+    &.table-heading {
+      font-size: 3rem;
+      .sub-heading {
+        margin-top: 2rem;
+        font-size: 1.5rem;
       }
     }
   }
-  .item-container {
-    &.coin-info {
-      display: grid;
-      grid-template-columns: 1.5fr 2fr 4fr 1fr;
-      gap: 0.5rem;
-      align-items: center;
-      justify-content: left;
-      .icon {
-        min-height: 40px;
-        max-height: 40px;
-      }
-      .name {
-        justify-self: left;
-      }
-      .ticker-symbol {
-        justify-self: left;
-        text-align: left;
+}
+
+.coin-heading {
+  .rank-heading,
+  .name-heading,
+  .ticker-heading {
+    text-align: left;
+  }
+  .icon-heading {
+    visibility: hidden;
+  }
+  .price-heading,
+  .change-amount-heading,
+  .volume-24-heading,
+  .market-cap-heading {
+    text-align: right;
+  }
+  .price-heading {
+    padding-right: 1.5rem;
+  }
+  .change-amount-heading {
+    padding-left: 1.5rem;
+  }
+  .rank-heading {
+    max-width: 45px;
+    padding-right: 0;
+  }
+}
+
+.coin-container {
+  border-top: 1px solid hsl(0, 0%, 25%, 50%);
+  border-bottom: 1px solid hsl(0, 0%, 25%, 50%);
+  .price,
+  .volume-24,
+  .market-cap,
+  .change-24 > .change-amount {
+    text-align: right;
+    &.no-change {
+      color: light-dark(#000000, #ffffff);
+    }
+    &.positive {
+      color: light-dark(#2fae67, #16c784);
+    }
+    &.negative {
+      color: light-dark(#ce3a3a, #ea3943);
+    }
+  }
+  .rank {
+    padding-right: 0;
+  }
+  .price {
+    padding-right: 1.5rem;
+  }
+  .change-24 {
+    padding-left: 1.5rem;
+    min-width: 55px;
+    .change-direction {
+      padding-right: 0;
+      max-height: 10px;
+      &.no-change {
+        visibility: hidden;
       }
     }
-    &.data-info {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 2fr 2fr;
-      align-items: center;
-      gap: 1rem;
-      .price {
-        align-self: center;
-        justify-self: right;
-        &.no-change {
-          color: light-dark(#000000, #ffffff);
-        }
-        &.positive {
-          color: #47954a;
-        }
-        &.negative {
-          color: #b23b32;
-        }
-      }
-      .change-24Hr {
-        display: grid;
-        grid-template-columns: 1fr 3fr;
-        align-items: center;
-        justify-self: right;
-
-        .change-direction {
-          max-height: 10px;
-          align-self: center;
-          justify-self: right;
-
-          &.no-change {
-            visibility: hidden;
-          }
-        }
-        .change-amount {
-          &.no-change {
-            color: light-dark(#000000, #ffffff);
-          }
-          &.positive {
-            color: #47954a;
-          }
-          &.negative {
-            color: #b23b32;
-          }
-        }
-      }
-      .volumeUsd24Hr {
-        align-self: center;
-        justify-self: right;
-      }
-      .market-cap {
-        align-self: center;
-        justify-self: right;
-      }
-    }
-    &.graph-info {
+    .change-amount {
+      min-width: 45px;
+      padding: 0;
       align-self: center;
-      margin: 0;
-      .graph {
-        height: 100%;
-        width: 100%;
-      }
+      display: inline-block;
     }
+  }
+
+  .graph-info {
+    height: 100%;
+    width: 100%;
   }
 }

@@ -2,23 +2,34 @@ import React from 'react'
 
 export function HeadingLabels() {
   return (
-    <li className="crypto-container heading-info">
-      <div className="coin-info-heading">
-        <div className="col-heading rank-heading">Rank</div>
-        <div className="icon"></div>
-        <div className="col-heading name-heading">Name</div>
-        <div className="col-heading symbol-heading">Symbol</div>
-      </div>
-      <div className="data-info-heading">
-        <div className="col-heading price-heading">Price</div>
-        <div className="col-heading change-24Hr-heading">24h</div>
-        <div className="col-heading volumeUsd24Hr-heading">Volume 24h</div>
-        <div className="col-heading market-cap-heading">Market Cap</div>
-      </div>
-      <div className="graph-info-heading">
-        {/* Real-time */}
-        <div className="col-heading graph-heading">Real-time</div>
-      </div>
-    </li>
+    <tr className="coin-heading">
+      <th scope="col" className="rank-heading">
+        Rank
+      </th>
+      <th scope="col" className="icon-heading">
+        Icon
+      </th>
+      <th scope="col" className="name-heading">
+        Name
+      </th>
+      <th scope="col" className="ticker-heading">
+        Symbol
+      </th>
+      <th scope="col" className="price-heading">
+        Price
+      </th>
+      <th scope="col" className="change-amount-heading">
+        24h
+      </th>
+      <th scope="col" className="volume-24-heading">
+        Volume 24h
+      </th>
+      <th scope="col" className="market-cap-heading">
+        Market Cap
+      </th>
+      <th scope="col" className="graph-heading">
+        Real-time
+      </th>
+    </tr>
   )
 }

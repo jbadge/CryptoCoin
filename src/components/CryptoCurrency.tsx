@@ -3,8 +3,10 @@ import { Icon } from './Icon'
 import LineGraph from './LineGraph'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib/functions'
-import red_triangle from '../../images/red_triangle.png'
-import green_triangle from '../../images/green_triangle.png'
+import red_triangle_lm from '../../images/red_triangle_lm.png'
+import green_triangle_lm from '../../images/green_triangle_lm.png'
+import red_triangle_dm from '../../images/red_triangle_dm.png'
+import green_triangle_dm from '../../images/green_triangle_dm.png'
 
 export function CryptoCurrency({
   id,
@@ -18,7 +20,8 @@ export function CryptoCurrency({
   marketCapUsd,
   volumeUsd24Hr,
 }: Coins) {
-  const changeArray = [red_triangle, green_triangle]
+  const changeArrayLM = [red_triangle_lm, green_triangle_lm]
+  const changeArrayDM = [red_triangle_dm, green_triangle_dm]
   const [posOrNegPrice, setPosOrNegPrice] = useState('')
   const [newPriceToCompare, setNewPriceToCompare] = useState(0)
   const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
@@ -62,44 +65,44 @@ export function CryptoCurrency({
   }, [transformed24Hr])
 
   useEffect(() => {
-    // setNewPriceToCompare(transformedPriceUsd)
     setPosOrNegPrice('no-change')
     setPosOrNeg24Hr('no-change')
-    // setCheckPosOrNeg(2)
   }, [])
 
   return (
-    <li key={rank} className={`crypto-container ${id}`}>
-      <div className="item-container coin-info">
-        <div className="crypto-rank">{rank}</div>
+    <tr key={rank} className={`coin-container ${id}`}>
+      <td className="rank">{rank}</td>
+      <td className="icon-container">
         <Icon key={rank} name={name} symbol={symbol} />
-        <div className="ticker-symbol">{name}</div>
-        <div className="ticker-symbol">{symbol}</div>
-      </div>
-      <div className="item-container data-info">
-        <div className={'price ' + `${posOrNegPrice}`}>
-          {currencyFormatter(priceUsd)}
-        </div>
-        <div className="change-24Hr">
+      </td>
+      <td scope="row" className="name">
+        {name}
+      </td>
+      <td className="ticker">{symbol}</td>
+      <td className={'price ' + `${posOrNegPrice}`}>
+        {currencyFormatter(priceUsd, 2)}
+      </td>
+      <td className="change-24">
+        <picture>
+          <source
+            srcSet={changeArrayDM[checkPosOrNeg]}
+            media="(prefers-color-scheme: dark)"
+          />
           <img
             className={'change-direction ' + `${posOrNeg24Hr}`}
-            src={changeArray[checkPosOrNeg]}
+            src={changeArrayLM[checkPosOrNeg]}
             alt="change of direction"
           />
-          <div className={'change-amount ' + `${posOrNeg24Hr}`}>
-            {parseFloat(changePercent24Hr).toFixed(2)}
-          </div>
-        </div>
-        <div className="volumeUsd24Hr">
-          {currencyFormatter(volumeUsd24Hr, 0)}
-        </div>
-        <div className="market-cap">{currencyFormatter(marketCapUsd, 0)}</div>
-      </div>
-      <LineGraph
-        key={rank}
-        transformedPriceUsd={transformedPriceUsd}
-        sparkline={[]}
-      />
-    </li>
+        </picture>
+        <span className={'change-amount ' + `${posOrNeg24Hr}`}>
+          {parseFloat(changePercent24Hr).toFixed(2)}
+        </span>
+      </td>
+      <td className="volume-24">{currencyFormatter(volumeUsd24Hr, 0)}</td>
+      <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
+      <td className="graph-info">
+        <LineGraph key={rank} transformedPriceUsd={transformedPriceUsd} />
+      </td>
+    </tr>
   )
 }

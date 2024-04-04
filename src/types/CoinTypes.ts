@@ -16,5 +16,4 @@ export type Coins = {
 
 export type CoinChartProps = {
   transformedPriceUsd: number
-  sparkline: string[]
 }

@@ -5,15 +5,10 @@ import Box from '@mui/material/Box'
 import { SparkLineChart } from '@mui/x-charts/SparkLineChart'
 import { CoinChartProps } from '../types/CoinTypes'
 
-export default function SparkLine({
-  transformedPriceUsd,
-  sparkline,
-}: CoinChartProps) {
+export default function SparkLine({ transformedPriceUsd }: CoinChartProps) {
   const [newDataSet, setNewDataSet] = useState<number[]>([])
-  console.log(sparkline)
   function makeDataArray() {
     const tempArray = [...newDataSet]
-    // for (let i = 0; i < data.length; i++) {
     if (newDataSet.length < 1000) {
       tempArray.push(transformedPriceUsd)
       setNewDataSet([...tempArray])
@@ -24,7 +19,6 @@ export default function SparkLine({
     }
   }
 
-  // Does this need a useEffect? Winds up running 100 times on load
   useEffect(() => {
     const interval = setInterval(() => {
       makeDataArray()
