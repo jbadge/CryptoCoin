@@ -5,3 +5,5 @@ dist-ssr
 *.local
 
 src/scratchpad.md
+# Local Netlify folder
+.netlify

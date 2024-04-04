@@ -7,13 +7,13 @@ type IconProps = {
 
 export function Icon({ name, symbol }: IconProps) {
   function handleEvent(e: SyntheticEvent<HTMLImageElement, Event>) {
-    e.currentTarget.src = `/node_modules/cryptocurrency-icons/svg/color/generic.svg`
+    e.currentTarget.src = `/images/cryptocurrency-icons/svg/color/generic.svg`
   }
 
   return (
     <img
       className="icon"
-      src={`/node_modules/cryptocurrency-icons/svg/color/${symbol}.svg`}
+      src={`/cryptocurrency-icons/svg/color/${symbol}.svg`}
       onError={handleEvent}
       height="40px"
       width="40px"

@@ -1,3 +1,4 @@
+// @ts-ignore
 import React, { useEffect, useMemo, useState } from 'react'
 import { generateTimestamps } from '../lib/functions'
 import { CoinChartProps } from '../types/CoinTypes'
