@@ -21,20 +21,17 @@ export function App() {
   }
 
   useEffect(() => {
+    loadAllCoins()
     const interval = setInterval(() => {
       loadAllCoins()
-    }, 1000)
+    }, 10000)
     return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    loadAllCoins()
   }, [])
 
   return (
     <table className="crypto-list">
       <caption className="table-heading">
-        CryptoCoin
+        <h2>CryptoCoin</h2>
         <div className="sub-heading">A CryptoCurrency Tracker</div>
       </caption>
       <thead>

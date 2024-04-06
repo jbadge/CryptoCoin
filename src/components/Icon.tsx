@@ -7,7 +7,7 @@ type IconProps = {
 
 export function Icon({ name, symbol }: IconProps) {
   function handleEvent(e: SyntheticEvent<HTMLImageElement, Event>) {
-    e.currentTarget.src = `/images/cryptocurrency-icons/svg/color/generic.svg`
+    e.currentTarget.src = `/cryptocurrency-icons/svg/color/generic.svg`
   }
 
   return (

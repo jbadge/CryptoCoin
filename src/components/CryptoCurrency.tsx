@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Icon } from './Icon'
-// import LineGraph from './LineGraph'
-import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib/functions'
-import red_triangle_lm from '/red_triangle_lm.png'
-import green_triangle_lm from '/green_triangle_lm.png'
-import red_triangle_dm from '/red_triangle_dm.png'
-import green_triangle_dm from '/green_triangle_dm.png'
+import { Coins } from '../types/CoinTypes'
+import { Icon } from './Icon'
+import AreaGraph from './AreaGraph'
 
 export function CryptoCurrency({
   id,
@@ -20,8 +16,8 @@ export function CryptoCurrency({
   marketCapUsd,
   volumeUsd24Hr,
 }: Coins) {
-  const changeArrayLM = [red_triangle_lm, green_triangle_lm]
-  const changeArrayDM = [red_triangle_dm, green_triangle_dm]
+  const changeArrayLM = [`/red_triangle_lm.png`, `/green_triangle_lm.png`]
+  const changeArrayDM = [`/red_triangle_dm.png`, `/green_triangle_dm.png`]
   const [posOrNegPrice, setPosOrNegPrice] = useState('')
   const [newPriceToCompare, setNewPriceToCompare] = useState(0)
   const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
@@ -101,7 +97,12 @@ export function CryptoCurrency({
       <td className="volume-24">{currencyFormatter(volumeUsd24Hr, 0)}</td>
       <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
       <td className="graph-info">
-        {/* <LineGraph key={rank} transformedPriceUsd={transformedPriceUsd} /> */}
+        <AreaGraph
+          key={rank}
+          rank={rank}
+          symbol={symbol}
+          transformedPriceUsd={transformedPriceUsd}
+        />
       </td>
     </tr>
   )

@@ -12,16 +12,14 @@ export function currencyFormatter(price: number | string, digits: number = 2) {
   return formattedNumber.format(price)
 }
 
-export function generateTimestamps(): string[] {
-  const currentHour = new Date().getHours()
-  const timestamps = []
-
-  for (let i = 0; i < 24; i++) {
-    const hour = (currentHour + i) % 24
-    const timestamp = `${hour}:00`
-    timestamps.push(timestamp)
-  }
-  return timestamps
+export function generateTimestamp(): string {
+  let dt = new Date()
+  let hour = (dt.getHours() < 10 ? '0' : '') + dt.getHours()
+  let minute = (dt.getMinutes() < 10 ? '0' : '') + dt.getMinutes()
+  let second = (dt.getSeconds() < 10 ? '0' : '') + dt.getSeconds()
+  const timestamp = `${hour}:${minute}:${second}`
+  console.log(timestamp)
+  return timestamp
 }
 
 export function holdData(data: Coins[]) {

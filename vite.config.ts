@@ -1,3 +1,5 @@
+/** @type {import('vite').UserConfig} */
+
 import { defineConfig } from 'vite'
 import reactRefresh from '@vitejs/plugin-react-refresh'
 import checker from 'vite-plugin-checker'

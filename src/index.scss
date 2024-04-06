@@ -21,7 +21,7 @@ body {
 
 table {
   border-collapse: collapse;
-  // width: 100%;
+  width: 100%;
   th {
     top: 0;
     padding: 1rem;
@@ -37,18 +37,21 @@ table {
   }
 
   caption {
-    padding: 5rem;
+    padding: 1rem;
     text-align: center;
     border-spacing: 0 15px;
-    font-family: 'Catamaran', sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-    font-weight: 200;
     &.table-heading {
-      font-size: 3rem;
+      margin: 3rem;
+      text-align: center;
+      // font-family: 'GatsbyFLF';
+      font-family: 'Haarlem Deco DEMO';
+      font-size: 3.5rem;
       .sub-heading {
-        margin-top: 2rem;
-        font-size: 1.5rem;
+        // padding-top: 2rem;
+        text-align: center;
+        font-weight: 400;
+        font-family: 'Haarlem Serif DEMO';
+        font-size: 1.2rem;
       }
     }
   }

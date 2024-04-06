@@ -15,5 +15,7 @@ export type Coins = {
 }
 
 export type CoinChartProps = {
+  rank: string
+  symbol: string
   transformedPriceUsd: number
 }
