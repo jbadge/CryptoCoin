@@ -6,9 +6,7 @@ export function currencyFormatter(price: number | string, digits: number = 2) {
     currency: 'USD',
     maximumFractionDigits: digits,
   })
-
   if (typeof price === 'string') return formattedNumber.format(Number(price))
-
   return formattedNumber.format(price)
 }
 
@@ -18,7 +16,6 @@ export function generateTimestamp(): string {
   let minute = (dt.getMinutes() < 10 ? '0' : '') + dt.getMinutes()
   let second = (dt.getSeconds() < 10 ? '0' : '') + dt.getSeconds()
   const timestamp = `${hour}:${minute}:${second}`
-  console.log(timestamp)
   return timestamp
 }
 

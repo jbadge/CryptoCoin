@@ -1,6 +1,27 @@
 import React from 'react'
+// Context
+import { useGraphContext } from '../context/GraphContext'
 
-export function HeadingLabels() {
+function HeadingLabels() {
+  const graphContext = useGraphContext()
+
+  const handleClick = React.useCallback(() => {
+    if (graphContext.contentType === 'b1') {
+      graphContext.setContentType('b2')
+    } else if (graphContext.contentType === 'b2') {
+      graphContext.setContentType('b1')
+    }
+  }, [graphContext])
+
+  const heading = React.useMemo(() => {
+    return (
+      <label className="switch">
+        <input type="checkbox" onChange={handleClick} />
+        <span className="slider round"></span>
+      </label>
+    )
+  }, [handleClick])
+
   return (
     <tr className="coin-heading">
       <th scope="col" className="rank-heading">
@@ -28,8 +49,10 @@ export function HeadingLabels() {
         Market Cap
       </th>
       <th scope="col" className="graph-heading">
-        Real-time
+        {heading}
       </th>
     </tr>
   )
 }
+
+export default HeadingLabels

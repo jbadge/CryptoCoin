@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { HeadingLabels } from './components/HeadingLabels'
-import { CryptoCurrency } from './components/CryptoCurrency'
+import React from 'react'
+import HeadingLabels from './components/HeadingLabels'
+import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
 import { holdData } from './lib/functions'
+// Context
+import { GraphContextProvider } from './context/GraphContext'
 
 export function App() {
-  const [coins, setCoins] = useState<Coins[]>([])
+  const [coins, setCoins] = React.useState<Coins[]>([])
 
   function loadAllCoins() {
     async function fetchCoins() {
@@ -20,7 +22,7 @@ export function App() {
     fetchCoins()
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     loadAllCoins()
     const interval = setInterval(() => {
       loadAllCoins()
@@ -29,34 +31,36 @@ export function App() {
   }, [])
 
   return (
-    <table className="crypto-list">
-      <caption className="table-heading">
-        <h2>CryptoCoin</h2>
-        <div className="sub-heading">A CryptoCurrency Tracker</div>
-      </caption>
-      <thead>
-        <HeadingLabels />
-      </thead>
-      <tbody>
-        {coins.map((cryptoItem, _index, data) => (
-          <CryptoCurrency
-            key={cryptoItem.rank}
-            id={cryptoItem.id}
-            rank={cryptoItem.rank}
-            name={cryptoItem.name}
-            symbol={cryptoItem.symbol}
-            priceUsd={cryptoItem.priceUsd}
-            transformedPriceUsd={cryptoItem.transformedPriceUsd}
-            changePercent24Hr={cryptoItem.changePercent24Hr}
-            transformed24Hr={cryptoItem.transformed24Hr}
-            marketCapUsd={cryptoItem.marketCapUsd}
-            volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
-            data={data}
-            explorer={null}
-            sparkline={[]}
-          />
-        ))}
-      </tbody>
-    </table>
+    <GraphContextProvider>
+      <table className="crypto-list">
+        <caption className="table-heading">
+          <h2>CryptoCoin</h2>
+          <div className="sub-heading">A CryptoCurrency Tracker</div>
+        </caption>
+        <thead>
+          <HeadingLabels />
+        </thead>
+        <tbody>
+          {coins.map((cryptoItem, _index, data) => (
+            <CryptoCurrency
+              key={cryptoItem.rank}
+              id={cryptoItem.id}
+              rank={cryptoItem.rank}
+              name={cryptoItem.name}
+              symbol={cryptoItem.symbol}
+              priceUsd={cryptoItem.priceUsd}
+              transformedPriceUsd={cryptoItem.transformedPriceUsd}
+              changePercent24Hr={cryptoItem.changePercent24Hr}
+              transformed24Hr={cryptoItem.transformed24Hr}
+              marketCapUsd={cryptoItem.marketCapUsd}
+              volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
+              data={data}
+              explorer={null}
+              sparkline={[]}
+            />
+          ))}
+        </tbody>
+      </table>
+    </GraphContextProvider>
   )
 }
