@@ -1,6 +1,16 @@
 :root {
   font: 14px / 1 sans-serif;
   color-scheme: light dark;
+  --background-color-light-mode: #ffffff;
+  --background-color-dark-mode: #2c2c2c;
+  --foreground-color-light-mode: #000000;
+  --foreground-color-dark-mode: #ffffff;
+  --green-light-mode: #268750;
+  --green-dark-mode: #13aa70;
+  --red-light-mode: #d04343;
+  --red-dark-mode: #ff5c5e;
+  --chart-color-green: light-dark(var(--green-light-mode), var(--green-dark-mode))
+  --chart-color-red: light-dark(var(--red-light-mode), var(--red-dark-mode))
 }
 
 html {
@@ -15,8 +25,14 @@ html {
 
 body {
   margin: 2rem;
-  color: light-dark(#000000, #ffffff);
-  background-color: light-dark(#ffffff, #2c2c2c);
+  color: light-dark(
+    var(--foreground-color-light-mode),
+    var(--foreground-color-dark-mode)
+  );
+  background-color: light-dark(
+    var(--background-color-light-mode),
+    var(--background-color-dark-mode)
+  );
 }
 
 table {
@@ -30,7 +46,10 @@ table {
     position: sticky;
     border-radius: 5px;
     box-shadow: 0px 0px 0px 0px black, 0px 0px 0px 0px black;
-    background-color: light-dark(#ffffff, #2c2c2c);
+    background-color: light-dark(
+      var(--background-color-light-mode),
+      var(--background-color-dark-mode)
+    );
   }
 
   td {
@@ -105,13 +124,16 @@ table {
   .change-24 > .change-amount {
     text-align: right;
     &.no-change {
-      color: light-dark(#000000, #ffffff);
+      color: (
+        var(--foreground-color-light-mode),
+        var(--foreground-color-dark-mode)
+      );
     }
     &.positive {
-      color: light-dark(#2fae67, #16c784);
+      color: light-dark(var(--green-light-mode), var(--green-dark-mode));
     }
     &.negative {
-      color: light-dark(#ce3a3a, #ea3943);
+      color: light-dark(var(--red-light-mode), var(--red-dark-mode));
     }
   }
   .rank {
@@ -141,21 +163,23 @@ table {
     height: 100%;
     width: 300px;
     min-width: 200px;
+    color: light-dark(var(--green-light-mode), var(--green-dark-mode));
   }
 }
 
-.switch {
+.graph-switch {
   position: relative;
   display: inline-block;
   width: 40px;
   height: 16px;
   vertical-align: middle;
   justify-self: center;
-  margin: 0 auto;
+  margin: 0 27px;
+  margin-right: 15px;
   font-size: 14px;
 }
 
-.switch input {
+.graph-switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -168,7 +192,7 @@ table {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #6cafce;
+  background-color: hsl(199, 50%, 60%);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -186,7 +210,7 @@ table {
 }
 
 input:checked + .slider {
-  background-color: #4378a4;
+  background-color: hsl(199, 50%, 40%);
 }
 
 input:focus + .slider {
@@ -207,12 +231,18 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.switch.real-time {
+.graph-switch.real-time {
+  top: 1px;
   display: flex;
   white-space: nowrap;
+  margin-left: 0;
+  margin-right: 1.1rem;
 }
 
-.switch.seven-day {
+.graph-switch.seven-day {
+  top: 1px;
   display: flex;
+  white-space: nowrap;
+
   margin-left: 0;
 }

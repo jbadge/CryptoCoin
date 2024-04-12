@@ -14,8 +14,9 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
       rank: string
     }[]
   >([])
+
   const colorChart =
-    history[0]?.value > history.at(-1)?.value! ? '#EA3943' : '#16C784'
+    history[0]?.value > history.at(-1)?.value! ? '#e84f50' : '#1c9860'
 
   function findMinPrice(arrayOfObjects: any): number | undefined {
     if (arrayOfObjects.length === 0) {
