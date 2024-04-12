@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { holdData } from '../lib/functions'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts'
 
-export default function Chart({ id, rank, symbol }: CoinChartProps) {
-  const [history, setHistory] = useState<
+const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
+  const [firstValue, setFirstValue] = React.useState(0)
+  const [lastValue, setLastValue] = React.useState(0)
+  const [history, setHistory] = React.useState<
     {
-      rank: string
       symbol: string
       time: string
       value: number
+      rank: string
     }[]
   >([])
-  const [firstValue, setFirstValue] = useState(0)
-  const [lastValue, setLastValue] = useState(0)
   const colorChart =
     history[0]?.value > history.at(-1)?.value! ? '#EA3943' : '#16C784'
 
@@ -31,53 +31,40 @@ export default function Chart({ id, rank, symbol }: CoinChartProps) {
     setLastValue(arrayOfObjects.at(-1).value)
   }
 
-  // 7 day Area Chart
-  function loadChartData() {
+  React.useEffect(() => {
+    let isMounted = true
     async function fetchChart() {
-      const response = await fetch(
-        `https://api.coincap.io/v2/assets/${id}/history?interval=m15`
-      )
-      if (response.ok) {
-        const { data } = await response.json()
-        let tempData = [...data]
-        holdData(tempData)
-        const mapData = tempData.flatMap((coin) => [
-          {
-            rank: rank,
-            symbol: symbol,
-            time: `${coin.time}`,
-            value: Number(coin.transformedPriceUsd),
-          },
-        ])
-        setHistory(mapData)
+      try {
+        const response = await fetch(
+          `https://api.coincap.io/v2/assets/${id}/history?interval=m15`
+        )
+        if (response.ok && isMounted) {
+          const { data } = await response.json()
+          let tempData = [...data]
+          holdData(tempData)
+          const mapData = tempData.flatMap((coin) => [
+            {
+              symbol: symbol,
+              time: `${coin.time}`,
+              value: Number(coin.transformedPriceUsd),
+              rank: rank,
+            },
+          ])
+          if (isMounted) {
+            setHistory(mapData)
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
       }
     }
     fetchChart()
-  }
-
-  useEffect(() => {
-    loadChartData()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
-  useEffect(() => {
-    if (
-      // symbol === 'BTC' &&
-      firstValue !== 0 &&
-      lastValue !== 0
-    ) {
-      // console.log(minValue)
-      // console.log(maxValue)
-      // console.log(history)
-      // if (firstValue > lastValue) {
-      //   console.log(`Rank: ${rank}, ${symbol} is going down`)
-      // } else if (lastValue > firstValue) {
-      //   console.log(`Rank: ${rank}, ${symbol} is going up`)
-      // }
-    }
-  }, [firstValue, lastValue])
-
-  useEffect(() => {
-    // console.log(history)
+  React.useEffect(() => {
     findMinPrice(history)
     findMaxPrice(history)
   }, [history])
@@ -107,3 +94,5 @@ export default function Chart({ id, rank, symbol }: CoinChartProps) {
     </ResponsiveContainer>
   )
 }
+
+export default HistoryAreaGraph

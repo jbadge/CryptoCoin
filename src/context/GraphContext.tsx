@@ -1,8 +1,8 @@
 import React from 'react'
 
 export type GraphContextType = {
-  contentType: string
-  setContentType: React.Dispatch<React.SetStateAction<string>>
+  checked: boolean
+  setChecked: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export const GraphContext = React.createContext<null | GraphContextType>(null)
@@ -12,11 +12,11 @@ type Props = {
 }
 
 export const GraphContextProvider = ({ children }: Props) => {
-  const [contentType, setContentType] = React.useState<string>('b1')
+  const [checked, setChecked] = React.useState<boolean>(true)
 
   const memoizedContextValue = React.useMemo(() => {
-    return { contentType, setContentType }
-  }, [contentType])
+    return { checked, setChecked }
+  }, [checked])
 
   return (
     <GraphContext.Provider value={memoizedContextValue}>

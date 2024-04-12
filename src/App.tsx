@@ -11,12 +11,16 @@ export function App() {
 
   function loadAllCoins() {
     async function fetchCoins() {
-      const response = await fetch('https://api.coincap.io/v2/assets')
-      if (response.ok) {
-        const { data } = await response.json()
-        const tempCoins = [...data]
-        holdData(tempCoins)
-        setCoins(tempCoins)
+      try {
+        const response = await fetch('https://api.coincap.io/v2/assets')
+        if (response.ok) {
+          const { data } = await response.json()
+          const tempCoins = [...data]
+          holdData(tempCoins)
+          setCoins(tempCoins)
+        }
+      } catch (error) {
+        console.error('Error fetching data from API:', error)
       }
     }
     fetchCoins()
@@ -41,7 +45,7 @@ export function App() {
           <HeadingLabels />
         </thead>
         <tbody>
-          {coins.map((cryptoItem, _index, data) => (
+          {coins.map((cryptoItem, _index) => (
             <CryptoCurrency
               key={cryptoItem.rank}
               id={cryptoItem.id}
@@ -54,9 +58,7 @@ export function App() {
               transformed24Hr={cryptoItem.transformed24Hr}
               marketCapUsd={cryptoItem.marketCapUsd}
               volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
-              data={data}
               explorer={null}
-              sparkline={[]}
             />
           ))}
         </tbody>

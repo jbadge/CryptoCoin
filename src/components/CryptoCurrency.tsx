@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { currencyFormatter } from '../lib/functions'
+import React from 'react'
+import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
-import { Icon } from './Icon'
-import RealTimeAreaGraph from './RealTimeAreaGraph'
+import { currencyFormatter } from '../lib/functions'
 import HistoryAreaGraph from './HistoryAreaGraph'
+import RealTimeAreaGraph from './RealTimeAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
 
-function CryptoCurrency({
+const CryptoCurrency = ({
   id,
   rank,
   name,
@@ -18,33 +18,15 @@ function CryptoCurrency({
   transformed24Hr,
   marketCapUsd,
   volumeUsd24Hr,
-}: Coins) {
+}: Coins) => {
   const changeArrayLM = [`/red_triangle_lm.png`, `/green_triangle_lm.png`]
   const changeArrayDM = [`/red_triangle_dm.png`, `/green_triangle_dm.png`]
-  const [newPriceToCompare, setNewPriceToCompare] = useState(0)
-  const [new24HrToCompare, setNew24HrToCompare] = useState(0)
-  const [posOrNegPrice, setPosOrNegPrice] = useState('')
-  const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
-  const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
+  const [newPriceToCompare, setNewPriceToCompare] = React.useState(0)
+  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
+  const [posOrNegPrice, setPosOrNegPrice] = React.useState('')
+  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
+  const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('')
   const graphContext = useGraphContext()
-
-  const AreaGraph1 = () => (
-    <RealTimeAreaGraph
-      id={''}
-      rank={rank}
-      symbol={symbol}
-      transformedPriceUsd={transformedPriceUsd}
-    />
-  )
-
-  const AreaGraph2 = () => (
-    <HistoryAreaGraph
-      id={id}
-      rank={rank}
-      symbol={symbol}
-      transformedPriceUsd={transformedPriceUsd}
-    />
-  )
 
   function checkPosOrNegPrice() {
     if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {
@@ -79,27 +61,18 @@ function CryptoCurrency({
     }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     checkPosOrNegPrice()
   }, [transformedPriceUsd])
 
-  useEffect(() => {
+  React.useEffect(() => {
     checkPosOrNeg24Hr()
   }, [transformed24Hr])
 
-  useEffect(() => {
+  React.useEffect(() => {
     setPosOrNegPrice('no-change')
     setPosOrNeg24Hr('no-change')
   }, [])
-
-  const graphs = React.useMemo(() => {
-    return (
-      <>
-        {graphContext.contentType === 'b1' && <AreaGraph1 />}
-        {graphContext.contentType === 'b2' && <AreaGraph2 />}
-      </>
-    )
-  }, [graphContext])
 
   return (
     <tr key={rank} className={`coin-container ${id}`}>
@@ -132,7 +105,24 @@ function CryptoCurrency({
       </td>
       <td className="volume-24">{currencyFormatter(volumeUsd24Hr, 0)}</td>
       <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
-      <td className="graph-info">{graphs}</td>
+      <td className="graph-info">
+        {graphContext.checked ? (
+          <HistoryAreaGraph
+            id={id}
+            rank={rank}
+            symbol={symbol}
+            transformedPriceUsd={transformedPriceUsd}
+          />
+        ) : (
+          <RealTimeAreaGraph
+            key={rank}
+            id={''}
+            rank={rank}
+            symbol={symbol}
+            transformedPriceUsd={transformedPriceUsd}
+          />
+        )}
+      </td>
     </tr>
   )
 }

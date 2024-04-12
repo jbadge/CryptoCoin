@@ -10,6 +10,7 @@ export function currencyFormatter(price: number | string, digits: number = 2) {
   return formattedNumber.format(price)
 }
 
+// Helper function currently unused
 export function generateTimestamp(): string {
   let dt = new Date()
   let hour = (dt.getHours() < 10 ? '0' : '') + dt.getHours()

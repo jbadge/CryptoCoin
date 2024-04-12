@@ -6,19 +6,24 @@ function HeadingLabels() {
   const graphContext = useGraphContext()
 
   const handleClick = React.useCallback(() => {
-    if (graphContext.contentType === 'b1') {
-      graphContext.setContentType('b2')
-    } else if (graphContext.contentType === 'b2') {
-      graphContext.setContentType('b1')
-    }
+    graphContext.setChecked((prev) => !prev)
   }, [graphContext])
 
   const heading = React.useMemo(() => {
     return (
-      <label className="switch">
-        <input type="checkbox" onChange={handleClick} />
-        <span className="slider round"></span>
-      </label>
+      <div className="graph-heading-switch">
+        <h5 className="switch real-time">Real-Time</h5>
+        <label className="switch">
+          <input
+            type="checkbox"
+            onChange={handleClick}
+            checked={graphContext.checked}
+            width={140}
+          />
+          <span className="slider round"></span>
+        </label>
+        <h5 className="switch seven-day">7-Day</h5>
+      </div>
     )
   }, [handleClick])
 

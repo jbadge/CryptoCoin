@@ -9,9 +9,7 @@ export type Coins = {
   transformedPriceUsd: number
   changePercent24Hr: string
   transformed24Hr: number
-  data: Coins[]
   explorer: string | null
-  sparkline: string[]
 }
 
 export type CoinChartProps = {
@@ -19,4 +17,9 @@ export type CoinChartProps = {
   rank: string
   symbol: string
   transformedPriceUsd: number
+}
+
+export type IconProps = {
+  name: string | undefined
+  symbol: string | undefined
 }

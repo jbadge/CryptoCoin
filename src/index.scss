@@ -82,6 +82,18 @@ table {
     max-width: 45px;
     padding-right: 0;
   }
+  .graph-heading {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    padding-right: 2;
+    flex-wrap: nowrap;
+    align-items: center;
+    .graph-heading-switch {
+      display: flex;
+      width: 100%;
+    }
+  }
 }
 
 .coin-container {
@@ -125,7 +137,6 @@ table {
       display: inline-block;
     }
   }
-
   .graph-info {
     height: 100%;
     width: 300px;
@@ -133,22 +144,23 @@ table {
   }
 }
 
-/* The switch - the box around the slider */
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 40px;
+  height: 16px;
+  vertical-align: middle;
+  justify-self: center;
+  margin: 0 auto;
+  font-size: 14px;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -156,7 +168,7 @@ table {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: #6cafce;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -164,17 +176,17 @@ table {
 .slider:before {
   position: absolute;
   content: '';
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
+  height: 14px;
+  width: 14px;
+  left: 1px;
+  bottom: 1px;
   background-color: white;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: #2196f3;
+  background-color: #4378a4;
 }
 
 input:focus + .slider {
@@ -182,16 +194,25 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+  -webkit-transform: translateX(24px);
+  -ms-transform: translateX(24px);
+  transform: translateX(24px);
 }
 
-/* Rounded sliders */
 .slider.round {
   border-radius: 34px;
 }
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+.switch.real-time {
+  display: flex;
+  white-space: nowrap;
+}
+
+.switch.seven-day {
+  display: flex;
+  margin-left: 0;
 }
