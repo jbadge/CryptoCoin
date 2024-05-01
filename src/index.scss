@@ -1,6 +1,14 @@
 :root {
   font: 14px / 1 sans-serif;
   color-scheme: light dark;
+  --background-color-light-mode: #ffffff;
+  --background-color-dark-mode: #2c2c2c;
+  --foreground-color-light-mode: #000000;
+  --foreground-color-dark-mode: #ffffff;
+  --green-light-mode: #268750;
+  --green-dark-mode: #13aa70;
+  --red-light-mode: #d04343;
+  --red-dark-mode: #ff5c5e;
 }
 
 html {
@@ -46,7 +54,7 @@ table {
       margin: 3rem;
       text-align: center;
       font-family: 'Haarlem Deco DEMO';
-      font-size: 3.5rem;
+      font-size: 2.6rem;
       .sub-heading {
         text-align: center;
         font-weight: 400;
@@ -139,7 +147,7 @@ table {
   }
   .graph-info {
     height: 100%;
-    width: 300px;
+    width: 200px;
     min-width: 200px;
   }
 }

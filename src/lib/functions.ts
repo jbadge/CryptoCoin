@@ -28,3 +28,25 @@ export function holdData(data: Coins[]) {
     data[i].transformed24Hr = temp24Hr
   }
 }
+
+import React from 'react'
+import { useDatasetContext } from '../context/DatasetContext'
+
+const PriceUpdater = ({
+  transformedPriceUsd,
+}: {
+  transformedPriceUsd: number
+}) => {
+  const datasetContext = useDatasetContext()
+
+  React.useEffect(() => {
+    datasetContext.setDataset((prevDataset) => [
+      ...prevDataset,
+      transformedPriceUsd,
+    ])
+  }, [transformedPriceUsd])
+
+  return null
+}
+
+export default PriceUpdater

@@ -5,9 +5,11 @@ import { Coins } from './types/CoinTypes'
 import { holdData } from './lib/functions'
 // Context
 import { GraphContextProvider } from './context/GraphContext'
+import { DatasetContextProvider } from './context/DatasetContext'
 
 export function App() {
   const [coins, setCoins] = React.useState<Coins[]>([])
+  // const [dataset, setDataset] = React.useState<number[]>([])
 
   function loadAllCoins() {
     async function fetchCoins() {
@@ -34,35 +36,42 @@ export function App() {
     return () => clearInterval(interval)
   }, [])
 
+  if (coins === null || undefined) {
+    return <p>Loading...</p>
+  }
+
   return (
     <GraphContextProvider>
-      <table className="crypto-list">
-        <caption className="table-heading">
-          <h2>CryptoCoin</h2>
-          <div className="sub-heading">A CryptoCurrency Tracker</div>
-        </caption>
-        <thead>
-          <HeadingLabels />
-        </thead>
-        <tbody>
-          {coins.map((cryptoItem, _index) => (
-            <CryptoCurrency
-              key={cryptoItem.rank}
-              id={cryptoItem.id}
-              rank={cryptoItem.rank}
-              name={cryptoItem.name}
-              symbol={cryptoItem.symbol}
-              priceUsd={cryptoItem.priceUsd}
-              transformedPriceUsd={cryptoItem.transformedPriceUsd}
-              changePercent24Hr={cryptoItem.changePercent24Hr}
-              transformed24Hr={cryptoItem.transformed24Hr}
-              marketCapUsd={cryptoItem.marketCapUsd}
-              volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
-              explorer={null}
-            />
-          ))}
-        </tbody>
-      </table>
+      <DatasetContextProvider>
+        <table className="crypto-list">
+          <caption className="table-heading">
+            <h1>CryptoCoin</h1>
+            <div className="sub-heading">A CryptoCurrency Tracker</div>
+          </caption>
+          <thead>
+            <HeadingLabels />
+          </thead>
+          <tbody>
+            {coins.map((cryptoItem, _index) => (
+              <CryptoCurrency
+                key={cryptoItem.rank}
+                id={cryptoItem.id}
+                rank={cryptoItem.rank}
+                name={cryptoItem.name}
+                symbol={cryptoItem.symbol}
+                priceUsd={cryptoItem.priceUsd}
+                transformedPriceUsd={cryptoItem.transformedPriceUsd}
+                changePercent24Hr={cryptoItem.changePercent24Hr}
+                transformed24Hr={cryptoItem.transformed24Hr}
+                marketCapUsd={cryptoItem.marketCapUsd}
+                volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
+                explorer={null}
+              />
+            ))}
+            {/* <PriceUpdater transformedPriceUsd={transformedPriceUsd} /> */}
+          </tbody>
+        </table>
+      </DatasetContextProvider>
     </GraphContextProvider>
   )
 }

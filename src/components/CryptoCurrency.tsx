@@ -6,6 +6,7 @@ import HistoryAreaGraph from './HistoryAreaGraph'
 import RealTimeAreaGraph from './RealTimeAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
+import PriceUpdater from '../lib/functions'
 
 const CryptoCurrency = ({
   id,
@@ -19,14 +20,23 @@ const CryptoCurrency = ({
   marketCapUsd,
   volumeUsd24Hr,
 }: Coins) => {
-  const changeArrayLM = [`/red_triangle_lm.png`, `/green_triangle_lm.png`]
-  const changeArrayDM = [`/red_triangle_dm.png`, `/green_triangle_dm.png`]
   const [newPriceToCompare, setNewPriceToCompare] = React.useState(0)
-  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
   const [posOrNegPrice, setPosOrNegPrice] = React.useState('')
-  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
   const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('')
+  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
+  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
+
   const graphContext = useGraphContext()
+  const redTriangleLM = new Image()
+  redTriangleLM.src = '/red_triangle_lm.png'
+  const greenTriangleLM = new Image()
+  greenTriangleLM.src = '/green_triangle_lm.png'
+  const redTriangleDM = new Image()
+  redTriangleDM.src = '/red_triangle_dm.png'
+  const greenTriangleDM = new Image()
+  greenTriangleDM.src = '/green_triangle_dm.png'
+  const changeArrayLM = [redTriangleLM.src, greenTriangleLM.src]
+  const changeArrayDM = [redTriangleDM.src, greenTriangleDM.src]
 
   function checkPosOrNegPrice() {
     if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {
@@ -74,6 +84,20 @@ const CryptoCurrency = ({
     setPosOrNeg24Hr('no-change')
   }, [])
 
+  const graphElement = React.useRef<SVGSVGElement | null>(null)
+  const [loaded, setLoaded] = React.useState(false)
+
+  const onGraphLoaded = () => setLoaded(true)
+
+  React.useEffect(() => {
+    const currGraphElement = graphElement.current
+
+    if (currGraphElement) {
+      currGraphElement.addEventListener('load', onGraphLoaded)
+      return () => currGraphElement.removeEventListener('load', onGraphLoaded)
+    }
+  }, [graphElement])
+
   return (
     <tr key={rank} className={`coin-container ${id}`}>
       <td className="rank">{rank}</td>
@@ -106,22 +130,36 @@ const CryptoCurrency = ({
       <td className="volume-24">{currencyFormatter(volumeUsd24Hr, 0)}</td>
       <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
       <td className="graph-info">
-        {graphContext.checked ? (
-          <HistoryAreaGraph
-            id={id}
-            rank={rank}
-            symbol={symbol}
-            transformedPriceUsd={transformedPriceUsd}
-          />
-        ) : (
-          <RealTimeAreaGraph
-            key={rank}
-            id={''}
-            rank={rank}
-            symbol={symbol}
-            transformedPriceUsd={transformedPriceUsd}
-          />
-        )}
+        <>
+          <p style={!loaded ? { display: 'block' } : { display: 'none' }}>
+            Loading...
+          </p>
+          {graphContext.checked ? (
+            <HistoryAreaGraph
+              ref={graphElement}
+              id={id}
+              rank={rank}
+              symbol={symbol}
+              transformedPriceUsd={transformedPriceUsd}
+              style={loaded ? { display: 'inline-block' } : { display: 'none' }}
+            />
+          ) : (
+            <>
+              <PriceUpdater transformedPriceUsd={transformedPriceUsd} />
+              <RealTimeAreaGraph
+                ref={graphElement}
+                key={rank}
+                id={''}
+                rank={rank}
+                symbol={symbol}
+                transformedPriceUsd={transformedPriceUsd}
+                style={
+                  loaded ? { display: 'inline-block' } : { display: 'none' }
+                }
+              />
+            </>
+          )}
+        </>
       </td>
     </tr>
   )

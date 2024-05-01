@@ -1,20 +1,42 @@
 import React from 'react'
 import { IconProps } from '../types/CoinTypes'
+import genericIcon from '/cryptocurrency-icons/svg/color/generic.svg'
 
 const Icon = ({ name, symbol }: IconProps) => {
-  function handleEvent(e: React.SyntheticEvent<HTMLImageElement, Event>) {
-    e.currentTarget.src = `/cryptocurrency-icons/svg/color/generic.svg`
+  const iconElement = React.useRef<HTMLImageElement>(null)
+  const [error, setError] = React.useState(false)
+  const [loaded, setLoaded] = React.useState(false)
+  const onIconLoaded = () => setLoaded(true)
+
+  React.useEffect(() => {
+    const currIconElement = iconElement.current
+
+    if (currIconElement) {
+      currIconElement?.addEventListener('load', onIconLoaded)
+      return () => currIconElement?.removeEventListener('load', onIconLoaded)
+    }
+  }, [iconElement])
+
+  function handleImageError() {
+    setError(true)
   }
 
   return (
-    <img
-      className="icon"
-      src={`/cryptocurrency-icons/svg/color/${symbol}.svg`}
-      onError={handleEvent}
-      height="40px"
-      width="40px"
-      alt={`image of ${name} icon`}
-    />
+    <>
+      <p style={!loaded ? { display: 'block' } : { display: 'none' }}></p>
+      <img
+        ref={iconElement}
+        className="icon"
+        src={
+          !error ? `/cryptocurrency-icons/svg/color/${symbol}.svg` : genericIcon
+        }
+        onError={handleImageError}
+        height="40px"
+        width="40px"
+        alt={`Image of ${name} icon`}
+        style={loaded ? { display: 'inline-block' } : { display: 'none' }}
+      />
+    </>
   )
 }
 
