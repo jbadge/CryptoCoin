@@ -7,22 +7,37 @@ function HeadingLabels() {
 
   const handleClick = React.useCallback(() => {
     graphContext.setChecked((prev) => !prev)
+    if (!graphContext.checked) {
+      graphContext.preloadDataForRealTimeView()
+    }
   }, [graphContext])
 
   const heading = React.useMemo(() => {
     return (
       <div className="graph-heading-switch">
-        <h5 className="graph-switch real-time">Real-Time</h5>
-        <label className="graph-switch">
+        <h2 className="graph-switch real-time">Real-Time</h2>
+        <label
+          className="graph-switch"
+          role="toggle-switch"
+          aria-checked={graphContext.checked}
+        >
           <input
             type="checkbox"
             onChange={handleClick}
             checked={graphContext.checked}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                handleClick()
+              }
+            }}
+            tabIndex={0}
             width={140}
+            aria-label="Toggle Real-Time and 7-Day Graph"
+            role="button"
           />
           <span className="slider round"></span>
         </label>
-        <h5 className="graph-switch seven-day">7-Day</h5>
+        <h2 className="graph-switch seven-day">7-Day</h2>
       </div>
     )
   }, [handleClick])

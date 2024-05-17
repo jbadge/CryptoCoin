@@ -6,6 +6,7 @@ import HistoryAreaGraph from './HistoryAreaGraph'
 import RealTimeAreaGraph from './RealTimeAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
+import PriceUpdater from '../lib/functions'
 
 const CryptoCurrency = ({
   id,
@@ -19,14 +20,23 @@ const CryptoCurrency = ({
   marketCapUsd,
   volumeUsd24Hr,
 }: Coins) => {
-  const changeArrayLM = [`/red_triangle_lm.png`, `/green_triangle_lm.png`]
-  const changeArrayDM = [`/red_triangle_dm.png`, `/green_triangle_dm.png`]
   const [newPriceToCompare, setNewPriceToCompare] = React.useState(0)
-  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
   const [posOrNegPrice, setPosOrNegPrice] = React.useState('')
-  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
   const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('')
+  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
+  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
+
   const graphContext = useGraphContext()
+  const redTriangleLM = new Image()
+  redTriangleLM.src = '/red_triangle_lm.png'
+  const greenTriangleLM = new Image()
+  greenTriangleLM.src = '/green_triangle_lm.png'
+  const redTriangleDM = new Image()
+  redTriangleDM.src = '/red_triangle_dm.png'
+  const greenTriangleDM = new Image()
+  greenTriangleDM.src = '/green_triangle_dm.png'
+  const changeArrayLM = [redTriangleLM.src, greenTriangleLM.src]
+  const changeArrayDM = [redTriangleDM.src, greenTriangleDM.src]
 
   function checkPosOrNegPrice() {
     if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {
@@ -97,6 +107,7 @@ const CryptoCurrency = ({
             className={'change-direction ' + `${posOrNeg24Hr}`}
             src={changeArrayLM[checkPosOrNeg]}
             alt="change of direction"
+            height={10}
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
@@ -106,22 +117,27 @@ const CryptoCurrency = ({
       <td className="volume-24">{currencyFormatter(volumeUsd24Hr, 0)}</td>
       <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
       <td className="graph-info">
-        {graphContext.checked ? (
-          <HistoryAreaGraph
-            id={id}
-            rank={rank}
-            symbol={symbol}
-            transformedPriceUsd={transformedPriceUsd}
-          />
-        ) : (
-          <RealTimeAreaGraph
-            key={rank}
-            id={''}
-            rank={rank}
-            symbol={symbol}
-            transformedPriceUsd={transformedPriceUsd}
-          />
-        )}
+        <>
+          {graphContext.checked ? (
+            <HistoryAreaGraph
+              id={id}
+              rank={rank}
+              symbol={symbol}
+              transformedPriceUsd={transformedPriceUsd}
+            />
+          ) : (
+            <>
+              <PriceUpdater transformedPriceUsd={transformedPriceUsd} />
+              <RealTimeAreaGraph
+                key={rank}
+                id={''}
+                rank={rank}
+                symbol={symbol}
+                transformedPriceUsd={transformedPriceUsd}
+              />
+            </>
+          )}
+        </>
       </td>
     </tr>
   )
