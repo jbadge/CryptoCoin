@@ -1,3 +1,13 @@
+@font-face {
+  font-family: Haarlem Deco;
+  src: url('./assets/Haarlem\ Deco\ DEMO.otf');
+}
+
+@font-face {
+  font-family: Haarlem Serif;
+  src: url('./assets/HaarlemSerif.otf');
+}
+
 :root {
   font: 14px / 1 sans-serif;
   color-scheme: light dark;
@@ -53,12 +63,12 @@ table {
     &.table-heading {
       margin: 3rem;
       text-align: center;
-      font-family: 'Haarlem Deco DEMO';
+      font-family: 'Haarlem Deco';
       font-size: 2.6rem;
       .sub-heading {
         text-align: center;
         font-weight: 400;
-        font-family: 'Haarlem Serif DEMO';
+        font-family: 'Haarlem Serif';
         font-size: 1.2rem;
       }
     }
@@ -91,6 +101,7 @@ table {
     padding-right: 0;
   }
   .graph-heading {
+    position: relative;
     display: flex;
     text-align: center;
     justify-content: center;
@@ -99,7 +110,69 @@ table {
     align-items: center;
     .graph-heading-switch {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
       width: 100%;
+      .graph-switch {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 16px;
+        margin: 0 auto;
+        font-size: 14px;
+        input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #6cafce;
+          -webkit-transition: 0.4s;
+          transition: 0.4s;
+        }
+        .slider:before {
+          position: absolute;
+          content: '';
+          height: 14px;
+          width: 14px;
+          left: 1px;
+          bottom: 1px;
+          background-color: white;
+          -webkit-transition: 0.4s;
+          transition: 0.4s;
+        }
+        input:checked + .slider {
+          background-color: #4378a4;
+        }
+        input:focus + .slider {
+          box-shadow: 0 0 1px #2196f3;
+        }
+        input:checked + .slider:before {
+          -webkit-transform: translateX(14px);
+          -ms-transform: translateX(14px);
+          transform: translateX(14px);
+        }
+        .slider.round {
+          border-radius: 34px;
+        }
+        .slider.round:before {
+          border-radius: 50%;
+        }
+      }
+      .graph-switch.real-time,
+      .graph-switch.seven-day {
+        flex: 1;
+        text-align: center;
+        white-space: nowrap;
+      }
     }
   }
 }
@@ -125,6 +198,9 @@ table {
   .rank {
     padding-right: 0;
   }
+  .icon-container {
+    width: 40px;
+  }
   .price {
     padding-right: 1.5rem;
   }
@@ -133,7 +209,6 @@ table {
     min-width: 55px;
     .change-direction {
       padding-right: 0;
-      max-height: 10px;
       &.no-change {
         visibility: hidden;
       }
@@ -150,77 +225,4 @@ table {
     width: 200px;
     min-width: 200px;
   }
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 16px;
-  vertical-align: middle;
-  justify-self: center;
-  margin: 0 auto;
-  font-size: 14px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #6cafce;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: '';
-  height: 14px;
-  width: 14px;
-  left: 1px;
-  bottom: 1px;
-  background-color: white;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #4378a4;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(24px);
-  -ms-transform: translateX(24px);
-  transform: translateX(24px);
-}
-
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-.switch.real-time {
-  display: flex;
-  white-space: nowrap;
-}
-
-.switch.seven-day {
-  display: flex;
-  margin-left: 0;
 }

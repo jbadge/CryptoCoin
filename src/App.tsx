@@ -9,7 +9,6 @@ import { DatasetContextProvider } from './context/DatasetContext'
 
 export function App() {
   const [coins, setCoins] = React.useState<Coins[]>([])
-  // const [dataset, setDataset] = React.useState<number[]>([])
 
   function loadAllCoins() {
     async function fetchCoins() {
@@ -68,7 +67,6 @@ export function App() {
                 explorer={null}
               />
             ))}
-            {/* <PriceUpdater transformedPriceUsd={transformedPriceUsd} /> */}
           </tbody>
         </table>
       </DatasetContextProvider>

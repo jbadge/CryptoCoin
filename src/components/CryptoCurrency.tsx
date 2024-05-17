@@ -84,22 +84,6 @@ const CryptoCurrency = ({
     setPosOrNeg24Hr('no-change')
   }, [])
 
-  //////////////////////////////////////////
-  // const graphElement = React.useRef<SVGSVGElement | null>(null)
-  const [loaded, setLoaded] = React.useState(false)
-  const [error, setError] = React.useState(false)
-
-  // const onGraphLoaded = () => setLoaded(true)
-
-  // React.useEffect(() => {
-  //   const currGraphElement = graphElement.current
-
-  //   if (currGraphElement) {
-  //     currGraphElement.addEventListener('load', onGraphLoaded)
-  //     return () => currGraphElement.removeEventListener('load', onGraphLoaded)
-  //   }
-  // }, [graphElement])
-
   return (
     <tr key={rank} className={`coin-container ${id}`}>
       <td className="rank">{rank}</td>
@@ -123,6 +107,7 @@ const CryptoCurrency = ({
             className={'change-direction ' + `${posOrNeg24Hr}`}
             src={changeArrayLM[checkPosOrNeg]}
             alt="change of direction"
+            height={10}
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
@@ -133,18 +118,12 @@ const CryptoCurrency = ({
       <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
       <td className="graph-info">
         <>
-          <p style={!loaded ? { display: 'block' } : { display: 'none' }}>
-            Loading...
-          </p>
           {graphContext.checked ? (
             <HistoryAreaGraph
               id={id}
               rank={rank}
               symbol={symbol}
               transformedPriceUsd={transformedPriceUsd}
-              onLoad={() => setLoaded(true)}
-              onError={() => setError(true)}
-              style={loaded ? { display: 'inline-block' } : { display: 'none' }}
             />
           ) : (
             <>
@@ -155,11 +134,6 @@ const CryptoCurrency = ({
                 rank={rank}
                 symbol={symbol}
                 transformedPriceUsd={transformedPriceUsd}
-                onLoad={() => setLoaded(true)}
-                onError={() => setError(true)}
-                style={
-                  loaded ? { display: 'inline-block' } : { display: 'none' }
-                }
               />
             </>
           )}

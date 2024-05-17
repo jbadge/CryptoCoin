@@ -1,21 +1,13 @@
 import React from 'react'
 import { CoinChartProps } from '../types/CoinTypes'
-import { YAxis, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts'
+import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { useDatasetContext } from '../context/DatasetContext'
 
 const RealTimeAreaGraph = ({
   rank,
   symbol,
   transformedPriceUsd,
-  onLoad,
-  onError,
-  style,
-}: CoinChartProps & {
-  onLoad: () => void
-  onError: () => void
-  style: React.CSSProperties
-}) => {
-  // const [datasetContext.dataset, datasetContext.setDataset] = React.useState<number[]>([])
+}: CoinChartProps) => {
   const [loading, setLoading] = React.useState<boolean>(true)
   const [minValue, setMinValue] = React.useState<number>(0)
   const [maxValue, setMaxValue] = React.useState<number>(0)
@@ -98,35 +90,9 @@ const RealTimeAreaGraph = ({
       const storedDataset = JSON.parse(storedData) as number[]
       datasetContext.setDataset(storedDataset)
       loadMinMaxEtc(storedDataset)
-      onLoad()
-    } else {
-      onError()
     }
     setLoading(false)
   }
-
-  // Helper function for debugging
-  // function logBTC(item: any, line: number) {
-  //   if (symbol === 'BTC') {
-  //     console.log(`Line: ${line} - `, item)
-  //   }
-  // }
-
-  // React.useEffect(() => {
-  //   const key = `${rank}_${symbol}_${Date}`
-  //   const storedData = sessionStorage.getItem(key)
-  //   if (storedData) {
-  //     const storedDataset = JSON.parse(storedData) as number[]
-  //     datasetContext.setDataset(storedDataset)
-  //     loadMinMaxEtc(storedDataset)
-  //   } else {
-  //     // Initialize with two data points if sessionStorage is empty
-  //     const initialData = Array.from({ length: 2 }, () => transformedPriceUsd)
-  //     datasetContext.setDataset(initialData)
-  //     saveToSessionStorage(initialData, symbol)
-  //     setLoading(false)
-  //   }
-  // }, [rank, symbol, transformedPriceUsd])
 
   React.useEffect(() => {
     if (sessionDataLoaded) {
@@ -170,7 +136,7 @@ const RealTimeAreaGraph = ({
   }, [transformedPriceUsd])
 
   return (
-    <ResponsiveContainer width="100%" height={70} style={style}>
+    <ResponsiveContainer width="100%" height={70}>
       <AreaChart
         data={coinChartData}
         margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
@@ -189,7 +155,6 @@ const RealTimeAreaGraph = ({
           format={'number'}
         />
         <YAxis hide domain={[minValue, maxValue]} />
-        <Tooltip contentStyle={{ borderRadius: 20 }} />
       </AreaChart>
     </ResponsiveContainer>
   )

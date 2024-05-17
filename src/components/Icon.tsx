@@ -23,9 +23,8 @@ const Icon = ({ name, symbol }: IconProps) => {
 
   return (
     <>
-      <p style={!loaded ? { display: 'block' } : { display: 'none' }}></p>
       <img
-        // ref={iconElement}
+        ref={iconElement}
         className="icon"
         src={
           !error ? `/cryptocurrency-icons/svg/color/${symbol}.svg` : genericIcon
