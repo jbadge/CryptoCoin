@@ -15,8 +15,12 @@ function HeadingLabels() {
   const heading = React.useMemo(() => {
     return (
       <div className="graph-heading-switch">
-        <h5 className="switch real-time">Real-Time</h5>
-        <label className="switch">
+        <h2 className="graph-switch real-time">Real-Time</h2>
+        <label
+          className="graph-switch"
+          role="toggle-switch"
+          aria-checked={graphContext.checked}
+        >
           <input
             type="checkbox"
             onChange={handleClick}
@@ -33,7 +37,7 @@ function HeadingLabels() {
           />
           <span className="slider round"></span>
         </label>
-        <h5 className="switch seven-day">7-Day</h5>
+        <h2 className="graph-switch seven-day">7-Day</h2>
       </div>
     )
   }, [handleClick])

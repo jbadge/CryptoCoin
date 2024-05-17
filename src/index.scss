@@ -11,6 +11,14 @@
 :root {
   font: 14px / 1 sans-serif;
   color-scheme: light dark;
+  --background-color-light-mode: #ffffff;
+  --background-color-dark-mode: #2c2c2c;
+  --foreground-color-light-mode: #000000;
+  --foreground-color-dark-mode: #ffffff;
+  --green-light-mode: #268750;
+  --green-dark-mode: #13aa70;
+  --red-light-mode: #d04343;
+  --red-dark-mode: #ff5c5e;
 }
 
 html {
@@ -230,77 +238,4 @@ table {
     min-width: 200px;
     color: light-dark(var(--green-light-mode), var(--green-dark-mode));
   }
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 16px;
-  vertical-align: middle;
-  justify-self: center;
-  margin: 0 auto;
-  font-size: 14px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #6cafce;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: '';
-  height: 14px;
-  width: 14px;
-  left: 1px;
-  bottom: 1px;
-  background-color: white;
-  -webkit-transition: 0.4s;
-  transition: 0.4s;
-}
-
-input:checked + .slider {
-  background-color: #4378a4;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(24px);
-  -ms-transform: translateX(24px);
-  transform: translateX(24px);
-}
-
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-.switch.real-time {
-  display: flex;
-  white-space: nowrap;
-}
-
-.switch.seven-day {
-  display: flex;
-  margin-left: 0;
 }
