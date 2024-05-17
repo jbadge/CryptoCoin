@@ -6,7 +6,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://cryptocoin-jb.netlify.app/)
 
-A cryptocurrency coin tracker using React, recharts, coincap API and lots of hard work.
+A cryptocurrency coin tracker using [CoinCap API](https://docs.coincap.io/), [Cryptocurrency Icons](https://github.com/spothq/cryptocurrency-icons) and [Recharts](https://recharts.org/en-US/).
 
 <!-- Write a short sentence or two about this project and what it does. Be sure to include a link and a screenshot. -->
 
@@ -16,7 +16,7 @@ A cryptocurrency coin tracker using React, recharts, coincap API and lots of har
 
 ## Built With
 
-**Tech used:** React.js, TypeScript, Axios, Recharts, Cryptocurrency-Icons
+**Tech used:** React.js, TypeScript, Axios
 
 <!-- Here's where you can go to town on how you actually built this thing. Write as much as you can here, it's totally fine if it's not too much just make sure you write _something_. Show off your passion and make up for lack of experience, ten fold. -->
 
