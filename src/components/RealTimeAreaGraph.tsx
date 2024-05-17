@@ -7,7 +7,14 @@ const RealTimeAreaGraph = ({
   rank,
   symbol,
   transformedPriceUsd,
-}: CoinChartProps) => {
+  onLoad,
+  onError,
+  style,
+}: CoinChartProps & {
+  onLoad: () => void
+  onError: () => void
+  style: React.CSSProperties
+}) => {
   // const [datasetContext.dataset, datasetContext.setDataset] = React.useState<number[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [minValue, setMinValue] = React.useState<number>(0)
@@ -91,6 +98,9 @@ const RealTimeAreaGraph = ({
       const storedDataset = JSON.parse(storedData) as number[]
       datasetContext.setDataset(storedDataset)
       loadMinMaxEtc(storedDataset)
+      onLoad()
+    } else {
+      onError()
     }
     setLoading(false)
   }
@@ -160,7 +170,7 @@ const RealTimeAreaGraph = ({
   }, [transformedPriceUsd])
 
   return (
-    <ResponsiveContainer width="100%" height={70}>
+    <ResponsiveContainer width="100%" height={70} style={style}>
       <AreaChart
         data={coinChartData}
         margin={{ top: 5, right: 0, left: 0, bottom: 5 }}

@@ -3,7 +3,18 @@ import { holdData } from '../lib/functions'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts'
 
-const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
+const HistoryAreaGraph = ({
+  id,
+  rank,
+  symbol,
+  onLoad,
+  onError,
+  style,
+}: CoinChartProps & {
+  onLoad: () => void
+  onError: () => void
+  style: React.CSSProperties
+}) => {
   const [firstValue, setFirstValue] = React.useState(0)
   const [lastValue, setLastValue] = React.useState(0)
   const [history, setHistory] = React.useState<
@@ -31,6 +42,39 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
     setLastValue(arrayOfObjects.at(-1).value)
   }
 
+  // React.useEffect(() => {
+  //   let isMounted = true
+  //   async function fetchChart() {
+  //     try {
+  //       const response = await fetch(
+  //         `https://api.coincap.io/v2/assets/${id}/history?interval=m15`
+  //       )
+  //       if (response.ok && isMounted) {
+  //         const { data } = await response.json()
+  //         let tempData = [...data]
+  //         holdData(tempData)
+  //         const mapData = tempData.flatMap((coin) => [
+  //           {
+  //             symbol: symbol,
+  //             time: `${coin.time}`,
+  //             value: Number(coin.transformedPriceUsd),
+  //             rank: rank,
+  //           },
+  //         ])
+  //         if (isMounted) {
+  //           setHistory(mapData)
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error)
+  //     }
+  //   }
+  //   fetchChart()
+  //   return () => {
+  //     isMounted = false
+  //   }
+  // }, [])
+
   React.useEffect(() => {
     let isMounted = true
     async function fetchChart() {
@@ -52,10 +96,14 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
           ])
           if (isMounted) {
             setHistory(mapData)
+            onLoad()
           }
+        } else {
+          onError()
         }
       } catch (error) {
         console.error('Error fetching data:', error)
+        onError()
       }
     }
     fetchChart()
@@ -70,7 +118,7 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
   }, [history])
 
   return (
-    <ResponsiveContainer width="100%" height={70}>
+    <ResponsiveContainer width="100%" height={70} style={style}>
       <AreaChart
         data={history}
         margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
