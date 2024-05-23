@@ -90,10 +90,12 @@ const CryptoCurrency = ({
       <td className="icon-container">
         <Icon key={rank} name={name} symbol={symbol} />
       </td>
+      {/* <div className="name-symbol"> */}
       <td scope="row" className="name">
         {name}
       </td>
       <td className="ticker">{symbol}</td>
+      {/* </div> */}
       <td className={'price ' + `${posOrNegPrice}`}>
         {currencyFormatter(priceUsd, 2)}
       </td>
