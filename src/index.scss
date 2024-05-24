@@ -239,3 +239,166 @@ table {
     color: light-dark(var(--green-light-mode), var(--green-dark-mode));
   }
 }
+
+@media (max-width: 600px) {
+  body {
+    margin: 0 0 3% 0;
+  }
+  table,
+  tbody,
+  tr,
+  th,
+  td {
+    // display: block;
+    position: relative;
+    width: 100vw;
+  }
+  // tbody {
+  //   width: 90%;
+  //   margin-left: 3%;
+  // }
+  tr {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100px;
+    &.coin-heading {
+      margin-bottom: 20px;
+    }
+  }
+  th {
+    // display: none;
+    padding-bottom: 1px;
+  }
+  td {
+    width: 100%;
+    text-align: left;
+    border: none;
+    // position: relative;
+    padding-left: 50%;
+    box-sizing: border-box;
+  }
+  td::before {
+    content: attr(data-label);
+    // position: absolute;
+    left: 0;
+    width: 50%;
+    padding-left: 10px;
+    font-weight: bold;
+    box-sizing: border-box;
+  }
+  table {
+    caption {
+      padding-bottom: 2rem;
+      &.table-heading {
+        margin: 0 0 3rem 0;
+      }
+    }
+  }
+  .coin-heading {
+    .rank-heading {
+      display: none;
+    }
+    .name-heading {
+      text-align: left;
+      margin-left: 5%;
+      margin-bottom: -11%;
+      // opacity: 50%;
+      z-index: 2;
+    }
+    .price-heading {
+      text-align: right;
+      margin-right: 3%;
+      margin-bottom: -11%;
+      z-index: 2;
+      // opacity: 100%;
+    }
+    .change-amount-heading {
+      text-align: right;
+      margin-right: 30%;
+      // opacity: 100%;
+      z-index: 2;
+    }
+    .name-heading,
+    .price-heading,
+    .change-amount-heading,
+    .ticker-heading,
+    .icon-heading,
+    .volume-24-heading,
+    .market-cap-heading {
+      display: none;
+    }
+    .graph-heading {
+      position: absolute;
+      top: -30px;
+      .graph-heading-switch {
+        //
+        .graph-switch {
+          //
+        }
+      }
+      .graph-switch.real-time,
+      .graph-switch.seven-day {
+        //
+      }
+    }
+  }
+  .coin-container {
+    .rank {
+      // display: none;
+      position: absolute;
+      margin-left: -12px;
+      margin-top: 45px;
+    }
+    .icon-container {
+      margin-left: 15px;
+      // margin-top: 20px;
+      img {
+        width: 30px;
+      }
+    }
+    .name {
+      margin-top: -35px;
+      margin-left: 55px;
+    }
+    .ticker {
+      margin-top: -15px;
+      margin-left: 55px;
+    }
+    .price {
+      text-align: right;
+      margin-top: -35px;
+    }
+    .change-24 {
+      width: 0;
+      text-align: right;
+      margin: -35px 0 0 50%;
+      picture {
+        ///
+      }
+    }
+    .volume-24 {
+      text-align: left;
+      margin-top: 10px;
+      padding-top: 15px;
+      margin-left: 15px;
+      color: #808a9d;
+      &::before {
+        content: 'Volume 24h: ';
+      }
+    }
+    .market-cap {
+      text-align: left;
+      margin-top: 5px;
+      padding-top: 5px;
+      margin-left: 15px;
+      color: #808a9d;
+      &::before {
+        content: 'Market Cap: ';
+      }
+    }
+    .graph-info {
+      margin-top: -80px;
+      margin-left: auto;
+    }
+  }
+}
