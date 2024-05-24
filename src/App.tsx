@@ -44,7 +44,7 @@ export function App() {
       <DatasetContextProvider>
         <table className="crypto-list">
           <caption className="table-heading">
-            <h1>CryptoCoin</h1>
+            <h1>CryptoCoin1</h1>
             <div className="sub-heading">A CryptoCurrency Tracker</div>
           </caption>
           <thead>
