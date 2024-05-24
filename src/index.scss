@@ -333,36 +333,63 @@ table {
       margin-top: 45px;
     }
     .icon-container {
-      margin-left: 15px;
-      padding-top: 3px;
-      margin-bottom: -3px;
-      width: 30px;
+      position: relative;
+      // width: 100%;
+      padding-top: 3%;
+      // background-color: #f0f0f0;
+      // margin-left: 15px;
+      // padding-top: 3px;
+      // margin-bottom: -3px;
+      // width: 30px;
+      // height: 30px;
       img {
-        width: 30px;
+        position: absolute;
+        top: 6px;
+        left: 25px;
+        width: 100%;
+        height: 30px;
+        // object-fit: cover;
+        display: none;
+        // width: 30px;
+        // height: 30px;
+      }
+      .placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        // background-color: #f0f0f0;
+      }
+      .image.loaded {
+        display: block;
       }
     }
     .name {
-      margin-top: -35px;
-      margin-left: 55px;
+      align-self: center;
+      margin-top: -25px;
+      margin-left: 45px;
     }
     .ticker {
-      margin-top: -15px;
-      margin-left: 55px;
+      margin-top: -5px;
+      margin-left: 45px;
     }
     .price {
+      align-self: center;
       text-align: right;
-      margin-top: -35px;
+      margin-top: -45px;
     }
     .change-24 {
+      align-self: center;
       width: 0;
       text-align: right;
-      margin: -35px 0 0 50%;
+      margin: -45px 0 0 50%;
     }
     .volume-24 {
       text-align: left;
-      margin-top: 2px;
+      margin-top: 10px;
       padding-top: 15px;
-      margin-left: 40px;
+      margin-left: 30px;
       color: #808a9d;
       &::before {
         content: 'Volume 24h: ';
@@ -374,7 +401,7 @@ table {
     .market-cap {
       text-align: left;
       margin-top: 5px;
-      margin-left: 40px;
+      margin-left: 30px;
       padding-top: 15px;
       color: #808a9d;
       &::before {

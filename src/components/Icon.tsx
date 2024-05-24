@@ -30,8 +30,7 @@ const Icon = ({ name, symbol }: IconProps) => {
           !error ? `/cryptocurrency-icons/svg/color/${symbol}.svg` : genericIcon
         }
         onError={handleImageError}
-        height="40px"
-        width="40px"
+        loading="lazy"
         alt={`Image of ${name} icon`}
         style={loaded ? { display: 'inline-block' } : { display: 'none' }}
       />

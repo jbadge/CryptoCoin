@@ -89,6 +89,7 @@ const CryptoCurrency = ({
       <td className="rank">{rank}</td>
       <td className="icon-container">
         <Icon key={rank} name={name} symbol={symbol} />
+        <div className="placeholder"></div>
       </td>
       <td scope="row" className="name">
         {name}
