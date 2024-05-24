@@ -266,9 +266,12 @@ table {
       margin-bottom: 20px;
     }
   }
-  th {
-    // display: none;
-    padding-bottom: 1px;
+  table {
+    th {
+      // display: none;
+      // padding-bottom: 1px;
+      background-color: initial;
+    }
   }
   td {
     width: 100%;
@@ -303,7 +306,7 @@ table {
       text-align: left;
       margin-left: 5%;
       margin-bottom: -11%;
-      // opacity: 50%;
+      opacity: 50%;
       z-index: 2;
     }
     .price-heading {
@@ -311,17 +314,18 @@ table {
       margin-right: 3%;
       margin-bottom: -11%;
       z-index: 2;
-      // opacity: 100%;
+      opacity: 50%;
     }
     .change-amount-heading {
       text-align: right;
       margin-right: 30%;
-      // opacity: 100%;
+      margin-bottom: -6%;
+      opacity: 50%;
       z-index: 2;
     }
-    .name-heading,
-    .price-heading,
-    .change-amount-heading,
+    // .name-heading,
+    // .price-heading,
+    // .change-amount-heading,
     .ticker-heading,
     .icon-heading,
     .volume-24-heading,
@@ -329,8 +333,8 @@ table {
       display: none;
     }
     .graph-heading {
-      position: absolute;
-      top: -30px;
+      margin-top: -60px;
+      margin-left: 30px;
       .graph-heading-switch {
         //
         .graph-switch {
