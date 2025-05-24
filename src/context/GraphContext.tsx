@@ -17,9 +17,8 @@ export const GraphContextProvider = ({ children }: Props) => {
 
   const preloadDataForRealTimeView = React.useCallback(async () => {
     try {
-      const response = await fetch(
-        'https://rest.coincap.io/v3/assets?apiKey=958e2a59e0e5eb863aade0bab758c792b4bc5c5b52bbc2bc29fda92ad900ec75'
-      )
+      const response = await fetch('/api/coin-list')
+
       await response.json()
     } catch (error) {
       console.error('Error fetching real-time data:', error)
