@@ -3,38 +3,38 @@ import { IconProps } from '../types/CoinTypes'
 import genericIcon from '/cryptocurrency-icons/svg/color/generic.svg'
 
 const Icon = ({ name, symbol }: IconProps) => {
-  const iconElement = React.useRef<HTMLImageElement>(null)
   const [error, setError] = React.useState(false)
   const [loaded, setLoaded] = React.useState(false)
-  const onIconLoaded = () => setLoaded(true)
 
-  React.useEffect(() => {
-    const currIconElement = iconElement.current
-
-    if (currIconElement) {
-      currIconElement?.addEventListener('load', onIconLoaded)
-      return () => currIconElement?.removeEventListener('load', onIconLoaded)
-    }
-  }, [iconElement])
+  const iconPath = !error
+    ? `${
+        import.meta.env.BASE_URL
+      }cryptocurrency-icons/svg/color/${symbol!.toLowerCase()}.svg`
+    : genericIcon
 
   function handleImageError() {
+    console.warn(`Icon failed to load: ${symbol}`)
     setError(true)
   }
 
+  function handleImageLoad() {
+    setLoaded(true)
+  }
+
   return (
-    <>
-      <img
-        ref={iconElement}
-        className="icon"
-        src={
-          !error ? `/cryptocurrency-icons/svg/color/${symbol}.svg` : genericIcon
-        }
-        onError={handleImageError}
-        loading="lazy"
-        alt={`Image of ${name} icon`}
-        style={loaded ? { display: 'inline-block' } : { display: 'none' }}
-      />
-    </>
+    <img
+      className="icon"
+      src={iconPath}
+      alt={`Image of ${name} icon`}
+      onError={handleImageError}
+      onLoad={handleImageLoad}
+      loading="lazy"
+      style={{
+        opacity: loaded ? 1 : 0,
+        visibility: loaded ? 'visible' : 'hidden',
+        transition: 'opacity 0.2s ease-in-out',
+      }}
+    />
   )
 }
 

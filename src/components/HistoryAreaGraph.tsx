@@ -38,7 +38,12 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
     async function fetchChart() {
       try {
         const response = await fetch(
-          `https://api.coincap.io/v2/assets/${id}/history?interval=m15`
+          `https://rest.coincap.io/v3/assets/${id}/history?interval=m15`,
+          {
+            headers: {
+              Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
+            },
+          }
         )
         if (response.ok && isMounted) {
           const { data } = await response.json()

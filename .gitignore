@@ -7,3 +7,4 @@ dist-ssr
 src/scratchpad.md
 # Local Netlify folder
 .netlify
+.env

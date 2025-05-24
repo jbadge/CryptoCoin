@@ -217,6 +217,7 @@ table {
     padding-right: 1.5rem;
   }
   .change-24 {
+    text-align: right;
     padding-left: 1.5rem;
     min-width: 55px;
     .change-direction {
@@ -226,12 +227,14 @@ table {
       }
     }
     .change-amount {
+      margin-left: auto;
       min-width: 45px;
       padding: 0;
       align-self: center;
       display: inline-block;
     }
   }
+
   .graph-info {
     height: 100%;
     width: 200px;
