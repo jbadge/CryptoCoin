@@ -13,12 +13,12 @@ const CryptoCurrency = ({
   rank,
   name,
   symbol,
-  priceUsd,
+  price,
   transformedPriceUsd,
-  changePercent24Hr,
+  change24h,
   transformed24Hr,
-  marketCapUsd,
-  volumeUsd24Hr,
+  marketcap,
+  volume24h,
 }: Coins) => {
   const [newPriceToCompare, setNewPriceToCompare] = React.useState(0)
   const [posOrNegPrice, setPosOrNegPrice] = React.useState('')
@@ -96,7 +96,7 @@ const CryptoCurrency = ({
       </td>
       <td className="ticker">{symbol}</td>
       <td className={'price ' + `${posOrNegPrice}`}>
-        {currencyFormatter(priceUsd, 2)}
+        {currencyFormatter(price, 2)}
       </td>
       <td className="change-24">
         <picture>
@@ -112,11 +112,11 @@ const CryptoCurrency = ({
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
-          {parseFloat(changePercent24Hr).toFixed(2)}
+          {parseFloat(change24h).toFixed(2)}
         </span>
       </td>
-      <td className="volume-24">{currencyFormatter(volumeUsd24Hr, 0)}</td>
-      <td className="market-cap">{currencyFormatter(marketCapUsd, 0)}</td>
+      <td className="volume-24">{currencyFormatter(volume24h, 0)}</td>
+      <td className="market-cap">{currencyFormatter(marketcap, 0)}</td>
       <td className="graph-info">
         <>
           {graphContext.checked ? (
@@ -131,7 +131,6 @@ const CryptoCurrency = ({
               <PriceUpdater transformedPriceUsd={transformedPriceUsd} />
               <RealTimeAreaGraph
                 key={rank}
-                id={''}
                 rank={rank}
                 symbol={symbol}
                 transformedPriceUsd={transformedPriceUsd}

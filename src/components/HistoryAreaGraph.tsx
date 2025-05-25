@@ -34,41 +34,58 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
   }
 
   React.useEffect(() => {
-    let isMounted = true
-    async function fetchChart() {
-      try {
-        const response = await fetch(`/api/coin-history?id=${id}`)
+    let numericRank = Number(rank)
+    if (
+      !id ||
+      !symbol ||
+      !rank ||
+      isNaN(numericRank) ||
+      numericRank < 1 ||
+      numericRank > 10
+    )
+      return
 
-        if (response.ok && isMounted) {
-          const { data } = await response.json()
-          let tempData = [...data]
-          holdData(tempData)
-          const mapData = tempData.flatMap((coin) => [
-            {
-              symbol: symbol,
-              time: `${coin.time}`,
-              value: Number(coin.transformedPriceUsd),
-              rank: rank,
-            },
-          ])
-          if (isMounted) {
-            setHistory(mapData)
+    if (id === 'bitcoin') {
+      let isMounted = true
+      const fetchChart = async () => {
+        console.log(id)
+        try {
+          const response = await fetch(`/api/coinHistory?id=${id}`)
+
+          if (response.ok && isMounted) {
+            const { data } = await response.json()
+            let tempData = [...data]
+            holdData(tempData)
+            console.log(tempData)
+            const mapData = tempData.flatMap((coin) => [
+              {
+                symbol: symbol,
+                time: `${coin.time}`,
+                value: Number(coin.transformedPriceUsd),
+                rank: rank,
+              },
+            ])
+            if (isMounted) {
+              setHistory(mapData)
+              setIsDataLoaded(true)
+              console.log(mapData)
+            }
           }
+        } catch (error) {
+          console.error('Error fetching data:', error)
         }
-      } catch (error) {
-        console.error('Error fetching data:', error)
+      }
+      fetchChart()
+      return () => {
+        isMounted = false
       }
     }
-    fetchChart()
-    setIsDataLoaded(true)
-    return () => {
-      isMounted = false
-    }
-  }, [])
+  }, [id, symbol, rank])
 
   React.useEffect(() => {
     findMinPrice(history)
     findMaxPrice(history)
+    console.log(history)
   }, [history])
 
   return (

@@ -10,14 +10,23 @@ import { DatasetContextProvider } from './context/DatasetContext'
 export function App() {
   const [coins, setCoins] = React.useState<Coins[]>([])
 
+  function generateId(name: string): string {
+    return name.toLowerCase().replace(/\s+/g, '-')
+  }
+
   function loadAllCoins() {
     async function fetchCoins() {
       try {
-        const response = await fetch('/api/coin-list')
+        const response = await fetch('/api/coinList')
 
         if (response.ok) {
-          const { data } = await response.json()
-          const tempCoins = [...data]
+          const json = await response.json()
+          const tempCoins = json.data.map((coin: any) => ({
+            ...coin,
+            id: generateId(coin.name),
+          }))
+
+          // const tempCoins = [...json.data]
           holdData(tempCoins)
           setCoins(tempCoins)
         }
@@ -36,7 +45,7 @@ export function App() {
     return () => clearInterval(interval)
   }, [])
 
-  if (coins === null || undefined) {
+  if (!coins || coins.length === 0) {
     return <p>Loading...</p>
   }
 
@@ -52,22 +61,26 @@ export function App() {
             <HeadingLabels />
           </thead>
           <tbody>
-            {coins.map((cryptoItem, _index) => (
-              <CryptoCurrency
-                key={cryptoItem.rank}
-                id={cryptoItem.id}
-                rank={cryptoItem.rank}
-                name={cryptoItem.name}
-                symbol={cryptoItem.symbol}
-                priceUsd={cryptoItem.priceUsd}
-                transformedPriceUsd={cryptoItem.transformedPriceUsd}
-                changePercent24Hr={cryptoItem.changePercent24Hr}
-                transformed24Hr={cryptoItem.transformed24Hr}
-                marketCapUsd={cryptoItem.marketCapUsd}
-                volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
-                explorer={null}
-              />
-            ))}
+            {coins.map(
+              (cryptoItem, _index) => (
+                // cryptoItem.id && cryptoItem.symbol && cryptoItem.rank ? (
+                <CryptoCurrency
+                  key={cryptoItem.rank}
+                  id={cryptoItem.id}
+                  rank={cryptoItem.rank}
+                  name={cryptoItem.name}
+                  symbol={cryptoItem.symbol}
+                  price={cryptoItem.price}
+                  transformedPriceUsd={cryptoItem.transformedPriceUsd}
+                  change24h={cryptoItem.change24h}
+                  transformed24Hr={cryptoItem.transformed24Hr}
+                  marketcap={cryptoItem.marketcap}
+                  volume24h={cryptoItem.volume24h}
+                  explorer={null}
+                />
+              )
+              // ) : null
+            )}
           </tbody>
         </table>
       </DatasetContextProvider>

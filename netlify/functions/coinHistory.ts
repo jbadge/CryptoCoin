@@ -1,5 +1,5 @@
-export async function handler(event: any, _context: any) {
-  const id = event.queryStringParameters.id
+export async function handler(event) {
+  const id = event.queryStringParameters?.id
   if (!id) {
     return {
       statusCode: 400,
@@ -8,11 +8,12 @@ export async function handler(event: any, _context: any) {
   }
 
   try {
+    console.log(id)
     const response = await fetch(
       `https://rest.coincap.io/v3/assets/${id}/history?interval=m15`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.API_KEY}`, // Your secret env var here
+          Authorization: `Bearer ${process.env.API_KEY}`,
         },
       }
     )
@@ -20,15 +21,15 @@ export async function handler(event: any, _context: any) {
     if (!response.ok) {
       return {
         statusCode: response.status,
-        body: JSON.stringify({ error: 'Failed to fetch from CoinCap' }),
+        body: JSON.stringify({ error: 'Failed to fetch from Crypto Rates' }),
       }
     }
 
-    const data = await response.json()
+    const apiResponse = await response.json()
 
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
+      body: JSON.stringify({ data: apiResponse.data }),
       headers: {
         'Content-Type': 'application/json',
       },
