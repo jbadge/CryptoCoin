@@ -1,49 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import HeadingLabels from './components/HeadingLabels'
 import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
-import { holdData } from './lib/functions'
+// import { holdData } from './lib/functions'
 // Context
 import { GraphContextProvider } from './context/GraphContext'
 import { DatasetContextProvider } from './context/DatasetContext'
+import { HistoryLoader } from './components/HistoryLoader'
+import { fetchAllAssets } from './lib/dataCollector'
 
 export function App() {
-  const [coins, setCoins] = React.useState<Coins[]>([])
+  const [coins, setCoins] = useState<Coins[]>([])
 
-  function loadAllCoins() {
-    async function fetchCoins() {
-      try {
-        const response = await fetch(
-          'https://rest.coincap.io/v3/assets?apiKey=958e2a59e0e5eb863aade0bab758c792b4bc5c5b52bbc2bc29fda92ad900ec75'
-        )
-        if (response.ok) {
-          const { data } = await response.json()
-          const tempCoins = [...data]
-          holdData(tempCoins)
-          setCoins(tempCoins)
-        }
-      } catch (error) {
-        console.error('Error fetching data from API:', error)
-      }
+  useEffect(() => {
+    async function loadCoins() {
+      // const tempCoins =
+      await fetchAllAssets(setCoins)
+      // holdData(tempCoins)
     }
-    fetchCoins()
-  }
-
-  React.useEffect(() => {
-    loadAllCoins()
-    const interval = setInterval(() => {
-      loadAllCoins()
-    }, 10000)
-    return () => clearInterval(interval)
+    loadCoins()
   }, [])
-
-  if (coins === null || undefined) {
-    return <p>Loading...</p>
-  }
 
   return (
     <GraphContextProvider>
       <DatasetContextProvider>
+        <HistoryLoader />
         <table className="crypto-list">
           <caption className="table-heading">
             <h1>CryptoCoin</h1>
@@ -55,7 +36,7 @@ export function App() {
           <tbody>
             {coins.map((cryptoItem, _index) => (
               <CryptoCurrency
-                key={cryptoItem.rank}
+                key={cryptoItem.id}
                 id={cryptoItem.id}
                 rank={cryptoItem.rank}
                 name={cryptoItem.name}

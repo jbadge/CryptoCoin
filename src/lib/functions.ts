@@ -29,6 +29,7 @@ export function holdData(data: Coins[]) {
   }
 }
 
+///////////////////////
 import React from 'react'
 import { useDatasetContext } from '../context/DatasetContext'
 
@@ -50,3 +51,4 @@ const PriceUpdater = ({
 }
 
 export default PriceUpdater
+////////////////////////

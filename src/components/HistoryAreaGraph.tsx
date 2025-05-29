@@ -1,5 +1,5 @@
 import React from 'react'
-import { holdData } from '../lib/functions'
+// import { holdData } from '../lib/functions'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 
@@ -19,6 +19,7 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
   const colorChart =
     history[0]?.value > history.at(-1)?.value! ? '#e84f50' : '#1c9860'
 
+  ////////////////// MAYBE REPLACE WITH COMMENTED OUT CODE BELOW
   function findMinPrice(arrayOfObjects: any): number | undefined {
     if (arrayOfObjects.length === 0) {
       return undefined
@@ -33,44 +34,35 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
     setLastValue(arrayOfObjects.at(-1).value)
   }
 
+  ////////////MAYBE REPLACE ABOVE WITH THIS?
+  //   React.useEffect(() => {
+  //   if (history.length > 0) {
+  //     setFirstValue(history[0].value)
+  //     setLastValue(history.at(-1)?.value || 0)
+  //   }
+  // }, [history])
+  ///////////////////////////////
+
   React.useEffect(() => {
-    let isMounted = true
-    async function fetchChart() {
-      try {
-        const response = await fetch(
-          `https://rest.coincap.io/v3/assets/${id}/history?interval=m15`,
-          {
-            headers: {
-              Authorization: `Bearer ${import.meta.env.VITE_API_KEY}`,
-            },
-          }
-        )
-        if (response.ok && isMounted) {
-          const { data } = await response.json()
-          let tempData = [...data]
-          holdData(tempData)
-          const mapData = tempData.flatMap((coin) => [
-            {
-              symbol: symbol,
-              time: `${coin.time}`,
-              value: Number(coin.transformedPriceUsd),
-              rank: rank,
-            },
-          ])
-          if (isMounted) {
-            setHistory(mapData)
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
-    fetchChart()
+    const storedHistory = localStorage.getItem('coinHistory')
+    if (!storedHistory) return
+
+    const parsed = JSON.parse(storedHistory)
+    const entry = parsed[id]
+
+    if (!entry) return
+    const historyArray = Array.isArray(entry.history) ? entry.history : entry
+
+    const formatted = historyArray.map((coin: any) => ({
+      symbol,
+      time: `${coin.time}`,
+      value: Number(coin.transformedPriceUsd ?? coin.priceUsd),
+      rank,
+    }))
+
+    setHistory(formatted)
     setIsDataLoaded(true)
-    return () => {
-      isMounted = false
-    }
-  }, [])
+  }, [id, rank, symbol])
 
   React.useEffect(() => {
     findMinPrice(history)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib/functions'
@@ -7,6 +7,14 @@ import RealTimeAreaGraph from './RealTimeAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
 import PriceUpdater from '../lib/functions'
+
+const redTriangleLM = '/red_triangle_lm.png'
+const greenTriangleLM = '/green_triangle_lm.png'
+const redTriangleDM = '/red_triangle_dm.png'
+const greenTriangleDM = '/green_triangle_dm.png'
+
+const changeArrayLM = [redTriangleLM, greenTriangleLM]
+const changeArrayDM = [redTriangleDM, greenTriangleDM]
 
 const CryptoCurrency = ({
   id,
@@ -20,81 +28,68 @@ const CryptoCurrency = ({
   marketCapUsd,
   volumeUsd24Hr,
 }: Coins) => {
-  const [newPriceToCompare, setNewPriceToCompare] = React.useState(0)
-  const [posOrNegPrice, setPosOrNegPrice] = React.useState('')
-  const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('')
-  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
-  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
-
   const graphContext = useGraphContext()
-  const redTriangleLM = new Image()
-  redTriangleLM.src = '/red_triangle_lm.png'
-  const greenTriangleLM = new Image()
-  greenTriangleLM.src = '/green_triangle_lm.png'
-  const redTriangleDM = new Image()
-  redTriangleDM.src = '/red_triangle_dm.png'
-  const greenTriangleDM = new Image()
-  greenTriangleDM.src = '/green_triangle_dm.png'
-  const changeArrayLM = [redTriangleLM.src, greenTriangleLM.src]
-  const changeArrayDM = [redTriangleDM.src, greenTriangleDM.src]
+  const prev24HrRef = useRef<number | null>(null)
+  const prevPriceRef = useRef<number | null>(null)
+  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
+  const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('no-change')
+  const [posOrNegPrice, setPosOrNegPrice] = React.useState('no-change')
 
-  function checkPosOrNegPrice() {
-    if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {
-      setNewPriceToCompare(transformedPriceUsd)
+  useEffect(() => {
+    const prevPrice = prevPriceRef.current
+
+    if (prevPrice === null || transformedPriceUsd === prevPrice) {
       setPosOrNegPrice('no-change')
-      return
-    } else if (transformedPriceUsd < newPriceToCompare) {
-      setNewPriceToCompare(transformedPriceUsd)
+    } else if (transformedPriceUsd < prevPrice) {
       setPosOrNegPrice('positive')
-      return
-    } else if (transformedPriceUsd > newPriceToCompare) {
-      setNewPriceToCompare(transformedPriceUsd)
+    } else if (transformedPriceUsd > prevPrice) {
       setPosOrNegPrice('negative')
-      return
     }
-  }
 
-  function checkPosOrNeg24Hr() {
-    if (new24HrToCompare === 0 || transformed24Hr === new24HrToCompare) {
-      setNew24HrToCompare(transformed24Hr)
+    prevPriceRef.current = transformedPriceUsd
+  }, [transformedPriceUsd])
+
+  useEffect(() => {
+    const prev24Hr = prev24HrRef.current
+
+    if (prev24Hr === null || transformed24Hr === prev24Hr) {
       setPosOrNeg24Hr('no-change')
-      return
-    } else if (transformed24Hr < new24HrToCompare) {
-      setNew24HrToCompare(transformed24Hr)
+      setCheckPosOrNeg(0)
+    } else if (transformed24Hr < prev24Hr) {
       setPosOrNeg24Hr('positive')
       setCheckPosOrNeg(1)
-      return
-    } else if (transformed24Hr > new24HrToCompare) {
-      setNew24HrToCompare(transformed24Hr)
+    } else if (transformed24Hr > prev24Hr) {
       setPosOrNeg24Hr('negative')
       setCheckPosOrNeg(0)
     }
-  }
 
-  React.useEffect(() => {
-    checkPosOrNegPrice()
-  }, [transformedPriceUsd])
-
-  React.useEffect(() => {
-    checkPosOrNeg24Hr()
+    prev24HrRef.current = transformed24Hr
   }, [transformed24Hr])
 
-  React.useEffect(() => {
+  useEffect(() => {
     setPosOrNegPrice('no-change')
     setPosOrNeg24Hr('no-change')
   }, [])
+  // console.timeEnd(`Render: ${id}`)
+  ////////////////
+  // console.log(`Rendering ${coins.length} graphs`)
+  //////////////////
 
   return (
-    <tr key={rank} className={`coin-container ${id}`}>
+    <tr className={`coin-container ${id}`}>
       <td className="rank">{rank}</td>
       <td className="icon-container">
-        <Icon key={rank} name={name} symbol={symbol} />
+        <Icon name={name} symbol={symbol} />
         <div className="placeholder"></div>
       </td>
       <td scope="row" className="name">
         {name}
       </td>
       <td className="ticker">{symbol}</td>
+      {/* <td className="name-container">
+        <div className="name1">{name}</div>
+        <div className="ticker1">{symbol}</div>
+      </td> */}
       <td className={'price ' + `${posOrNegPrice}`}>
         {currencyFormatter(priceUsd, 2)}
       </td>
@@ -130,7 +125,6 @@ const CryptoCurrency = ({
             <>
               <PriceUpdater transformedPriceUsd={transformedPriceUsd} />
               <RealTimeAreaGraph
-                key={rank}
                 id={''}
                 rank={rank}
                 symbol={symbol}
@@ -144,4 +138,5 @@ const CryptoCurrency = ({
   )
 }
 
-export default CryptoCurrency
+// export default CryptoCurrency
+export default React.memo(CryptoCurrency)

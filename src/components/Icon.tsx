@@ -23,7 +23,7 @@ const Icon = ({ name, symbol }: IconProps) => {
 
   return (
     <img
-      className="icon"
+      className={`icon${loaded ? ' loaded' : ''}`}
       src={iconPath}
       alt={`Image of ${name} icon`}
       onError={handleImageError}
