@@ -29,7 +29,9 @@
 
 export async function handler(_event) {
   try {
-    const response = await fetch('https://cryptorates.ai/v1/coins/500')
+    // const response = await fetch('https://cryptorates.ai/v1/coins/500')
+    const url = `https://rest.coincap.io/v3/assets?apiKey=${process.env.REACT_APP_API_KEY}`
+    const response = await fetch(url)
 
     const rawText = await response.text()
 

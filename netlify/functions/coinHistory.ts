@@ -9,13 +9,16 @@ export async function handler(event) {
 
   try {
     console.log(id)
+    // const response = await fetch(
+    //   `https://rest.coincap.io/v3/assets/${id}/history?interval=m15`,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${process.env.API_KEY}`,
+    //     },
+    //   }
+    // )
     const response = await fetch(
-      `https://rest.coincap.io/v3/assets/${id}/history?interval=m15`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.API_KEY}`,
-        },
-      }
+      `https://rest.coincap.io/v3/assets?apiKey=${process.env.REACT_APP_API_KEY}`
     )
 
     if (!response.ok) {
