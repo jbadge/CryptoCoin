@@ -99,15 +99,22 @@ table {
   .market-cap-heading {
     text-align: right;
   }
-  .price-heading {
-    padding-right: 1.5rem;
-  }
-  .change-amount-heading {
-    padding-left: 1.5rem;
-  }
   .rank-heading {
     max-width: 45px;
     padding-right: 0;
+  }
+  .price-heading {
+    padding-right: 62px;
+  }
+  .change-amount-heading {
+    padding-left: 25px;
+    padding-right: 68px;
+  }
+  .volume-24-heading {
+    padding-right: 68px;
+  }
+  .market-cap-heading {
+    padding-right: 55px;
   }
   .graph-heading {
     position: relative;
@@ -189,6 +196,30 @@ table {
 .coin-container {
   border-top: 1px solid hsl(0, 0%, 25%, 50%);
   border-bottom: 1px solid hsl(0, 0%, 25%, 50%);
+  height: 100%;
+  .name-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .name {
+      font-weight: bold;
+      font-size: 1em;
+      width: 350px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .ticker {
+      font-size: 0.9em;
+      color: gray;
+      padding-top: 8px;
+      width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
   .price,
   .volume-24,
   .market-cap,
@@ -208,17 +239,19 @@ table {
     }
   }
   .rank {
-    padding-right: 0;
+    width: 60px;
+    text-align: center;
   }
   .icon-container {
     width: 40px;
   }
   .price {
-    padding-right: 1.5rem;
+    padding-right: 62px;
   }
   .change-24 {
     text-align: right;
     padding-left: 1.5rem;
+    padding-right: 68px;
     min-width: 55px;
     .change-direction {
       padding-right: 0;
@@ -234,8 +267,14 @@ table {
       display: inline-block;
     }
   }
-
+  .volume-24 {
+    padding-right: 68px;
+  }
+  .market-cap {
+    padding-right: 55px;
+  }
   .graph-info {
+    padding-left: 2rem;
     height: 100%;
     width: 200px;
     min-width: 200px;
@@ -337,24 +376,14 @@ table {
     }
     .icon-container {
       position: relative;
-      // width: 100%;
       padding-top: 3%;
-      // background-color: #f0f0f0;
-      // margin-left: 15px;
-      // padding-top: 3px;
-      // margin-bottom: -3px;
-      // width: 30px;
-      // height: 30px;
       img {
         position: absolute;
         top: 6px;
         left: 25px;
         width: 100%;
         height: 30px;
-        // object-fit: cover;
         display: none;
-        // width: 30px;
-        // height: 30px;
       }
       .placeholder {
         position: absolute;
@@ -362,7 +391,6 @@ table {
         left: 0;
         width: 100%;
         height: 100%;
-        // background-color: #f0f0f0;
       }
       .image.loaded {
         display: block;

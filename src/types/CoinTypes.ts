@@ -3,11 +3,11 @@ export type Coins = {
   rank: string
   symbol: string
   name: string
-  marketcap: string
-  volume24h: string
-  price: string
+  marketCapUsd: string
+  volumeUsd24Hr: string
+  priceUsd: string
   transformedPriceUsd: number
-  change24h: string
+  changePercent24Hr: string
   transformed24Hr: number
   explorer: string | null
 }

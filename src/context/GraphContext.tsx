@@ -1,66 +1,66 @@
-import React from 'react'
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 
 export type GraphContextType = {
   checked: boolean
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>
+  setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
-
-  nameToIdMap: Record<string, string>
-  loadNameToIdMap: () => Promise<void>
+  updateHistoryData: (_id: string, _data: any[]) => void
+  historyData: Record<string, any[]>
 }
 
-export const GraphContext = React.createContext<null | GraphContextType>(null)
+export const GraphContext = createContext<null | GraphContextType>(null)
 
 type Props = {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export const GraphContextProvider = ({ children }: Props) => {
-  const [checked, setChecked] = React.useState<boolean>(true)
-  const [nameToIdMap, setNameToIdMap] = React.useState<Record<string, string>>(
-    {}
-  )
+  const [checked, setChecked] = useState<boolean>(true)
+  const [historyData, setHistoryData] = useState<Record<string, any[]>>({})
 
-  const preloadDataForRealTimeView = React.useCallback(async () => {
+  const updateHistoryData = useCallback((id: string, data: any[]) => {
+    setHistoryData((prev) => ({
+      ...prev,
+      [id]: data,
+    }))
+  }, [])
+
+  const preloadDataForRealTimeView = useCallback(async () => {
     try {
-      const response = await fetch('/api/coinList')
-
+      const response = await fetch(
+        `https://rest.coincap.io/v3/assets?apiKey=${
+          import.meta.env.VITE_API_KEY
+        }`
+      )
       await response.json()
     } catch (error) {
       console.error('Error fetching real-time data:', error)
     }
   }, [])
 
-  const loadNameToIdMap = React.useCallback(async () => {
-    try {
-      const response = await fetch('https://price.mycryptoapi.com/')
-      if (response.ok) {
-        const data = await response.json()
-        setNameToIdMap(data)
-      }
-    } catch (error) {
-      console.error('Failed to load coin name-to-ID map:', error)
-    }
-  }, [])
-
-  React.useEffect(() => {
-    loadNameToIdMap()
-  }, [loadNameToIdMap])
-
-  const memoizedContextValue = React.useMemo(() => {
+  const memoizedContextValue = useMemo(() => {
     return {
       checked,
       setChecked,
       preloadDataForRealTimeView,
-      nameToIdMap,
-      loadNameToIdMap,
+      updateHistoryData,
+      historyData,
     }
   }, [
     checked,
     setChecked,
     preloadDataForRealTimeView,
-    nameToIdMap,
-    loadNameToIdMap,
+    updateHistoryData,
+    historyData,
   ])
 
   return (
@@ -71,7 +71,7 @@ export const GraphContextProvider = ({ children }: Props) => {
 }
 
 export const useGraphContext = () => {
-  const graphContext = React.useContext(GraphContext)
+  const graphContext = useContext(GraphContext)
 
   if (!graphContext) {
     throw new Error('You need to use this context inside a Provider')

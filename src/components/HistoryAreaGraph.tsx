@@ -1,13 +1,12 @@
-import React from 'react'
-import { holdData } from '../lib/functions'
+import React, { useEffect, useState } from 'react'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 
 const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
-  const [isDataLoaded, setIsDataLoaded] = React.useState(false)
-  const [firstValue, setFirstValue] = React.useState(0)
-  const [lastValue, setLastValue] = React.useState(0)
-  const [history, setHistory] = React.useState<
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
+  const [firstValue, setFirstValue] = useState(0)
+  const [lastValue, setLastValue] = useState(0)
+  const [history, setHistory] = useState<
     {
       symbol: string
       time: string
@@ -19,73 +18,32 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
   const colorChart =
     history[0]?.value > history.at(-1)?.value! ? '#e84f50' : '#1c9860'
 
-  function findMinPrice(arrayOfObjects: any): number | undefined {
-    if (arrayOfObjects.length === 0) {
-      return undefined
+  useEffect(() => {
+    const storedHistory = localStorage.getItem('coinHistory')
+    if (!storedHistory || !id) return
+
+    const parsed = JSON.parse(storedHistory)
+    const entry = parsed[id]
+
+    if (!entry) return
+    const historyArray = Array.isArray(entry.history) ? entry.history : entry
+
+    const formatted = historyArray.map((coin: any) => ({
+      symbol,
+      time: `${coin.time}`,
+      value: Number(coin.transformedPriceUsd ?? coin.priceUsd),
+      rank,
+    }))
+
+    setHistory(formatted)
+    setIsDataLoaded(true)
+  }, [id, rank, symbol])
+
+  useEffect(() => {
+    if (history.length) {
+      setFirstValue(history[0].value)
+      setLastValue(history.at(-1)?.value || 0)
     }
-    setFirstValue(arrayOfObjects[0].value)
-  }
-
-  function findMaxPrice(arrayOfObjects: any): number | undefined {
-    if (arrayOfObjects.length === 0) {
-      return undefined
-    }
-    setLastValue(arrayOfObjects.at(-1).value)
-  }
-
-  React.useEffect(() => {
-    let numericRank = Number(rank)
-    if (
-      !id ||
-      !symbol ||
-      !rank ||
-      isNaN(numericRank) ||
-      numericRank < 1 ||
-      numericRank > 10
-    )
-      return
-
-    if (id === 'bitcoin') {
-      let isMounted = true
-      const fetchChart = async () => {
-        console.log(id)
-        try {
-          const response = await fetch(`/api/coinHistory?id=${id}`)
-
-          if (response.ok && isMounted) {
-            const { data } = await response.json()
-            let tempData = [...data]
-            holdData(tempData)
-            console.log(tempData)
-            const mapData = tempData.flatMap((coin) => [
-              {
-                symbol: symbol,
-                time: `${coin.time}`,
-                value: Number(coin.transformedPriceUsd),
-                rank: rank,
-              },
-            ])
-            if (isMounted) {
-              setHistory(mapData)
-              setIsDataLoaded(true)
-              console.log(mapData)
-            }
-          }
-        } catch (error) {
-          console.error('Error fetching data:', error)
-        }
-      }
-      fetchChart()
-      return () => {
-        isMounted = false
-      }
-    }
-  }, [id, symbol, rank])
-
-  React.useEffect(() => {
-    findMinPrice(history)
-    findMaxPrice(history)
-    console.log(history)
   }, [history])
 
   return (
