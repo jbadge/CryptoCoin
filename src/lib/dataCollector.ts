@@ -2,7 +2,7 @@ import { Coins } from '../types/CoinTypes'
 import { holdData } from './functions'
 type DataCallback = (_id: string, _data: any[]) => void
 
-let apiKey = import.meta.env.VITE_API_KEY
+let apiKey = process.env.API_KEY
 let collectedData: Record<string, any[]> = {}
 
 export function resetCollector() {
@@ -65,9 +65,7 @@ export async function fetchHistory(id: string) {
     const end = now
 
     const response = await fetch(
-      `https://rest.coincap.io/v3/assets/${id}/history?interval=d1&start=${start}&end=${end}&apiKey=${
-        import.meta.env.VITE_API_KEY
-      }`
+      `https://rest.coincap.io/v3/assets/${id}/history?interval=d1&start=${start}&end=${end}&apiKey=${process.env.API_KEY}`
     )
     if (response.ok) {
       const { data } = await response.json()
