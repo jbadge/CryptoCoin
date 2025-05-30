@@ -37,7 +37,7 @@ export const GraphContextProvider = ({ children }: Props) => {
   const preloadDataForRealTimeView = useCallback(async () => {
     try {
       const response = await fetch(
-        `https://rest.coincap.io/v3/assets?apiKey=${process.env.API_KEY}`
+        `https://rest.coincap.io/v3/assets?apiKey=${process.env.REACT_APP_API_KEY}`
       )
       await response.json()
     } catch (error) {

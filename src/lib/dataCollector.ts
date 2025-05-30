@@ -2,7 +2,7 @@ import { Coins } from '../types/CoinTypes'
 import { holdData } from './functions'
 type DataCallback = (_id: string, _data: any[]) => void
 
-let apiKey = process.env.API_KEY
+let apiKey = process.env.REACT_APP_API_KEY
 let collectedData: Record<string, any[]> = {}
 
 export function resetCollector() {
