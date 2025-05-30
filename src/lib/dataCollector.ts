@@ -24,33 +24,33 @@ export async function fetchAllAssets(
   // let offset = 0
   const batchSize = 20
   const pauseMs = 100 //5000
+  let offset = 0
   let moreData = true
-  let allAssets: Coins[] = []
+  const allAssets: any[] = []
 
   while (moreData) {
-    const response = await fetch('/.netlify/functions/coinList')
-    // const url = `https://rest.coincap.io/v3/assets?apiKey=${apiKey}`
-    // &limit=${limit}&offset=${offset}`
-    // const response = await fetch(url)
+    const response = await fetch(
+      `/.netlify/functions/coinList?limit=${batchSize}&offset=${offset}`
+    )
     if (!response.ok) {
       throw new Error(`API error: ${response.statusText}`)
     }
 
     const { data } = await response.json()
 
-    const nextBatch = data.slice(allAssets.length, allAssets.length + batchSize)
-    if (nextBatch.length === 0) break
+    if (!data || data.length === 0) break
 
-    holdData(nextBatch)
-    allAssets.push(...nextBatch)
+    holdData(data)
+    allAssets.push(...data)
+
     if (setCoins) {
       setCoins([...allAssets])
     }
-    // if (data.length < limit) {
-    if (nextBatch.length < batchSize) {
+
+    if (data.length < batchSize) {
       moreData = false
     } else {
-      // offset += limit
+      offset += batchSize
       await new Promise((res) => setTimeout(res, pauseMs))
     }
   }
