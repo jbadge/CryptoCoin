@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import HeadingLabels from './components/HeadingLabels'
 import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
-// import { holdData } from './lib/functions'
 // Context
 import { GraphContextProvider } from './context/GraphContext'
 import { DatasetContextProvider } from './context/DatasetContext'
@@ -12,13 +11,20 @@ import { fetchAllAssets } from './lib/dataCollector'
 export function App() {
   const [coins, setCoins] = useState<Coins[]>([])
 
-  useEffect(() => {
-    async function loadCoins() {
-      // const tempCoins =
+  async function loadCoins() {
+    try {
       await fetchAllAssets(setCoins)
-      // holdData(tempCoins)
+    } catch (error) {
+      console.error('Error fetching data from API:', error)
     }
+  }
+
+  useEffect(() => {
     loadCoins()
+    const interval = setInterval(() => {
+      loadCoins()
+    }, 10000)
+    return () => clearInterval(interval)
   }, [])
 
   return (

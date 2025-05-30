@@ -1,13 +1,12 @@
-import React from 'react'
-// import { holdData } from '../lib/functions'
+import React, { useEffect, useState } from 'react'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 
 const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
-  const [isDataLoaded, setIsDataLoaded] = React.useState(false)
-  const [firstValue, setFirstValue] = React.useState(0)
-  const [lastValue, setLastValue] = React.useState(0)
-  const [history, setHistory] = React.useState<
+  const [isDataLoaded, setIsDataLoaded] = useState(false)
+  const [firstValue, setFirstValue] = useState(0)
+  const [lastValue, setLastValue] = useState(0)
+  const [history, setHistory] = useState<
     {
       symbol: string
       time: string
@@ -19,31 +18,7 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
   const colorChart =
     history[0]?.value > history.at(-1)?.value! ? '#e84f50' : '#1c9860'
 
-  ////////////////// MAYBE REPLACE WITH COMMENTED OUT CODE BELOW
-  function findMinPrice(arrayOfObjects: any): number | undefined {
-    if (arrayOfObjects.length === 0) {
-      return undefined
-    }
-    setFirstValue(arrayOfObjects[0].value)
-  }
-
-  function findMaxPrice(arrayOfObjects: any): number | undefined {
-    if (arrayOfObjects.length === 0) {
-      return undefined
-    }
-    setLastValue(arrayOfObjects.at(-1).value)
-  }
-
-  ////////////MAYBE REPLACE ABOVE WITH THIS?
-  //   React.useEffect(() => {
-  //   if (history.length > 0) {
-  //     setFirstValue(history[0].value)
-  //     setLastValue(history.at(-1)?.value || 0)
-  //   }
-  // }, [history])
-  ///////////////////////////////
-
-  React.useEffect(() => {
+  useEffect(() => {
     const storedHistory = localStorage.getItem('coinHistory')
     if (!storedHistory) return
 
@@ -64,9 +39,11 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
     setIsDataLoaded(true)
   }, [id, rank, symbol])
 
-  React.useEffect(() => {
-    findMinPrice(history)
-    findMaxPrice(history)
+  useEffect(() => {
+    if (history.length) {
+      setFirstValue(history[0].value)
+      setLastValue(history.at(-1)?.value || 0)
+    }
   }, [history])
 
   return (

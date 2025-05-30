@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { useDatasetContext } from '../context/DatasetContext'
@@ -8,13 +8,13 @@ const RealTimeAreaGraph = ({
   symbol,
   transformedPriceUsd,
 }: CoinChartProps) => {
-  const [loading, setLoading] = React.useState<boolean>(true)
-  const [minValue, setMinValue] = React.useState<number>(0)
-  const [maxValue, setMaxValue] = React.useState<number>(0)
-  const [openingValue, setOpeningValue] = React.useState<number>(0)
-  const [closingValue, setClosingValue] = React.useState<number>(0)
-  const [minMaxEtcLoaded, setMinMaxEtcLoaded] = React.useState(false)
-  const [sessionDataLoaded, setSessionDataLoaded] = React.useState(false)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [minValue, setMinValue] = useState<number>(0)
+  const [maxValue, setMaxValue] = useState<number>(0)
+  const [openingValue, setOpeningValue] = useState<number>(0)
+  const [closingValue, setClosingValue] = useState<number>(0)
+  const [minMaxEtcLoaded, setMinMaxEtcLoaded] = useState(false)
+  const [sessionDataLoaded, setSessionDataLoaded] = useState(false)
   const colorChart = openingValue > closingValue ? '#EA3943' : '#16C784'
   const numOfDataPoints = 672
   const datasetContext = useDatasetContext()
@@ -43,7 +43,7 @@ const RealTimeAreaGraph = ({
     if (datasetContext.dataset.at(-1) !== transformedPriceUsd) {
       const updatedDataset = [...datasetContext.dataset]
       findMinMaxEtc()
-      // Add Data
+
       if (updatedDataset.length === 0) {
         updatedDataset.push(transformedPriceUsd)
         updatedDataset.push(transformedPriceUsd)
@@ -56,16 +56,15 @@ const RealTimeAreaGraph = ({
         updatedDataset.shift()
         updatedDataset.push(transformedPriceUsd)
       }
-      // Update the state and sessionStorage with the new data
       datasetContext.setDataset(updatedDataset)
       saveToSessionStorage(updatedDataset, symbol)
-      // Set opening and closing values
+
       setOpeningValue(updatedDataset[0])
       setClosingValue(updatedDataset.at(-1)!)
     }
   }
 
-  const coinChartData = React.useMemo(() => {
+  const coinChartData = useMemo(() => {
     return datasetContext.dataset.map((price) => {
       return {
         symbol: symbol,
@@ -94,7 +93,7 @@ const RealTimeAreaGraph = ({
     setLoading(false)
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (sessionDataLoaded) {
       loadSessionStorage()
       setMinMaxEtcLoaded(true)
@@ -106,12 +105,12 @@ const RealTimeAreaGraph = ({
     }
   }, [sessionDataLoaded])
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadSessionStorage()
     setSessionDataLoaded(true)
   }, [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true
     async function loadMinMaxEtcOnce() {
       if (sessionDataLoaded) {
@@ -129,7 +128,7 @@ const RealTimeAreaGraph = ({
     }
   }, [sessionDataLoaded, minMaxEtcLoaded])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!loading && sessionDataLoaded) {
       makeDataArray()
     }

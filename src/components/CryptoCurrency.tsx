@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib/functions'
@@ -31,9 +31,9 @@ const CryptoCurrency = ({
   const graphContext = useGraphContext()
   const prev24HrRef = useRef<number | null>(null)
   const prevPriceRef = useRef<number | null>(null)
-  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
-  const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('no-change')
-  const [posOrNegPrice, setPosOrNegPrice] = React.useState('no-change')
+  const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
+  const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('no-change')
+  const [posOrNegPrice, setPosOrNegPrice] = useState('no-change')
 
   useEffect(() => {
     const prevPrice = prevPriceRef.current
@@ -51,7 +51,7 @@ const CryptoCurrency = ({
 
   useEffect(() => {
     const prev24Hr = prev24HrRef.current
-
+    console.log(prev24Hr)
     if (prev24Hr === null || transformed24Hr === prev24Hr) {
       setPosOrNeg24Hr('no-change')
       setCheckPosOrNeg(0)
@@ -66,15 +66,6 @@ const CryptoCurrency = ({
     prev24HrRef.current = transformed24Hr
   }, [transformed24Hr])
 
-  useEffect(() => {
-    setPosOrNegPrice('no-change')
-    setPosOrNeg24Hr('no-change')
-  }, [])
-  // console.timeEnd(`Render: ${id}`)
-  ////////////////
-  // console.log(`Rendering ${coins.length} graphs`)
-  //////////////////
-
   return (
     <tr className={`coin-container ${id}`}>
       <td className="rank">{rank}</td>
@@ -82,14 +73,10 @@ const CryptoCurrency = ({
         <Icon name={name} symbol={symbol} />
         <div className="placeholder"></div>
       </td>
-      <td scope="row" className="name">
-        {name}
+      <td className="name-container">
+        <div className="name">{name}</div>
+        <div className="ticker">{symbol}</div>
       </td>
-      <td className="ticker">{symbol}</td>
-      {/* <td className="name-container">
-        <div className="name1">{name}</div>
-        <div className="ticker1">{symbol}</div>
-      </td> */}
       <td className={'price ' + `${posOrNegPrice}`}>
         {currencyFormatter(priceUsd, 2)}
       </td>
@@ -138,5 +125,4 @@ const CryptoCurrency = ({
   )
 }
 
-// export default CryptoCurrency
-export default React.memo(CryptoCurrency)
+export default memo(CryptoCurrency)

@@ -1,33 +1,40 @@
-import React from 'react'
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 
 export type GraphContextType = {
   checked: boolean
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>
+  setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
   updateHistoryData: (_id: string, _data: any[]) => void
   historyData: Record<string, any[]>
 }
 
-export const GraphContext = React.createContext<null | GraphContextType>(null)
+export const GraphContext = createContext<null | GraphContextType>(null)
 
 type Props = {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export const GraphContextProvider = ({ children }: Props) => {
-  const [checked, setChecked] = React.useState<boolean>(true)
-  const [historyData, setHistoryData] = React.useState<Record<string, any[]>>(
-    {}
-  )
+  const [checked, setChecked] = useState<boolean>(true)
+  const [historyData, setHistoryData] = useState<Record<string, any[]>>({})
 
-  const updateHistoryData = React.useCallback((id: string, data: any[]) => {
+  const updateHistoryData = useCallback((id: string, data: any[]) => {
     setHistoryData((prev) => ({
       ...prev,
       [id]: data,
     }))
   }, [])
 
-  const preloadDataForRealTimeView = React.useCallback(async () => {
+  const preloadDataForRealTimeView = useCallback(async () => {
     try {
       const response = await fetch(
         `https://rest.coincap.io/v3/assets?apiKey=${
@@ -40,7 +47,7 @@ export const GraphContextProvider = ({ children }: Props) => {
     }
   }, [])
 
-  const memoizedContextValue = React.useMemo(() => {
+  const memoizedContextValue = useMemo(() => {
     return {
       checked,
       setChecked,
@@ -64,7 +71,7 @@ export const GraphContextProvider = ({ children }: Props) => {
 }
 
 export const useGraphContext = () => {
-  const graphContext = React.useContext(GraphContext)
+  const graphContext = useContext(GraphContext)
 
   if (!graphContext) {
     throw new Error('You need to use this context inside a Provider')

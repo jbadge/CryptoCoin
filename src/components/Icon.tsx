@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { IconProps } from '../types/CoinTypes'
 import genericIcon from '/cryptocurrency-icons/svg/color/generic.svg'
 
 const Icon = ({ name, symbol }: IconProps) => {
-  const [error, setError] = React.useState(false)
-  const [loaded, setLoaded] = React.useState(false)
+  const [error, setError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
 
   const iconPath = !error
     ? `${
