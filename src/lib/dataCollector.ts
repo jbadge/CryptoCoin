@@ -2,7 +2,7 @@ import { Coins } from '../types/CoinTypes'
 import { holdData } from './functions'
 type DataCallback = (_id: string, _data: any[]) => void
 
-let apiKey = process.env.REACT_APP_API_KEY
+// let apiKey = process.env.REACT_APP_API_KEY
 let collectedData: Record<string, any[]> = {}
 
 export function resetCollector() {
@@ -28,9 +28,10 @@ export async function fetchAllAssets(
   let allAssets: Coins[] = []
 
   while (moreData) {
-    const url = `https://rest.coincap.io/v3/assets?apiKey=${apiKey}`
+    const response = await fetch('/.netlify/functions/coinList')
+    // const url = `https://rest.coincap.io/v3/assets?apiKey=${apiKey}`
     // &limit=${limit}&offset=${offset}`
-    const response = await fetch(url)
+    // const response = await fetch(url)
     if (!response.ok) {
       throw new Error(`API error: ${response.statusText}`)
     }

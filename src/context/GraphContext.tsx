@@ -36,9 +36,11 @@ export const GraphContextProvider = ({ children }: Props) => {
 
   const preloadDataForRealTimeView = useCallback(async () => {
     try {
-      const response = await fetch(
-        `https://rest.coincap.io/v3/assets?apiKey=${process.env.REACT_APP_API_KEY}`
-      )
+      // const response = await fetch(
+      //   `https://rest.coincap.io/v3/assets?apiKey=${process.env.REACT_APP_API_KEY}`
+      // )
+      const response = await fetch('/.netlify/functions/coinList')
+
       await response.json()
     } catch (error) {
       console.error('Error fetching real-time data:', error)
