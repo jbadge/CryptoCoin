@@ -13,7 +13,9 @@ export function App() {
   function loadAllCoins() {
     async function fetchCoins() {
       try {
-        const response = await fetch('https://api.coincap.io/v2/assets')
+        const response = await fetch('https://cryptorates.ai/v1/coins/100')
+        console.log(typeof response)
+        console.log(response)
         if (response.ok) {
           const { data } = await response.json()
           const tempCoins = [...data]
