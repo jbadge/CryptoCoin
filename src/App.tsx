@@ -13,11 +13,14 @@ export function App() {
   function loadAllCoins() {
     async function fetchCoins() {
       try {
-        const response = await fetch('/netlify/functions/getCoins.ts')
-        console.log(response)
+        const response = await fetch('/.netlify/functions/getCoins')
+        // const json = await response.json
+        // console.log(json)
+        // const text = await response.text()
+        // console.log(text)
 
         if (response.ok) {
-          const { data } = await response.json()
+          const data = await response.json()
           const tempCoins = [...data]
           holdData(tempCoins)
           setCoins(tempCoins)

@@ -3,7 +3,7 @@ import { holdData } from '../lib/functions'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 
-const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
+const HistoryAreaGraph = ({ id: _id, rank, symbol }: CoinChartProps) => {
   const [isDataLoaded, setIsDataLoaded] = React.useState(false)
   const [firstValue, setFirstValue] = React.useState(0)
   const [lastValue, setLastValue] = React.useState(0)
@@ -37,11 +37,9 @@ const HistoryAreaGraph = ({ id, rank, symbol }: CoinChartProps) => {
     let isMounted = true
     async function fetchChart() {
       try {
-        const response = await fetch(
-          `https://api.coincap.io/v2/assets/${id}/history?interval=m15`
-        )
+        const response = await fetch('/.netlify/functions/getCoins')
         if (response.ok && isMounted) {
-          const { data } = await response.json()
+          const data = await response.json()
           let tempData = [...data]
           holdData(tempData)
           const mapData = tempData.flatMap((coin) => [

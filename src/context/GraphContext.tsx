@@ -17,7 +17,7 @@ export const GraphContextProvider = ({ children }: Props) => {
 
   const preloadDataForRealTimeView = React.useCallback(async () => {
     try {
-      const response = await fetch('/netlify/functions/getCoins.ts')
+      const response = await fetch('/netlify/functions/getCoins')
       await response.json()
     } catch (error) {
       console.error('Error fetching real-time data:', error)
