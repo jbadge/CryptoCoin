@@ -1,20 +1,21 @@
 export type Coins = {
-  id: string
-  rank: string
+  // id: string
+  rank: number
   symbol: string
   name: string
-  marketCapUsd: string
-  volumeUsd24Hr: string
-  priceUsd: string
+  marketcap: number
+  volume24h: number
+  price: number
   transformedPriceUsd: number
-  changePercent24Hr: string
+  change24h: number
+  // change7d: number
   transformed24Hr: number
   explorer: string | null
 }
 
 export type CoinChartProps = {
-  id: string
-  rank: string
+  // id: string
+  rank: number
   symbol: string
   transformedPriceUsd: number
 }

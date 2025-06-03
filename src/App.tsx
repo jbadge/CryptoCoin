@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import HeadingLabels from './components/HeadingLabels'
 import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
@@ -8,19 +8,16 @@ import { GraphContextProvider } from './context/GraphContext'
 import { DatasetContextProvider } from './context/DatasetContext'
 
 export function App() {
-  const [coins, setCoins] = React.useState<Coins[]>([])
+  const [coins, setCoins] = useState<Coins[]>([])
 
   function loadAllCoins() {
     async function fetchCoins() {
       try {
         const response = await fetch('/.netlify/functions/getCoins')
-        // const json = await response.json
-        // console.log(json)
-        // const text = await response.text()
-        // console.log(text)
 
         if (response.ok) {
           const data = await response.json()
+          console.log('App: ', data)
           const tempCoins = [...data]
           holdData(tempCoins)
           setCoins(tempCoins)
@@ -40,10 +37,6 @@ export function App() {
     return () => clearInterval(interval)
   }, [])
 
-  if (coins === null || undefined) {
-    return <p>Loading...</p>
-  }
-
   return (
     <GraphContextProvider>
       <DatasetContextProvider>
@@ -59,16 +52,16 @@ export function App() {
             {coins.map((cryptoItem, _index) => (
               <CryptoCurrency
                 key={cryptoItem.rank}
-                id={cryptoItem.id}
+                // id={cryptoItem.id}
                 rank={cryptoItem.rank}
                 name={cryptoItem.name}
                 symbol={cryptoItem.symbol}
-                priceUsd={cryptoItem.priceUsd}
+                price={cryptoItem.price}
                 transformedPriceUsd={cryptoItem.transformedPriceUsd}
-                changePercent24Hr={cryptoItem.changePercent24Hr}
+                change24h={cryptoItem.change24h}
                 transformed24Hr={cryptoItem.transformed24Hr}
-                marketCapUsd={cryptoItem.marketCapUsd}
-                volumeUsd24Hr={cryptoItem.volumeUsd24Hr}
+                marketcap={cryptoItem.marketcap}
+                volume24h={cryptoItem.volume24h}
                 explorer={null}
               />
             ))}

@@ -22,8 +22,11 @@ export function generateTimestamp(): string {
 
 export function holdData(data: Coins[]) {
   for (let i = 0; i < data.length; i++) {
-    let tempPriceUsd = parseFloat(data[i].priceUsd)
-    let temp24Hr = parseFloat(data[i].changePercent24Hr)
+    // let tempPriceUsd = parseFloat(data[i].price)
+    // let temp24Hr = parseFloat(data[i].change24h)
+    let tempPriceUsd = data[i].price
+    let temp24Hr = data[i].change24h
+    ///////////////////////////////////
     data[i].transformedPriceUsd = tempPriceUsd
     data[i].transformed24Hr = temp24Hr
   }
