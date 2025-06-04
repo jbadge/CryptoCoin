@@ -122,7 +122,7 @@ const CryptoCurrency = ({
         <>
           {graphContext.checked ? (
             <HistoryAreaGraph
-              // id={id}
+              name={name}
               rank={rank}
               symbol={symbol}
               transformedPriceUsd={transformedPriceUsd}
@@ -133,6 +133,7 @@ const CryptoCurrency = ({
               <RealTimeAreaGraph
                 key={rank}
                 // id={''}
+                name={name}
                 rank={rank}
                 symbol={symbol}
                 transformedPriceUsd={transformedPriceUsd}

@@ -17,7 +17,7 @@ export function App() {
 
         if (response.ok) {
           const data = await response.json()
-          console.log('App: ', data)
+          // console.log('App: ', data)
           const tempCoins = [...data]
           holdData(tempCoins)
           setCoins(tempCoins)
