@@ -8,6 +8,14 @@ import RealTimeAreaGraph from './RealTimeAreaGraph'
 import { useGraphContext } from '../context/GraphContext'
 import PriceUpdater from '../lib/functions'
 
+const redTriangleLM = '/red_triangle_lm.png'
+const greenTriangleLM = '/green_triangle_lm.png'
+const redTriangleDM = '/red_triangle_dm.png'
+const greenTriangleDM = '/green_triangle_dm.png'
+
+const changeArrayLM = [redTriangleLM, greenTriangleLM]
+const changeArrayDM = [redTriangleDM, greenTriangleDM]
+
 const CryptoCurrency = ({
   rank,
   name,
@@ -26,16 +34,16 @@ const CryptoCurrency = ({
   const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
 
   const graphContext = useGraphContext()
-  const redTriangleLM = new Image()
-  redTriangleLM.src = '/red_triangle_lm.png'
-  const greenTriangleLM = new Image()
-  greenTriangleLM.src = '/green_triangle_lm.png'
-  const redTriangleDM = new Image()
-  redTriangleDM.src = '/red_triangle_dm.png'
-  const greenTriangleDM = new Image()
-  greenTriangleDM.src = '/green_triangle_dm.png'
-  const changeArrayLM = [redTriangleLM.src, greenTriangleLM.src]
-  const changeArrayDM = [redTriangleDM.src, greenTriangleDM.src]
+  // const redTriangleLM = new Image()
+  // redTriangleLM.src = '/red_triangle_lm.png'
+  // const greenTriangleLM = new Image()
+  // greenTriangleLM.src = '/green_triangle_lm.png'
+  // const redTriangleDM = new Image()
+  // redTriangleDM.src = '/red_triangle_dm.png'
+  // const greenTriangleDM = new Image()
+  // greenTriangleDM.src = '/green_triangle_dm.png'
+  // const changeArrayLM = [redTriangleLM.src, greenTriangleLM.src]
+  // const changeArrayDM = [redTriangleDM.src, greenTriangleDM.src]
 
   function checkPosOrNegPrice() {
     if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {

@@ -5,12 +5,35 @@ import {
   RawHistoryItem,
 } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
-import rawHistoryJson from '../data/coin_history.json'
+
+// Helper function (unchanged)
+function resolveCoinId(
+  symbol: string,
+  name: string,
+  jsonHistory: Record<string, any>
+): string | null {
+  const symbolLc = symbol.toLowerCase()
+  const nameLc = name.toLowerCase()
+  const firstWord = nameLc.split(' ')[0]
+
+  for (const id in jsonHistory) {
+    if (
+      id === symbolLc ||
+      id === nameLc.replace(/\s+/g, '-') ||
+      id.includes(symbolLc) ||
+      id.includes(firstWord)
+    ) {
+      return id
+    }
+  }
+
+  return null
+}
 
 const HistoryAreaGraph = ({ name, rank, symbol }: CoinChartProps) => {
   const [isDataLoaded, setIsDataLoaded] = useState(false)
-  const [firstValue, setFirstValue] = useState(0)
-  const [lastValue, setLastValue] = useState(0)
+  const [firstValue, setFirstValue] = useState<number | null>(null)
+  const [lastValue, setLastValue] = useState<number | null>(null)
   const [history, setHistory] = useState<
     {
       symbol: string
@@ -20,73 +43,84 @@ const HistoryAreaGraph = ({ name, rank, symbol }: CoinChartProps) => {
     }[]
   >([])
 
+  // Safely compute colorChart only if we have enough data
   const colorChart =
-    history[0]?.value > history.at(-1)?.value! ? '#e84f50' : '#1c9860'
+    history.length > 1 && history[0].value > history[history.length - 1].value
+      ? '#e84f50'
+      : '#1c9860'
 
-  function findMinPrice(arrayOfObjects: any): number | undefined {
+  function findMinPrice(arrayOfObjects: any): void {
     if (arrayOfObjects.length === 0) {
-      return undefined
+      setFirstValue(null)
+      return
     }
     setFirstValue(arrayOfObjects[0].value)
   }
 
-  function findMaxPrice(arrayOfObjects: any): number | undefined {
+  function findMaxPrice(arrayOfObjects: any): void {
     if (arrayOfObjects.length === 0) {
-      return undefined
+      setLastValue(null)
+      return
     }
-    setLastValue(arrayOfObjects.at(-1).value)
+    setLastValue(arrayOfObjects[arrayOfObjects.length - 1].value)
   }
 
-  const rawHistory = rawHistoryJson as RawHistoryItem[]
+  useEffect(() => {
+    async function fetchAndLoadHistory() {
+      try {
+        const response = await fetch('/coin_history.json') // correct path in public root
+        if (!response.ok) throw new Error('Failed to load history JSON')
+        const rawHistory: RawHistoryItem[] = await response.json()
 
-  function resolveCoinId(symbol: string, name: string): string | null {
-    const symbolLc = symbol.toLowerCase()
-    const nameLc = name.toLowerCase()
-    const firstWord = nameLc.split(' ')[0]
+        const jsonHistory: CoinHistoryData = rawHistory.reduce((acc, item) => {
+          acc[item.id.toLowerCase()] = item.entries
+          return acc
+        }, {} as CoinHistoryData)
 
-    for (const id in jsonHistory) {
-      if (
-        id === symbolLc ||
-        id === nameLc.replace(/\s+/g, '-') ||
-        id.includes(symbolLc) ||
-        id.includes(firstWord)
-      ) {
-        return id
+        const resolvedId = resolveCoinId(symbol, name, jsonHistory)
+        if (!resolvedId) {
+          console.warn(`No matching history for ${symbol} (${name})`)
+          setHistory([])
+          setIsDataLoaded(true)
+          return
+        }
+
+        const coinData = jsonHistory[resolvedId]
+        if (!coinData || !Array.isArray(coinData)) {
+          setHistory([])
+          setIsDataLoaded(true)
+          return
+        }
+
+        // First 10 entries: set immediately
+        const first10 = coinData.slice(0, 10).map((entry) => ({
+          symbol,
+          time: `${entry.time}`,
+          value: Number(entry.priceUsd),
+          rank,
+        }))
+        setHistory(first10)
+        setIsDataLoaded(true)
+
+        // Then append the rest asynchronously, so UI updates quickly
+        if (coinData.length > 10) {
+          setTimeout(() => {
+            const rest = coinData.slice(10).map((entry) => ({
+              symbol,
+              time: `${entry.time}`,
+              value: Number(entry.priceUsd),
+              rank,
+            }))
+            setHistory((prev) => [...prev, ...rest])
+          }, 50) // delay 50ms to yield rendering first batch
+        }
+      } catch (error) {
+        console.error(error)
+        setIsDataLoaded(true)
       }
     }
 
-    return null
-  }
-
-  const jsonHistory: CoinHistoryData = rawHistory.reduce((acc, item) => {
-    acc[item.id.toLowerCase()] = item.entries
-    return acc
-  }, {} as CoinHistoryData)
-
-  useEffect(() => {
-    const resolvedId = resolveCoinId(symbol, name)
-    // console.log('resolveId: ', resolvedId)
-
-    if (!resolvedId) {
-      console.warn(`No matching history for ${symbol} (${name})`)
-      return
-    }
-
-    const coinData = jsonHistory[resolvedId]
-    // console.log('coinData: ', coinData)
-
-    if (!coinData || !Array.isArray(coinData)) return
-
-    const formatted = coinData.map((entry) => ({
-      symbol,
-      time: `${entry.time}`,
-      value: Number(entry.priceUsd),
-      rank,
-    }))
-    // console.log('formatted: ', formatted)
-
-    setHistory(formatted)
-    setIsDataLoaded(true)
+    fetchAndLoadHistory()
   }, [symbol, name, rank])
 
   useEffect(() => {
@@ -96,7 +130,10 @@ const HistoryAreaGraph = ({ name, rank, symbol }: CoinChartProps) => {
 
   return (
     <ResponsiveContainer width="100%" height={70}>
-      {isDataLoaded && history.length > 0 ? (
+      {isDataLoaded &&
+      history.length > 0 &&
+      firstValue !== null &&
+      lastValue !== null ? (
         <AreaChart
           data={history}
           margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
