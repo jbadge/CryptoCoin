@@ -1,21 +1,30 @@
-import React from 'react'
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 
 export type GraphContextType = {
   checked: boolean
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>
+  setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
 }
 
-export const GraphContext = React.createContext<null | GraphContextType>(null)
+export const GraphContext = createContext<null | GraphContextType>(null)
 
 type Props = {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export const GraphContextProvider = ({ children }: Props) => {
-  const [checked, setChecked] = React.useState<boolean>(true)
+  const [checked, setChecked] = useState<boolean>(true)
 
-  const preloadDataForRealTimeView = React.useCallback(async () => {
+  const preloadDataForRealTimeView = useCallback(async () => {
     try {
       const response = await fetch('/netlify/functions/getCoins')
       await response.json()
@@ -24,7 +33,7 @@ export const GraphContextProvider = ({ children }: Props) => {
     }
   }, [])
 
-  const memoizedContextValue = React.useMemo(() => {
+  const memoizedContextValue = useMemo(() => {
     return { checked, setChecked, preloadDataForRealTimeView }
   }, [checked, setChecked, preloadDataForRealTimeView])
 
@@ -36,7 +45,7 @@ export const GraphContextProvider = ({ children }: Props) => {
 }
 
 export const useGraphContext = () => {
-  const graphContext = React.useContext(GraphContext)
+  const graphContext = useContext(GraphContext)
 
   if (!graphContext) {
     throw new Error('You need to use this context inside a Provider')

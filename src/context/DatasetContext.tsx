@@ -1,22 +1,28 @@
-import React from 'react'
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
 
 export type DatasetContextType = {
   dataset: number[]
-  setDataset: React.Dispatch<React.SetStateAction<number[]>>
+  setDataset: Dispatch<SetStateAction<number[]>>
 }
 
-export const DatasetContext = React.createContext<null | DatasetContextType>(
-  null
-)
+export const DatasetContext = createContext<null | DatasetContextType>(null)
 
 type Props = {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export const DatasetContextProvider = ({ children }: Props) => {
-  const [dataset, setDataset] = React.useState<number[]>([])
+  const [dataset, setDataset] = useState<number[]>([])
 
-  const memoizedContextValue = React.useMemo(() => {
+  const memoizedContextValue = useMemo(() => {
     return { dataset, setDataset }
   }, [dataset, setDataset])
 
@@ -28,7 +34,7 @@ export const DatasetContextProvider = ({ children }: Props) => {
 }
 
 export const useDatasetContext = () => {
-  const datasetContext = React.useContext(DatasetContext)
+  const datasetContext = useContext(DatasetContext)
 
   if (!datasetContext) {
     throw new Error('You need to use this context inside a Provider')

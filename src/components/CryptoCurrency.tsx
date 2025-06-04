@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib/functions'
@@ -9,7 +9,6 @@ import { useGraphContext } from '../context/GraphContext'
 import PriceUpdater from '../lib/functions'
 
 const CryptoCurrency = ({
-  // id,
   rank,
   name,
   symbol,
@@ -20,11 +19,11 @@ const CryptoCurrency = ({
   marketcap,
   volume24h,
 }: Coins) => {
-  const [newPriceToCompare, setNewPriceToCompare] = React.useState(0)
-  const [posOrNegPrice, setPosOrNegPrice] = React.useState('')
-  const [posOrNeg24Hr, setPosOrNeg24Hr] = React.useState('')
-  const [new24HrToCompare, setNew24HrToCompare] = React.useState(0)
-  const [checkPosOrNeg, setCheckPosOrNeg] = React.useState(0)
+  const [newPriceToCompare, setNewPriceToCompare] = useState(0)
+  const [posOrNegPrice, setPosOrNegPrice] = useState('')
+  const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
+  const [new24HrToCompare, setNew24HrToCompare] = useState(0)
+  const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
 
   const graphContext = useGraphContext()
   const redTriangleLM = new Image()
@@ -71,15 +70,15 @@ const CryptoCurrency = ({
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     checkPosOrNegPrice()
   }, [transformedPriceUsd])
 
-  React.useEffect(() => {
+  useEffect(() => {
     checkPosOrNeg24Hr()
   }, [transformed24Hr])
 
-  React.useEffect(() => {
+  useEffect(() => {
     setPosOrNegPrice('no-change')
     setPosOrNeg24Hr('no-change')
   }, [])
@@ -112,7 +111,6 @@ const CryptoCurrency = ({
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
-          {/* {parseFloat(change24h).toFixed(2)} */}
           {(change24h * 100).toFixed(2)}
         </span>
       </td>
@@ -132,7 +130,6 @@ const CryptoCurrency = ({
               <PriceUpdater transformedPriceUsd={transformedPriceUsd} />
               <RealTimeAreaGraph
                 key={rank}
-                // id={''}
                 name={name}
                 rank={rank}
                 symbol={symbol}

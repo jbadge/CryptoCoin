@@ -17,7 +17,6 @@ export function App() {
 
         if (response.ok) {
           const data = await response.json()
-          // console.log('App: ', data)
           const tempCoins = [...data]
           holdData(tempCoins)
           setCoins(tempCoins)
@@ -52,7 +51,6 @@ export function App() {
             {coins.map((cryptoItem, _index) => (
               <CryptoCurrency
                 key={cryptoItem.rank}
-                // id={cryptoItem.id}
                 rank={cryptoItem.rank}
                 name={cryptoItem.name}
                 symbol={cryptoItem.symbol}
@@ -62,7 +60,6 @@ export function App() {
                 transformed24Hr={cryptoItem.transformed24Hr}
                 marketcap={cryptoItem.marketcap}
                 volume24h={cryptoItem.volume24h}
-                explorer={null}
               />
             ))}
           </tbody>

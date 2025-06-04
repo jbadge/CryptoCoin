@@ -1,5 +1,4 @@
 export type Coins = {
-  // id: string
   rank: number
   symbol: string
   name: string
@@ -8,13 +7,10 @@ export type Coins = {
   price: number
   transformedPriceUsd: number
   change24h: number
-  // change7d: number
   transformed24Hr: number
-  explorer: string | null
 }
 
 export type CoinChartProps = {
-  // id: string
   name: string
   rank: number
   symbol: string
