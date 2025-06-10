@@ -8,3 +8,4 @@ src/scratchpad.md
 # Local Netlify folder
 .netlify
 .env
+src/test

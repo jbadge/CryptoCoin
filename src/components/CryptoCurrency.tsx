@@ -32,18 +32,10 @@ const CryptoCurrency = ({
   const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
   const [new24HrToCompare, setNew24HrToCompare] = useState(0)
   const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
 
   const graphContext = useGraphContext()
-  // const redTriangleLM = new Image()
-  // redTriangleLM.src = '/red_triangle_lm.png'
-  // const greenTriangleLM = new Image()
-  // greenTriangleLM.src = '/green_triangle_lm.png'
-  // const redTriangleDM = new Image()
-  // redTriangleDM.src = '/red_triangle_dm.png'
-  // const greenTriangleDM = new Image()
-  // greenTriangleDM.src = '/green_triangle_dm.png'
-  // const changeArrayLM = [redTriangleLM.src, greenTriangleLM.src]
-  // const changeArrayDM = [redTriangleDM.src, greenTriangleDM.src]
 
   function checkPosOrNegPrice() {
     if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {
@@ -92,16 +84,16 @@ const CryptoCurrency = ({
   }, [])
 
   return (
-    <tr key={rank} className={`coin-container ${symbol}`}>
+    <tr className={`coin-container ${rank}`}>
       <td className="rank">{rank}</td>
       <td className="icon-container">
-        <Icon key={rank} name={name} symbol={symbol} />
+        <Icon name={name} symbol={symbol} />
         <div className="placeholder"></div>
       </td>
-      <td scope="row" className="name">
-        {name}
+      <td className="name-container">
+        <div className="name">{name}</div>
+        <div className="ticker">{symbol}</div>
       </td>
-      <td className="ticker">{symbol}</td>
       <td className={'price ' + `${posOrNegPrice}`}>
         {currencyFormatter(price, 2)}
       </td>
@@ -119,7 +111,7 @@ const CryptoCurrency = ({
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
-          {(change24h * 100).toFixed(2)}
+          {change24h.toFixed(2)}
         </span>
       </td>
       <td className="volume-24">{currencyFormatter(volume24h, 0)}</td>
@@ -132,6 +124,12 @@ const CryptoCurrency = ({
               rank={rank}
               symbol={symbol}
               transformedPriceUsd={transformedPriceUsd}
+              onLoad={() => setLoaded(true)}
+              onError={() => {
+                setError(true)
+                console.log(error)
+              }}
+              style={loaded ? { display: 'inline-block' } : { display: 'none' }}
             />
           ) : (
             <>
@@ -142,6 +140,14 @@ const CryptoCurrency = ({
                 rank={rank}
                 symbol={symbol}
                 transformedPriceUsd={transformedPriceUsd}
+                onLoad={() => setLoaded(true)}
+                onError={() => {
+                  setError(true)
+                  console.log(error)
+                }}
+                style={
+                  loaded ? { display: 'inline-block' } : { display: 'none' }
+                }
               />
             </>
           )}

@@ -48,6 +48,12 @@ table {
   margin: auto;
   width: 100%;
   max-width: 1400px;
+  table-layout: fixed;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  &.loaded {
+    opacity: 1;
+  }
   th {
     top: 0;
     padding: 1rem;
@@ -59,12 +65,11 @@ table {
       var(--background-color-dark-mode)
     );
   }
-
   td {
-    padding: 0 1rem;
     white-space: nowrap;
+    height: 75px;
+    min-height: 75px;
   }
-
   caption {
     padding: 1rem;
     text-align: center;
@@ -92,6 +97,7 @@ table {
   }
   .icon-heading {
     visibility: hidden;
+    width: 60px;
   }
   .price-heading,
   .change-amount-heading,
@@ -100,30 +106,43 @@ table {
     text-align: right;
   }
   .rank-heading {
-    max-width: 45px;
-    padding-right: 0;
+    width: 45px;
+  }
+  .name-heading {
+    width: 300px;
+    padding: 0;
+  }
+  .ticker-heading {
+    padding: 0;
   }
   .price-heading {
-    padding-right: 62px;
+    width: 130px;
+    padding: 0;
   }
   .change-amount-heading {
-    padding-left: 25px;
-    padding-right: 68px;
+    width: 120px;
+    padding: 0;
   }
   .volume-24-heading {
-    padding-right: 68px;
+    width: 200px;
+    padding: 0;
   }
   .market-cap-heading {
-    padding-right: 55px;
+    width: 200px;
+    padding: 0;
   }
   .graph-heading {
     position: relative;
     display: flex;
     text-align: center;
-    justify-content: center;
-    padding-right: 2;
+    justify-content: flex-end;
+    padding-left: 40px;
+    padding-right: 0;
     flex-wrap: nowrap;
     align-items: center;
+    text-align: right;
+    width: 220px;
+    margin-left: auto;
     .graph-heading-switch {
       display: flex;
       align-items: center;
@@ -200,12 +219,12 @@ table {
   .name-container {
     height: 100%;
     display: flex;
+    width: 300px;
     flex-direction: column;
     justify-content: center;
     .name {
-      font-weight: bold;
       font-size: 1em;
-      width: 350px;
+      width: 300px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -239,21 +258,24 @@ table {
     }
   }
   .rank {
-    width: 60px;
+    width: 45px;
     text-align: center;
-    padding-right: 30px;
   }
   .icon-container {
-    width: 40px;
+    width: 60px;
+    padding-left: 10px;
+    img {
+      width: 40px;
+      height: auto;
+    }
   }
   .price {
-    padding-right: 62px;
+    width: 130px;
+    text-align: right;
   }
   .change-24 {
+    width: 120px;
     text-align: right;
-    padding-left: 1.5rem;
-    padding-right: 68px;
-    min-width: 55px;
     .change-direction {
       padding-right: 0;
       &.no-change {
@@ -269,17 +291,17 @@ table {
     }
   }
   .volume-24 {
-    padding-right: 68px;
+    width: 200px;
   }
   .market-cap {
-    padding-right: 55px;
+    width: 200px;
   }
   .graph-info {
-    padding-left: 2rem;
     height: 100%;
     width: 200px;
-    min-width: 200px;
     color: light-dark(var(--green-light-mode), var(--green-dark-mode));
+    text-align: right;
+    padding-right: 14px;
   }
 }
 

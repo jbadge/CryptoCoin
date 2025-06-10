@@ -1,5 +1,5 @@
 export type Coins = {
-  rank: number
+  rank: string
   symbol: string
   name: string
   marketcap: number
@@ -12,7 +12,7 @@ export type Coins = {
 
 export type CoinChartProps = {
   name: string
-  rank: number
+  rank: string
   symbol: string
   transformedPriceUsd: number
 }

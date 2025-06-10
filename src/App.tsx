@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import HeadingLabels from './components/HeadingLabels'
 import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
@@ -28,13 +28,18 @@ export function App() {
     fetchCoins()
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadAllCoins()
     const interval = setInterval(() => {
       loadAllCoins()
     }, 10000)
     return () => clearInterval(interval)
   }, [])
+
+  window.addEventListener('load', () => {
+    const table = document.querySelector('table')
+    table?.classList.add('loaded')
+  })
 
   return (
     <GraphContextProvider>

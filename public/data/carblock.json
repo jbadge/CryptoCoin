@@ -1,0 +1,185 @@
+{
+  "data": [
+    {
+      "priceUsd": "0.0772693248418704",
+      "time": 1749133800000,
+      "date": "2025-06-05T14:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0762635457846725",
+      "time": 1749134700000,
+      "date": "2025-06-05T14:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0762784657246512",
+      "time": 1749135600000,
+      "date": "2025-06-05T15:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0758201719347621",
+      "time": 1749136500000,
+      "date": "2025-06-05T15:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0756996993855001",
+      "time": 1749137400000,
+      "date": "2025-06-05T15:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0753488863433940",
+      "time": 1749138300000,
+      "date": "2025-06-05T15:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0754376161207387",
+      "time": 1749139200000,
+      "date": "2025-06-05T16:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0755071575896222",
+      "time": 1749140100000,
+      "date": "2025-06-05T16:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0744265575454296",
+      "time": 1749141000000,
+      "date": "2025-06-05T16:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0742032586713194",
+      "time": 1749141900000,
+      "date": "2025-06-05T16:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0719172545935558",
+      "time": 1749142800000,
+      "date": "2025-06-05T17:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0699974734335939",
+      "time": 1749143700000,
+      "date": "2025-06-05T17:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0739229966949139",
+      "time": 1749144600000,
+      "date": "2025-06-05T17:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0734848464173146",
+      "time": 1749145500000,
+      "date": "2025-06-05T17:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0725552772356842",
+      "time": 1749146400000,
+      "date": "2025-06-05T18:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0725754581373005",
+      "time": 1749147300000,
+      "date": "2025-06-05T18:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0727237338017923",
+      "time": 1749148200000,
+      "date": "2025-06-05T18:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0725878679332193",
+      "time": 1749149100000,
+      "date": "2025-06-05T18:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0731155217710585",
+      "time": 1749150000000,
+      "date": "2025-06-05T19:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0734057224749785",
+      "time": 1749150900000,
+      "date": "2025-06-05T19:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0754235971623955",
+      "time": 1749151800000,
+      "date": "2025-06-05T19:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0766319862870675",
+      "time": 1749152700000,
+      "date": "2025-06-05T19:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0822125472521293",
+      "time": 1749153600000,
+      "date": "2025-06-05T20:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0867084046524913",
+      "time": 1749154500000,
+      "date": "2025-06-05T20:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0849043136155077",
+      "time": 1749155400000,
+      "date": "2025-06-05T20:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0848853667550967",
+      "time": 1749156300000,
+      "date": "2025-06-05T20:45:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0834485352899828",
+      "time": 1749157200000,
+      "date": "2025-06-05T21:00:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0833434020053009",
+      "time": 1749158100000,
+      "date": "2025-06-05T21:15:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0825725187290325",
+      "time": 1749159000000,
+      "date": "2025-06-05T21:30:00.000Z",
+      "circulatingSupply": null
+    },
+    {
+      "priceUsd": "0.0833814473554310",
+      "time": 1749159900000,
+      "date": "2025-06-05T21:45:00.000Z",
+      "circulatingSupply": null
+    }
+  ],
+  "timestamp": 1749160512508
+}

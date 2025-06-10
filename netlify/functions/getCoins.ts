@@ -1,4 +1,3 @@
-// netlify/functions/getCoins.js
 export async function handler() {
   try {
     const res = await fetch('https://cryptorates.ai/v1/coins/100')
