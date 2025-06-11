@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
-import { currencyFormatter } from '../lib/functions'
-// import PriceUpdater from '../lib/functions'
+import { currencyFormatter } from '../lib'
 import HistoryAreaGraph from './HistoryAreaGraph'
-// import RealTimeAreaGraph from './RealTimeAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
-import History1dAreaGraph from './History1dAreaGraph'
-h
+
 const redTriangleLM = '/red_triangle_lm.png'
 const greenTriangleLM = '/green_triangle_lm.png'
 const redTriangleDM = '/red_triangle_dm.png'
@@ -125,6 +122,7 @@ const CryptoCurrency = ({
               name={name}
               rank={rank}
               symbol={symbol}
+              interval={'h6'}
               transformedPriceUsd={transformedPriceUsd}
               onLoad={() => setLoaded(true)}
               onError={() => {
@@ -134,10 +132,11 @@ const CryptoCurrency = ({
             />
           ) : (
             <>
-              <History1dAreaGraph
+              <HistoryAreaGraph
                 name={name}
                 rank={rank}
                 symbol={symbol}
+                interval={'h1'}
                 transformedPriceUsd={transformedPriceUsd}
                 onLoad={() => setLoaded(true)}
                 onError={() => {

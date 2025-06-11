@@ -8,7 +8,6 @@ export type Coins = {
   transformedPriceUsd: number
   change24h: number
   transformed24Hr: number
-  filename?: string
 }
 
 export type Interval =
@@ -26,6 +25,7 @@ export type CoinChartProps = {
   name: string
   rank: string
   symbol: string
+  interval: Interval
   transformedPriceUsd: number
 }
 

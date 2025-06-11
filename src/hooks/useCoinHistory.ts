@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Interval } from '../types/CoinTypes'
 import coinAssets from '../data/index.json'
-import {
-  resolveCoinId,
-  getFileId,
-  calculateStartTime,
-  debugMode,
-} from './utils'
+import { calculateStartTime, debugMode, getFileId, resolveCoinId } from '../lib'
 
 const API_KEY =
   import.meta.env.VITE_API_KEY || import.meta.env.REACT_APP_API_KEY

@@ -1,42 +1,13 @@
 import React, { CSSProperties, useEffect, useState } from 'react'
-import { CoinChartProps, Interval } from '../types/CoinTypes'
-import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
-import coinAssets from '../data/index.json'
-const API_KEY = import.meta.env.VITE_API_KEY
-/////////// Debug
-const debugMode = false
-const apiCallRef = { current: 0 }
-
-function resolveCoinId(
-  symbol: string,
-  jsonHistory: Record<string, any>
-): string | null {
-  const symbolLc = symbol.toLowerCase()
-
-  for (const coin of jsonHistory.data) {
-    const coinSymbol = coin.symbol.toLowerCase()
-
-    if (coinSymbol === symbolLc) {
-      if (debugMode) {
-        if (symbol === 'BNB' || symbol === 'bnb') {
-          console.log(
-            `Symbol is ${coinSymbol} and ID is ${coin.id} and rank is ${coin.rank}`
-          )
-        }
-      }
-      return coin.id
-    }
-  }
-  if (debugMode) {
-    console.log(`No matching ID found for ${symbol}`)
-  }
-  return null
-}
+import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts'
+import { useCoinHistory } from '../hooks/useCoinHistory'
+import { CoinChartProps } from '../types/CoinTypes'
 
 const HistoryAreaGraph = ({
   name,
   rank,
   symbol,
+  interval,
   onLoad,
   onError,
   style,
@@ -45,176 +16,32 @@ const HistoryAreaGraph = ({
   onError: () => void
   style: CSSProperties
 }) => {
-  const [isDataLoaded, setIsDataLoaded] = useState(false)
+  const { history, isDataLoaded } = useCoinHistory(
+    symbol,
+    rank,
+    name,
+    interval,
+    onLoad,
+    onError
+  )
+
   const [firstValue, setFirstValue] = useState<number | null>(null)
   const [lastValue, setLastValue] = useState<number | null>(null)
-  const [history, setHistory] = useState<
-    {
-      symbol: string
-      time: string
-      value: number
-      rank: string
-    }[]
-  >([])
+
+  useEffect(() => {
+    if (history.length === 0) {
+      setFirstValue(null)
+      setLastValue(null)
+    } else {
+      setFirstValue(history[0].value)
+      setLastValue(history[history.length - 1].value)
+    }
+  }, [history])
 
   const colorChart =
     history.length > 1 && history[0].value > history[history.length - 1].value
       ? '#e84f50'
       : '#1c9860'
-
-  function findMinPrice(arrayOfObjects: any): void {
-    if (arrayOfObjects.length === 0) {
-      setFirstValue(null)
-      return
-    }
-    setFirstValue(arrayOfObjects[0].value)
-  }
-
-  function findMaxPrice(arrayOfObjects: any): void {
-    if (arrayOfObjects.length === 0) {
-      setLastValue(null)
-      return
-    }
-    setLastValue(arrayOfObjects[arrayOfObjects.length - 1].value)
-  }
-
-  function getFileId(symbol: string, resolvedId: string) {
-    const coinMeta = coinAssets.data.find(
-      (coin) => coin.symbol.toLowerCase() === symbol.toLowerCase()
-    )
-    return coinMeta?.filename || resolvedId
-  }
-
-  useEffect(() => {
-    let isMounted = true
-    async function fetchAndLoadHistory() {
-      let fetchUrl = ''
-      try {
-        const resolvedId = resolveCoinId(symbol, coinAssets)
-        if (!resolvedId) {
-          if (debugMode) {
-            console.warn(`No matching history for ${name}`)
-          }
-          setHistory([])
-          setIsDataLoaded(true)
-          return
-        }
-
-        let response
-        const interval = 'h6' as Interval
-        const fileId = getFileId(symbol, resolvedId)
-
-        // RENAMED to Bitcoi on purpose to limit actual API calls for monthly limit
-        const numericRank = Number(rank)
-        // if (numericRank >= 1 && numericRank <= 13) {
-        if (resolvedId === 'bitcoi') {
-          if (debugMode) {
-            console.log('rank: ', rank, 'name: ', name)
-            console.log(typeof rank)
-          }
-          const currentTime = Date.now()
-          const count = 28
-          let startTime = 0
-
-          switch (interval) {
-            case 'm1':
-              startTime = currentTime - count * 1 * 60 * 1000
-              break
-            case 'm5':
-              startTime = currentTime - count * 5 * 60 * 1000
-              break
-            case 'm15':
-              startTime = currentTime - count * 15 * 60 * 1000
-              break
-            case 'm30':
-              startTime = currentTime - count * 30 * 60 * 1000
-              break
-            case 'h1':
-              startTime = currentTime - count * 60 * 60 * 1000
-              break
-            case 'h2':
-              startTime = currentTime - count * 2 * 60 * 60 * 1000
-              break
-            case 'h6':
-              startTime = currentTime - count * 6 * 60 * 60 * 1000
-              break
-            case 'h12':
-              startTime = currentTime - count * 12 * 60 * 60 * 1000
-              break
-            case 'd1':
-              startTime = currentTime - count * 24 * 60 * 60 * 1000
-              break
-            default:
-              if (debugMode) {
-                console.warn(`Unknown interval: ${interval}, defaulting to m15`)
-              }
-              startTime = currentTime - count * 15 * 60 * 1000
-              break
-          }
-          if (debugMode) {
-            apiCallRef.current += 1
-            console.log(`API Call #${apiCallRef.current}`)
-          }
-
-          response = await fetch(
-            `https://rest.coincap.io/v3/assets/bitcoin/history?interval=${interval}&start=${startTime}&end=${currentTime}`,
-            {
-              headers: {
-                Authorization: `Bearer ${API_KEY}`,
-              },
-            }
-          )
-        } else if (interval && numericRank >= 1 && numericRank <= 13) {
-          if (debugMode) {
-            if (symbol === 'BNB' || symbol === 'bnb') {
-              console.log(
-                `Symbol is ${symbol} and ID is ${resolvedId} and rank is ${rank}`
-              )
-              console.log(`/data/${interval}/${fileId}.json`)
-            }
-          }
-          fetchUrl = `/data/${interval}/${fileId}.json`
-          response = await fetch(fetchUrl)
-        } else {
-          fetchUrl = `/data/${fileId}.json`
-          response = await fetch(fetchUrl)
-        }
-
-        if (response.ok) {
-          const { data } = await response.json()
-          const mapData = data.flatMap((coin: any) => [
-            {
-              symbol: symbol,
-              time: `${coin.time}`,
-              value: Number(coin.priceUsd),
-              rank: rank,
-            },
-          ])
-          if (isMounted) {
-            setHistory(mapData)
-            setIsDataLoaded(true)
-            onLoad()
-          }
-        } else {
-          onError()
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error)
-        console.log(fetchUrl)
-        onError()
-      }
-    }
-
-    fetchAndLoadHistory()
-    return () => {
-      isMounted = false
-    }
-  }, [name])
-
-  useEffect(() => {
-    findMinPrice(history)
-    findMaxPrice(history)
-  }, [history])
 
   return (
     <ResponsiveContainer width={200} height={70} style={style}>
@@ -234,8 +61,8 @@ const HistoryAreaGraph = ({
               x2={0}
               y2={1}
             >
-              <stop offset={'25%'} stopColor={colorChart} stopOpacity={0.4} />
-              <stop offset={'75%'} stopColor={colorChart} stopOpacity={0.05} />
+              <stop offset="25%" stopColor={colorChart} stopOpacity={0.4} />
+              <stop offset="75%" stopColor={colorChart} stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <Area
@@ -243,7 +70,6 @@ const HistoryAreaGraph = ({
             dataKey="value"
             stroke={colorChart}
             fill={`url(#color${colorChart})`}
-            format={'number'}
           />
           <YAxis hide domain={[firstValue, lastValue]} />
         </AreaChart>
