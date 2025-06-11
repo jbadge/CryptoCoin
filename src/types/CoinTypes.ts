@@ -10,6 +10,17 @@ export type Coins = {
   transformed24Hr: number
 }
 
+export type Interval =
+  | 'm1'
+  | 'm5'
+  | 'm15'
+  | 'm30'
+  | 'h1'
+  | 'h2'
+  | 'h6'
+  | 'h12'
+  | 'd1'
+
 export type CoinChartProps = {
   name: string
   rank: string

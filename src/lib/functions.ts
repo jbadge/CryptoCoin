@@ -1,4 +1,5 @@
-import { Coins } from '../types/CoinTypes'
+import React from 'react'
+import { useDatasetContext } from '../context/DatasetContext'
 
 export function currencyFormatter(price: number | string, digits: number = 2) {
   const formattedNumber = new Intl.NumberFormat('en-US', {
@@ -20,26 +21,11 @@ export function generateTimestamp(): string {
   return timestamp
 }
 
-export function holdData(data: Coins[]) {
-  for (let i = 0; i < data.length; i++) {
-    // let tempPriceUsd = parseFloat(data[i].price)
-    // let temp24Hr = parseFloat(data[i].change24h)
-    let tempPriceUsd = data[i].price
-    let temp24Hr = data[i].change24h
-    ///////////////////////////////////
-    data[i].transformedPriceUsd = tempPriceUsd
-    data[i].transformed24Hr = temp24Hr
-  }
-}
-
-import React from 'react'
-import { useDatasetContext } from '../context/DatasetContext'
-
-const PriceUpdater = ({
+export default function PriceUpdater({
   transformedPriceUsd,
 }: {
   transformedPriceUsd: number
-}) => {
+}) {
   const datasetContext = useDatasetContext()
 
   React.useEffect(() => {
@@ -51,5 +37,3 @@ const PriceUpdater = ({
 
   return null
 }
-
-export default PriceUpdater

@@ -2,7 +2,7 @@ import React, { CSSProperties, useEffect, useState } from 'react'
 import { CoinChartProps, Interval } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import coinAssets from '../test/assets.slim.json'
-const API_KEY = import.meta.env.VITE_API_KEY
+const API_KEY = import.meta.env.REACT_APP_API_KEY
 /////////// Debug
 const debugMode = false
 const apiCallRef = { current: 0 }
@@ -94,7 +94,7 @@ const HistoryAreaGraph = ({
         }
 
         let response
-        const interval = 'h6' as Interval
+        const interval = 'h1' as Interval
 
         // RENAMED to Bitcoi on purpose to limit actual API calls for monthly limit
         const numericRank = Number(rank)
@@ -105,7 +105,7 @@ const HistoryAreaGraph = ({
             console.log(typeof rank)
           }
           const currentTime = Date.now()
-          const count = 28
+          const count = 24
           let startTime = 0
 
           switch (interval) {

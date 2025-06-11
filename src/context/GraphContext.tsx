@@ -22,7 +22,7 @@ type Props = {
 }
 
 export const GraphContextProvider = ({ children }: Props) => {
-  const [checked, setChecked] = useState<boolean>(true)
+  const [checked, setChecked] = useState<boolean>(false)
 
   const preloadDataForRealTimeView = useCallback(async () => {
     try {

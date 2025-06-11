@@ -1,3 +1,6 @@
 [dev]
+  functions = "netlify/functions"
   targetPort = 3000
-port=8888
+  port=8888
+  
+autoLaunch = false

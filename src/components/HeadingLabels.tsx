@@ -15,7 +15,8 @@ function HeadingLabels() {
   const heading = React.useMemo(() => {
     return (
       <div className="graph-heading-switch">
-        <h2 className="graph-switch real-time">Real-Time</h2>
+        <h2 className="graph-switch real-time">1-Day</h2>
+        {/* Real-Time</h2> */}
         <label
           className="graph-switch"
           role="toggle-switch"
@@ -32,7 +33,7 @@ function HeadingLabels() {
             }}
             tabIndex={0}
             width={140}
-            aria-label="Toggle Real-Time and 7-Day Graph"
+            aria-label="Toggle 1-Day and 7-Day Graph" // Real-Time
             role="button"
           />
           <span className="slider round"></span>

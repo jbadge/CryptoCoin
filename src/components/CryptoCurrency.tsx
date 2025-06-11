@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib/functions'
+// import PriceUpdater from '../lib/functions'
 import HistoryAreaGraph from './HistoryAreaGraph'
-import RealTimeAreaGraph from './RealTimeAreaGraph'
+// import RealTimeAreaGraph from './RealTimeAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
-import PriceUpdater from '../lib/functions'
+import History1dAreaGraph from './History1dAreaGraph'
 
 const redTriangleLM = '/red_triangle_lm.png'
 const greenTriangleLM = '/green_triangle_lm.png'
@@ -34,6 +35,7 @@ const CryptoCurrency = ({
   const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
+  void error
 
   const graphContext = useGraphContext()
 
@@ -111,7 +113,7 @@ const CryptoCurrency = ({
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
-          {change24h.toFixed(2)}
+          {(change24h * 100).toFixed(2)}
         </span>
       </td>
       <td className="volume-24">{currencyFormatter(volume24h, 0)}</td>
@@ -127,15 +129,12 @@ const CryptoCurrency = ({
               onLoad={() => setLoaded(true)}
               onError={() => {
                 setError(true)
-                console.log(error)
               }}
               style={loaded ? { display: 'inline-block' } : { display: 'none' }}
             />
           ) : (
             <>
-              <PriceUpdater transformedPriceUsd={transformedPriceUsd} />
-              <RealTimeAreaGraph
-                key={rank}
+              <History1dAreaGraph
                 name={name}
                 rank={rank}
                 symbol={symbol}
@@ -143,7 +142,6 @@ const CryptoCurrency = ({
                 onLoad={() => setLoaded(true)}
                 onError={() => {
                   setError(true)
-                  console.log(error)
                 }}
                 style={
                   loaded ? { display: 'inline-block' } : { display: 'none' }
