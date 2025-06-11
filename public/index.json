@@ -358,7 +358,8 @@
       "id": "quant",
       "symbol": "QNT",
       "name": "Quant",
-      "rank": "60"
+      "rank": "60",
+      "filename": "quantdata"
     },
     {
       "id": "kucoin-token",

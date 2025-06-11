@@ -1,18 +1,18 @@
-import React from 'react'
+import React, { useCallback, useMemo } from 'react'
 // Context
 import { useGraphContext } from '../context/GraphContext'
 
 function HeadingLabels() {
   const graphContext = useGraphContext()
 
-  const handleClick = React.useCallback(() => {
+  const handleClick = useCallback(() => {
     graphContext.setChecked((prev) => !prev)
     if (!graphContext.checked) {
       graphContext.preloadDataForRealTimeView()
     }
   }, [graphContext])
 
-  const heading = React.useMemo(() => {
+  const heading = useMemo(() => {
     return (
       <div className="graph-heading-switch">
         <h2 className="graph-switch real-time">1-Day</h2>

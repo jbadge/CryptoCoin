@@ -8,7 +8,7 @@ import HistoryAreaGraph from './HistoryAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
 import History1dAreaGraph from './History1dAreaGraph'
-
+h
 const redTriangleLM = '/red_triangle_lm.png'
 const greenTriangleLM = '/green_triangle_lm.png'
 const redTriangleDM = '/red_triangle_dm.png'

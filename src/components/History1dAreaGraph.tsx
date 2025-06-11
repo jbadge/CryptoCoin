@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from 'react'
 import { CoinChartProps, Interval } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'
-import coinAssets from '../test/assets.slim.json'
+import coinAssets from '../data/index.json'
 const API_KEY = import.meta.env.REACT_APP_API_KEY
 /////////// Debug
 const debugMode = false
@@ -33,7 +33,7 @@ function resolveCoinId(
   return null
 }
 
-const HistoryAreaGraph = ({
+const History1dAreaGraph = ({
   name,
   rank,
   symbol,
@@ -78,6 +78,13 @@ const HistoryAreaGraph = ({
     setLastValue(arrayOfObjects[arrayOfObjects.length - 1].value)
   }
 
+  function getFileId(symbol: string, resolvedId: string) {
+    const coinMeta = coinAssets.data.find(
+      (coin) => coin.symbol.toLowerCase() === symbol.toLowerCase()
+    )
+    return coinMeta?.filename || resolvedId
+  }
+
   useEffect(() => {
     let isMounted = true
     async function fetchAndLoadHistory() {
@@ -95,6 +102,7 @@ const HistoryAreaGraph = ({
 
         let response
         const interval = 'h1' as Interval
+        const fileId = getFileId(symbol, resolvedId)
 
         // RENAMED to Bitcoi on purpose to limit actual API calls for monthly limit
         const numericRank = Number(rank)
@@ -162,15 +170,16 @@ const HistoryAreaGraph = ({
               console.log(
                 `Symbol is ${symbol} and ID is ${resolvedId} and rank is ${rank}`
               )
-              console.log(`/data/${interval}/${resolvedId}.json`)
+              console.log(`/data/${interval}/${fileId}.json`)
             }
           }
-          fetchUrl = `/data/${interval}/${resolvedId}.json`
-          response = await fetch(`/data/${interval}/${resolvedId}.json`)
+          fetchUrl = `/data/${interval}/${fileId}.json`
+          response = await fetch(fetchUrl)
         } else {
-          fetchUrl = `/data/${resolvedId}.json`
-          response = await fetch(`/data/${resolvedId}.json`)
+          fetchUrl = `/data/${fileId}.json`
+          response = await fetch(fetchUrl)
         }
+
         if (response.ok) {
           const { data } = await response.json()
           const mapData = data.flatMap((coin: any) => [
@@ -256,4 +265,4 @@ const HistoryAreaGraph = ({
   )
 }
 
-export default HistoryAreaGraph
+export default History1dAreaGraph
