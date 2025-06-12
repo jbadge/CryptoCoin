@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib'
@@ -19,16 +19,14 @@ const CryptoCurrency = ({
   name,
   symbol,
   price,
-  transformedPriceUsd,
   change24h,
-  transformed24Hr,
   marketcap,
   volume24h,
 }: Coins) => {
-  const [newPriceToCompare, setNewPriceToCompare] = useState(0)
+  const [previousPrice, setPreviousPrice] = useState(0)
   const [posOrNegPrice, setPosOrNegPrice] = useState('')
   const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
-  const [new24HrToCompare, setNew24HrToCompare] = useState(0)
+  const [previous24h, setPrevious24h] = useState(0)
   const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -36,50 +34,58 @@ const CryptoCurrency = ({
 
   const graphContext = useGraphContext()
 
-  function checkPosOrNegPrice() {
-    if (newPriceToCompare === 0 || transformedPriceUsd === newPriceToCompare) {
-      setNewPriceToCompare(transformedPriceUsd)
+  const checkPosOrNegPrice = useCallback(() => {
+    if (previousPrice === 0 || price === previousPrice) {
+      setPreviousPrice(price)
       setPosOrNegPrice('no-change')
       return
-    } else if (transformedPriceUsd < newPriceToCompare) {
-      setNewPriceToCompare(transformedPriceUsd)
+    } else if (price < previousPrice) {
+      setPreviousPrice(price)
       setPosOrNegPrice('positive')
       return
-    } else if (transformedPriceUsd > newPriceToCompare) {
-      setNewPriceToCompare(transformedPriceUsd)
+    } else if (price > previousPrice) {
+      setPreviousPrice(price)
       setPosOrNegPrice('negative')
       return
     }
-  }
+  }, [previousPrice, price])
 
-  function checkPosOrNeg24Hr() {
-    if (new24HrToCompare === 0 || transformed24Hr === new24HrToCompare) {
-      setNew24HrToCompare(transformed24Hr)
+  const checkPosOrNeg24Hr = useCallback(() => {
+    if (previous24h === 0 || change24h === previous24h) {
+      setPrevious24h(change24h)
       setPosOrNeg24Hr('no-change')
       return
-    } else if (transformed24Hr < new24HrToCompare) {
-      setNew24HrToCompare(transformed24Hr)
+    } else if (change24h < previous24h) {
+      setPrevious24h(change24h)
       setPosOrNeg24Hr('positive')
       setCheckPosOrNeg(1)
       return
-    } else if (transformed24Hr > new24HrToCompare) {
-      setNew24HrToCompare(transformed24Hr)
+    } else if (change24h > previous24h) {
+      setPrevious24h(change24h)
       setPosOrNeg24Hr('negative')
       setCheckPosOrNeg(0)
     }
-  }
+  }, [previous24h, change24h])
 
   useEffect(() => {
     checkPosOrNegPrice()
-  }, [transformedPriceUsd])
+  }, [checkPosOrNegPrice])
 
   useEffect(() => {
     checkPosOrNeg24Hr()
-  }, [transformed24Hr])
+  }, [checkPosOrNeg24Hr])
 
   useEffect(() => {
     setPosOrNegPrice('no-change')
     setPosOrNeg24Hr('no-change')
+  }, [])
+
+  const handleLoad = useCallback(() => {
+    setLoaded(true)
+  }, [])
+
+  const handleError = useCallback(() => {
+    setError(true)
   }, [])
 
   return (
@@ -116,39 +122,31 @@ const CryptoCurrency = ({
       <td className="volume-24">{currencyFormatter(volume24h, 0)}</td>
       <td className="market-cap">{currencyFormatter(marketcap, 0)}</td>
       <td className="graph-info">
-        <>
+        <div style={{ width: '200px', marginLeft: 'auto' }}>
           {graphContext.checked ? (
             <HistoryAreaGraph
               name={name}
               rank={rank}
               symbol={symbol}
               interval={'h6'}
-              transformedPriceUsd={transformedPriceUsd}
-              onLoad={() => setLoaded(true)}
-              onError={() => {
-                setError(true)
-              }}
+              price={price}
+              onLoad={handleLoad}
+              onError={handleError}
               style={loaded ? { display: 'inline-block' } : { display: 'none' }}
             />
           ) : (
-            <>
-              <HistoryAreaGraph
-                name={name}
-                rank={rank}
-                symbol={symbol}
-                interval={'h1'}
-                transformedPriceUsd={transformedPriceUsd}
-                onLoad={() => setLoaded(true)}
-                onError={() => {
-                  setError(true)
-                }}
-                style={
-                  loaded ? { display: 'inline-block' } : { display: 'none' }
-                }
-              />
-            </>
+            <HistoryAreaGraph
+              name={name}
+              rank={rank}
+              symbol={symbol}
+              interval={'h1'}
+              price={price}
+              onLoad={handleLoad}
+              onError={handleError}
+              style={loaded ? { display: 'inline-block' } : { display: 'none' }}
+            />
           )}
-        </>
+        </div>
       </td>
     </tr>
   )

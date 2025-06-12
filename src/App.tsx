@@ -6,11 +6,12 @@ import { Coins } from './types/CoinTypes'
 import { GraphContextProvider } from './context/GraphContext'
 import { DatasetContextProvider } from './context/DatasetContext'
 /////////// Debug
-const debugMode = false
+import { debugMode } from './lib'
 
 export function App() {
   const [coins, setCoins] = useState<Coins[]>([])
   const [initialLoadDone, setInitialLoadDone] = useState(false)
+  const [apiAccessIssue, setApiAccessIssue] = useState(false)
 
   async function fetchCoins(useCryptoRatesOnly = false) {
     if (debugMode) {
@@ -26,11 +27,16 @@ export function App() {
           : '/.netlify/functions/getCoins'
       )
 
+      if (!response.ok) {
+        if (!useCryptoRatesOnly && response.status === 403) {
+          setApiAccessIssue(true)
+          console.warn('CoinCap API access denied.')
+        }
+      }
+
       if (response.ok) {
         const { data, source } = await response.json()
-        // const json = await response.json()
-        // console.log('Response JSON:', json)
-        // const { data, source } = json
+
         if (debugMode) {
           console.log('Data source:', source)
         }
@@ -47,7 +53,17 @@ export function App() {
     }
   }
 
-  function loadAllCoins() {
+  useEffect(() => {
+    if (initialLoadDone) {
+      // After initial load, fetch from CryptoRates at 10 second intervals
+      const interval = setInterval(() => {
+        fetchCoins(true)
+      }, 10000)
+      return () => clearInterval(interval)
+    }
+  }, [initialLoadDone])
+
+  useEffect(() => {
     const cachedCoins = localStorage.getItem('coins')
 
     if (!cachedCoins) {
@@ -61,20 +77,7 @@ export function App() {
       setCoins(JSON.parse(cachedCoins))
       setInitialLoadDone(true)
     }
-  }
-
-  useEffect(() => {
-    if (initialLoadDone) {
-      // After initial load, fetch from CryptoRates at 10 second intervals
-      const interval = setInterval(() => {
-        fetchCoins(true)
-      }, 10000)
-      return () => clearInterval(interval)
-    }
-  }, [initialLoadDone])
-
-  useEffect(() => {
-    loadAllCoins()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -93,6 +96,13 @@ export function App() {
   return (
     <GraphContextProvider>
       <DatasetContextProvider>
+        {apiAccessIssue && (
+          <div className="alert alert-warning">
+            ⚠️ CoinCap API access is currently restricted. Showing fallback
+            data.
+          </div>
+        )}
+
         <table className="crypto-list">
           <caption className="table-heading">
             <h1>CryptoCoin</h1>
@@ -109,9 +119,7 @@ export function App() {
                 name={cryptoItem.name}
                 symbol={cryptoItem.symbol}
                 price={cryptoItem.price}
-                transformedPriceUsd={cryptoItem.transformedPriceUsd}
                 change24h={cryptoItem.change24h}
-                transformed24Hr={cryptoItem.transformed24Hr}
                 marketcap={cryptoItem.marketcap}
                 volume24h={cryptoItem.volume24h}
               />

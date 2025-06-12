@@ -4,28 +4,28 @@ import { useGraphContext } from '../context/GraphContext'
 
 function HeadingLabels() {
   const graphContext = useGraphContext()
+  const { checked, setChecked, preloadDataForRealTimeView } = graphContext
 
   const handleClick = useCallback(() => {
-    graphContext.setChecked((prev) => !prev)
-    if (!graphContext.checked) {
-      graphContext.preloadDataForRealTimeView()
+    setChecked((prev) => !prev)
+    if (!checked) {
+      preloadDataForRealTimeView()
     }
-  }, [graphContext])
+  }, [checked, setChecked, preloadDataForRealTimeView])
 
   const heading = useMemo(() => {
     return (
       <div className="graph-heading-switch">
         <h2 className="graph-switch real-time">1-Day</h2>
-        {/* Real-Time</h2> */}
         <label
           className="graph-switch"
           role="toggle-switch"
-          aria-checked={graphContext.checked}
+          aria-checked={checked}
         >
           <input
             type="checkbox"
             onChange={handleClick}
-            checked={graphContext.checked}
+            checked={checked}
             onKeyDown={(event) => {
               if (event.key === 'Enter' || event.key === ' ') {
                 handleClick()
@@ -33,7 +33,7 @@ function HeadingLabels() {
             }}
             tabIndex={0}
             width={140}
-            aria-label="Toggle 1-Day and 7-Day Graph" // Real-Time
+            aria-label="Toggle 1-Day and 7-Day Graph"
             role="button"
           />
           <span className="slider round"></span>
@@ -41,7 +41,7 @@ function HeadingLabels() {
         <h2 className="graph-switch seven-day">7-Day</h2>
       </div>
     )
-  }, [handleClick])
+  }, [checked, handleClick])
 
   return (
     <tr className="coin-heading">

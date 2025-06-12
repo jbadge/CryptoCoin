@@ -5,9 +5,7 @@ export type Coins = {
   marketcap: number
   volume24h: number
   price: number
-  transformedPriceUsd: number
   change24h: number
-  transformed24Hr: number
 }
 
 export type Interval =
@@ -26,7 +24,7 @@ export type CoinChartProps = {
   rank: string
   symbol: string
   interval: Interval
-  transformedPriceUsd: number
+  price: number
 }
 
 export type IconProps = {

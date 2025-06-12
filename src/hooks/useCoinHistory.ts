@@ -100,7 +100,7 @@ export function useCoinHistory(
     return () => {
       isMounted = false
     }
-  }, [symbol, rank, name, interval])
+  }, [symbol, rank, name, interval, onLoad, onError])
 
   return { history, isDataLoaded }
 }

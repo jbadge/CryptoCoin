@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { CSSProperties, useEffect, useState } from 'react'
 import { CoinChartProps, Interval } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area } from 'recharts'

@@ -44,7 +44,7 @@ const HistoryAreaGraph = ({
       : '#1c9860'
 
   return (
-    <ResponsiveContainer width={200} height={70} style={style}>
+    <ResponsiveContainer width="100%" height={70} style={style}>
       {isDataLoaded &&
       history.length > 0 &&
       firstValue !== null &&

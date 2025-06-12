@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { CSSProperties, useEffect, useMemo, useState } from 'react'
 import { CoinChartProps } from '../types/CoinTypes'
 import { YAxis, ResponsiveContainer, AreaChart, Area, Tooltip } from 'recharts'
@@ -6,7 +8,7 @@ import { useDatasetContext } from '../context/DatasetContext'
 const RealTimeAreaGraph = ({
   rank,
   symbol,
-  transformedPriceUsd,
+  price,
   onLoad,
   onError,
   style,
@@ -34,34 +36,34 @@ const RealTimeAreaGraph = ({
   }
 
   function findMinMaxEtc() {
-    if (datasetContext.dataset.at(-1) !== transformedPriceUsd) {
+    if (datasetContext.dataset.at(-1) !== price) {
       if (datasetContext.dataset.length === 0) {
-        setMinValue(transformedPriceUsd)
-        setMaxValue(transformedPriceUsd)
-      } else if (transformedPriceUsd < minValue) {
-        setMinValue(transformedPriceUsd)
-      } else if (transformedPriceUsd > maxValue) {
-        setMaxValue(transformedPriceUsd)
+        setMinValue(price)
+        setMaxValue(price)
+      } else if (price < minValue) {
+        setMinValue(price)
+      } else if (price > maxValue) {
+        setMaxValue(price)
       }
     }
   }
 
   function makeDataArray() {
-    if (datasetContext.dataset.at(-1) !== transformedPriceUsd) {
+    if (datasetContext.dataset.at(-1) !== price) {
       const updatedDataset = [...datasetContext.dataset]
       findMinMaxEtc()
       // Add Data
       if (updatedDataset.length === 0) {
-        updatedDataset.push(transformedPriceUsd)
-        updatedDataset.push(transformedPriceUsd)
+        updatedDataset.push(price)
+        updatedDataset.push(price)
       } else if (
         updatedDataset.length > 1 &&
         updatedDataset.length < numOfDataPoints
       ) {
-        updatedDataset.push(transformedPriceUsd)
+        updatedDataset.push(price)
       } else if (updatedDataset.length === numOfDataPoints) {
         updatedDataset.shift()
-        updatedDataset.push(transformedPriceUsd)
+        updatedDataset.push(price)
       }
       // Update the state and sessionStorage with the new data
       datasetContext.setDataset(updatedDataset)
@@ -143,7 +145,7 @@ const RealTimeAreaGraph = ({
     if (!loading && sessionDataLoaded) {
       makeDataArray()
     }
-  }, [transformedPriceUsd])
+  }, [price])
 
   return (
     <ResponsiveContainer width={200} height={70} style={style}>
