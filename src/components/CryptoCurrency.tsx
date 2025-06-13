@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import { Coins } from '../types/CoinTypes'
 import { currencyFormatter } from '../lib'
@@ -6,6 +6,7 @@ import HistoryAreaGraph from './HistoryAreaGraph'
 // Context
 import { useGraphContext } from '../context/GraphContext'
 
+// LM - Light Mode, DM - Dark Mode
 const redTriangleLM = '/red_triangle_lm.png'
 const greenTriangleLM = '/green_triangle_lm.png'
 const redTriangleDM = '/red_triangle_dm.png'
@@ -23,7 +24,7 @@ const CryptoCurrency = ({
   marketcap,
   volume24h,
 }: Coins) => {
-  const [previousPrice, setPreviousPrice] = useState(0)
+  const previousPrice = useRef(0)
   const [posOrNegPrice, setPosOrNegPrice] = useState('')
   const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
   const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
@@ -33,23 +34,19 @@ const CryptoCurrency = ({
 
   const graphContext = useGraphContext()
 
-  function checkPosOrNegPrice() {
-    if (previousPrice === 0 || price === previousPrice) {
-      setPreviousPrice(price)
+  useEffect(() => {
+    const prev = previousPrice.current
+    if (prev === 0 || price === prev) {
       setPosOrNegPrice('no-change')
-      return
-    } else if (price > previousPrice) {
-      setPreviousPrice(price)
+    } else if (price > prev) {
       setPosOrNegPrice('positive')
-      return
-    } else if (price < previousPrice) {
-      setPreviousPrice(price)
+    } else {
       setPosOrNegPrice('negative')
-      return
     }
-  }
+    previousPrice.current = price
+  }, [price])
 
-  function checkPosOrNeg24Hr() {
+  useEffect(() => {
     if (change24h > 0) {
       setPosOrNeg24Hr('positive')
       setCheckPosOrNeg(1)
@@ -57,25 +54,9 @@ const CryptoCurrency = ({
       setPosOrNeg24Hr('negative')
       setCheckPosOrNeg(0)
     } else {
-      setPosOrNeg24Hr('negative')
-      setCheckPosOrNeg(0)
+      setPosOrNeg24Hr('no-change')
     }
-  }
-
-  useEffect(() => {
-    checkPosOrNegPrice()
-  }, [price])
-
-  useEffect(() => {
-    checkPosOrNeg24Hr()
   }, [change24h])
-
-  useEffect(() => {
-    // setPosOrNegPrice('no-change')
-    // setPosOrNeg24Hr('no-change')
-    checkPosOrNegPrice()
-    checkPosOrNeg24Hr()
-  }, [])
 
   const handleLoad = useCallback(() => {
     setLoaded(true)
@@ -84,6 +65,9 @@ const CryptoCurrency = ({
   const handleError = useCallback(() => {
     setError(true)
   }, [])
+
+  if (typeof price !== 'number' || isNaN(price)) return null
+  if (typeof change24h !== 'number' || isNaN(change24h)) return null
 
   return (
     <tr className={`coin-container ${rank}`}>

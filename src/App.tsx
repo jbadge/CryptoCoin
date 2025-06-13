@@ -112,7 +112,7 @@ export function App() {
             <HeadingLabels />
           </thead>
           <tbody>
-            {coins.map((cryptoItem, _index) => (
+            {coins.map((cryptoItem) => (
               <CryptoCurrency
                 key={cryptoItem.rank}
                 rank={String(cryptoItem.rank)}

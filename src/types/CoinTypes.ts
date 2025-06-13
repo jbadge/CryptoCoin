@@ -8,6 +8,26 @@ export type Coins = {
   change24h: number
 }
 
+export type RawCoinCapType = {
+  rank: string | number
+  symbol: string
+  name: string
+  marketCapUsd: string
+  volumeUsd24Hr: string
+  priceUsd: string
+  changePercent24Hr: string
+}
+
+export type RawCryptoRatesType = {
+  rank: string | number
+  symbol: string
+  name: string
+  marketcap: number
+  volume24h: number
+  price: number
+  change24h: number
+}
+
 export type Interval =
   | 'm1'
   | 'm5'
