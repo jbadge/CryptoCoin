@@ -45,12 +45,59 @@ function mapCryptoRates(data) {
 }
 
 async function notifyAdmin(message: string) {
-  await fetch('https://hooks.slack.com/services/your/slack/webhook', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text: message }),
+  const { Client, GatewayIntentBits } = await import('discord.js')
+
+  const userId = process.env.MY_DISCORD_USER_ID
+  const token = process.env.DISCORD_BOT_TOKEN
+
+  // 🔐 Type safety check
+  if (!userId || !token) {
+    console.error('❌ Missing Discord credentials in environment variables.')
+    return
+  }
+
+  const client = new Client({
+    intents: [
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.MessageContent,
+    ],
+  })
+
+  return new Promise((resolve) => {
+    client.once('ready', async () => {
+      try {
+        const user = await client.users.fetch(userId)
+        await user.send(`⚠️ Admin Alert: ${message}`)
+        console.log('✅ Discord DM sent')
+        client.destroy()
+        resolve(true)
+      } catch (err) {
+        console.error('❌ Failed to send Discord DM', err)
+        client.destroy()
+        resolve(false)
+      }
+    })
+
+    client.login(token)
   })
 }
+
+// async function notifyAdmin(message: string) {
+//   await fetch('https://hooks.slack.com/services/your/slack/webhook', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ text: message }),
+//   })
+// }
+
+// const sendDiscordDM = async () => {
+//   const response = await fetch('/.netlify/functions/sendDiscordDM');
+//   const data = await response.json();
+//   console.log(data);
+// };
+
+// <button onClick={sendDiscordDM}>Send Me a Discord DM</button>
 
 // async function notifyAdmin(message: string) {
 //   const promises = []
