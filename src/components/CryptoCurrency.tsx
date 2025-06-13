@@ -26,7 +26,6 @@ const CryptoCurrency = ({
   const [previousPrice, setPreviousPrice] = useState(0)
   const [posOrNegPrice, setPosOrNegPrice] = useState('')
   const [posOrNeg24Hr, setPosOrNeg24Hr] = useState('')
-  const [previous24h, setPrevious24h] = useState(0)
   const [checkPosOrNeg, setCheckPosOrNeg] = useState(0)
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
@@ -34,50 +33,48 @@ const CryptoCurrency = ({
 
   const graphContext = useGraphContext()
 
-  const checkPosOrNegPrice = useCallback(() => {
+  function checkPosOrNegPrice() {
     if (previousPrice === 0 || price === previousPrice) {
       setPreviousPrice(price)
       setPosOrNegPrice('no-change')
       return
-    } else if (price < previousPrice) {
+    } else if (price > previousPrice) {
       setPreviousPrice(price)
       setPosOrNegPrice('positive')
       return
-    } else if (price > previousPrice) {
+    } else if (price < previousPrice) {
       setPreviousPrice(price)
       setPosOrNegPrice('negative')
       return
     }
-  }, [previousPrice, price])
+  }
 
-  const checkPosOrNeg24Hr = useCallback(() => {
-    if (previous24h === 0 || change24h === previous24h) {
-      setPrevious24h(change24h)
-      setPosOrNeg24Hr('no-change')
-      return
-    } else if (change24h < previous24h) {
-      setPrevious24h(change24h)
+  function checkPosOrNeg24Hr() {
+    if (change24h > 0) {
       setPosOrNeg24Hr('positive')
       setCheckPosOrNeg(1)
-      return
-    } else if (change24h > previous24h) {
-      setPrevious24h(change24h)
+    } else if (change24h < 0) {
+      setPosOrNeg24Hr('negative')
+      setCheckPosOrNeg(0)
+    } else {
       setPosOrNeg24Hr('negative')
       setCheckPosOrNeg(0)
     }
-  }, [previous24h, change24h])
+  }
 
   useEffect(() => {
     checkPosOrNegPrice()
-  }, [checkPosOrNegPrice])
+  }, [price])
 
   useEffect(() => {
     checkPosOrNeg24Hr()
-  }, [checkPosOrNeg24Hr])
+  }, [change24h])
 
   useEffect(() => {
-    setPosOrNegPrice('no-change')
-    setPosOrNeg24Hr('no-change')
+    // setPosOrNegPrice('no-change')
+    // setPosOrNeg24Hr('no-change')
+    checkPosOrNegPrice()
+    checkPosOrNeg24Hr()
   }, [])
 
   const handleLoad = useCallback(() => {
@@ -112,11 +109,10 @@ const CryptoCurrency = ({
             className={'change-direction ' + `${posOrNeg24Hr}`}
             src={changeArrayLM[checkPosOrNeg]}
             alt="change of direction"
-            height={10}
           />
         </picture>
         <span className={'change-amount ' + `${posOrNeg24Hr}`}>
-          {(change24h * 100).toFixed(2)}
+          {(change24h * 100).toFixed(2)}%
         </span>
       </td>
       <td className="volume-24">{currencyFormatter(volume24h, 0)}</td>

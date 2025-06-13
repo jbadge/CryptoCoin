@@ -277,7 +277,8 @@ table {
     width: 120px;
     text-align: right;
     .change-direction {
-      padding-right: 0;
+      padding-right: 5px;
+      height: 9px;
       &.no-change {
         visibility: hidden;
       }
