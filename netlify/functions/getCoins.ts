@@ -1,5 +1,3 @@
-// const { getStore } = require('@netlify/blobs')
-
 import type {
   Coins,
   RawCoinCapType,
@@ -15,15 +13,6 @@ const USE_CRYPTORATES = process.env.USE_CRYPTORATES === 'true'
 const CACHE_BLOB_KEY = 'cache_coins_data'
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 const CACHE_HISTORY_BLOB_KEY = 'cache_history_h1'
-
-// let blobStore
-
-// try {
-//   blobStore = getStore('default')
-//   console.log('[ℹ️] Initialized Netlify Blob Store')
-// } catch (e) {
-//   console.warn('[⚠️] Failed to initialize Netlify Blob Store:', e)
-// }
 
 function mapCoinCap(data: RawCoinCapType[]): Coins[] {
   return data
@@ -132,7 +121,7 @@ async function notifyAdmin(message: string): Promise<boolean | void> {
   })
 }
 
-export default async function handler(event) {
+export async function handler(event) {
   let blobStore
 
   try {
@@ -150,7 +139,6 @@ export default async function handler(event) {
     const coinId = event.queryStringParameters.id
     try {
       if (blobStore) {
-        // Read 1-day history blob as JSON
         const cachedHistory = await blobStore.get(CACHE_HISTORY_BLOB_KEY, {
           type: 'json',
         })
@@ -159,33 +147,45 @@ export default async function handler(event) {
           !cachedHistory.history ||
           !cachedHistory.history[coinId]
         ) {
-          return {
-            statusCode: 404,
-            body: JSON.stringify({
-              error: `No 1-day history found for ${coinId}`,
-            }),
-          }
+          return new Response(
+            JSON.stringify({ error: `No 1-day history found for ${coinId}` }),
+            {
+              status: 404,
+              headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Content-Type': 'application/json',
+              },
+            }
+          )
         }
 
-        return {
-          statusCode: 200,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ data: cachedHistory.history[coinId] }),
-        }
+        return new Response(
+          JSON.stringify({ data: cachedHistory.history[coinId] }),
+          {
+            status: 200,
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json',
+            },
+          }
+        )
       } else {
         throw new Error('Netlify Blobs unavailable')
       }
     } catch (err) {
       console.error(`[❌] Error serving 1-day history for ${coinId}:`, err)
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
+      return new Response(
+        JSON.stringify({
           error: `Failed to get 1-day history for ${coinId}`,
         }),
-      }
+        {
+          status: 500,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          },
+        }
+      )
     }
   }
 
@@ -196,7 +196,6 @@ export default async function handler(event) {
     let cachedData: { timestamp: number; coins: Coins[] } | null = null
     try {
       if (blobStore) {
-        // Read coins cache blob as JSON
         cachedData = await blobStore.get(CACHE_BLOB_KEY, { type: 'json' })
       } else {
         console.warn('[⚠️] Netlify blobs API not available')
@@ -224,7 +223,6 @@ export default async function handler(event) {
 
       if (blobStore) {
         try {
-          // Write fresh data as JSON blob
           await blobStore.setJSON(CACHE_BLOB_KEY, { timestamp: now, coins })
           console.log('[💾] Cached CryptoRates data in blob storage')
         } catch (e) {
@@ -284,7 +282,6 @@ export default async function handler(event) {
 
           await Promise.all(historyFetches)
 
-          // Write history blob as JSON
           await blobStore.setJSON(CACHE_HISTORY_BLOB_KEY, {
             timestamp: now,
             history: historyBlob,
@@ -295,7 +292,6 @@ export default async function handler(event) {
         }
 
         try {
-          // Write coins cache blob as JSON
           await blobStore.setJSON(CACHE_BLOB_KEY, { timestamp: now, coins })
           console.log('[💾] Cached CoinCap data in blob storage')
         } catch (e) {
@@ -324,20 +320,22 @@ export default async function handler(event) {
     }
   } catch (error) {
     console.error('[❌] Handler crashed:', error.message)
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    }
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+      },
+    })
   }
 }
 
-function successResponse(data: Coins[], source: string) {
-  return {
-    statusCode: 200,
+function successResponse(data: Coins[], source: string): Response {
+  return new Response(JSON.stringify({ data, source }), {
+    status: 200,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ data, source }),
-  }
+  })
 }
