@@ -126,7 +126,12 @@ export async function handler(event) {
 
   try {
     const { getStore } = await import('@netlify/blobs')
-    blobStore = getStore('default')
+    // blobStore = getStore('default')
+    blobStore = getStore({
+      name: 'default',
+      siteID: process.env.NETLIFY_SITE_ID,
+      token: process.env.NETLIFY_BLOB_STORE_TOKEN,
+    })
     console.log('[ℹ️] Initialized Netlify Blob Store')
   } catch (e) {
     console.warn('[⚠️] Failed to initialize Netlify Blob Store:', e)
