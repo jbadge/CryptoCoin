@@ -1,4 +1,3 @@
-import { Handler } from '@netlify/functions'
 const { getStore } = require('@netlify/blobs')
 
 import type {
@@ -133,7 +132,7 @@ async function notifyAdmin(message: string): Promise<boolean | void> {
   })
 }
 
-export const handler: Handler = async (event) => {
+export default async function handler(event) {
   if (
     event.queryStringParameters?.id &&
     event.queryStringParameters?.interval === 'h1'
