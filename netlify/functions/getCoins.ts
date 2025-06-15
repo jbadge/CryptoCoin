@@ -1,4 +1,6 @@
 import { Handler } from '@netlify/functions'
+import { getStore } from '@netlify/blobs'
+
 import type {
   Coins,
   RawCoinCapType,
@@ -12,22 +14,44 @@ const API_KEY =
 const USE_CRYPTORATES = process.env.USE_CRYPTORATES === 'true'
 
 // Safe global scope detection for environments without globalThis
-const globalScope =
-  typeof globalThis !== 'undefined'
-    ? /* eslint-disable-next-line no-undef */
-      globalThis
-    : typeof global !== 'undefined'
-    ? global
-    : typeof self !== 'undefined'
-    ? self
-    : {}
+// const globalScope =
+//   typeof globalThis !== 'undefined'
+//     ? /* eslint-disable-next-line no-undef */
+//       globalThis
+//     : typeof global !== 'undefined'
+//     ? global
+//     : typeof self !== 'undefined'
+//     ? self
+//     : {}
 
-const netlifyBlobs = (globalScope as any).netlify?.blobs
+// Removed old netlifyBlobs assignment
+// const netlifyBlobs = (globalScope as any).netlify?.blobs
+
 const CACHE_BLOB_KEY = 'cache_coins_data'
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 
 // Added new cache key for 1-day history blob
 const CACHE_HISTORY_BLOB_KEY = 'cache_history_h1'
+
+// --- New blob store initialization ---
+
+// Your Netlify Site/Project ID from UI > Project settings > General > Project information
+// const SITE_ID = process.env.NETLIFY_SITE_ID || 'your-site-id-here' // <-- Replace or set env var
+
+// Optionally set your token here (if needed for permissions)
+// const BLOB_STORE_TOKEN = process.env.NETLIFY_BLOB_STORE_TOKEN || '########' // <-- Replace as needed
+
+let blobStore
+
+try {
+  // Initialize the Netlify Blob Store once on module load
+  blobStore = getStore('default') // Open store named "default"
+  console.log('[ℹ️] Initialized Netlify Blob Store')
+} catch (e) {
+  console.warn('[⚠️] Failed to initialize Netlify Blob Store:', e)
+}
+
+// --- End new blob store init ---
 
 // Map CoinCap API response to expected shape
 function mapCoinCap(data: RawCoinCapType[]): Coins[] {
@@ -149,8 +173,9 @@ export const handler: Handler = async (event) => {
   ) {
     const coinId = event.queryStringParameters.id
     try {
-      if (netlifyBlobs) {
-        const blobText = await netlifyBlobs.getText(CACHE_HISTORY_BLOB_KEY)
+      if (blobStore) {
+        // Replaced netlifyBlobs with blobStore
+        const blobText = await blobStore.getText(CACHE_HISTORY_BLOB_KEY)
         if (!blobText) throw new Error('History blob is missing')
         const { history } = JSON.parse(blobText)
 
@@ -192,8 +217,9 @@ export const handler: Handler = async (event) => {
     // Try to read cached data from Netlify Blob storage
     let cachedData: { timestamp: number; coins: Coins[] } | null = null
     try {
-      if (netlifyBlobs) {
-        const blobText = await netlifyBlobs.getText(CACHE_BLOB_KEY)
+      if (blobStore) {
+        // Replaced netlifyBlobs with blobStore
+        const blobText = await blobStore.getText(CACHE_BLOB_KEY)
         cachedData = blobText ? JSON.parse(blobText) : null
       } else {
         console.warn('[⚠️] Netlify blobs API not available')
@@ -220,9 +246,10 @@ export const handler: Handler = async (event) => {
       const coins = mapCryptoRates(data)
 
       // Cache updated data
-      if (netlifyBlobs) {
+      if (blobStore) {
         try {
-          await netlifyBlobs.putText(
+          // Replaced netlifyBlobs with blobStore
+          await blobStore.putText(
             CACHE_BLOB_KEY,
             JSON.stringify({ timestamp: now, coins })
           )
@@ -258,7 +285,7 @@ export const handler: Handler = async (event) => {
       const coins = mapCoinCap(data)
 
       // Fetch 1-day history for each coin and cache it in a separate blob
-      if (netlifyBlobs) {
+      if (blobStore) {
         try {
           const historyBlob: Record<string, any[]> = {}
           const now = Date.now()
@@ -288,7 +315,8 @@ export const handler: Handler = async (event) => {
 
           await Promise.all(historyFetches)
 
-          await netlifyBlobs.putText(
+          // Replaced netlifyBlobs with blobStore
+          await blobStore.putText(
             CACHE_HISTORY_BLOB_KEY,
             JSON.stringify({ timestamp: now, history: historyBlob })
           )
@@ -300,7 +328,8 @@ export const handler: Handler = async (event) => {
 
         // Cache coins data as usual
         try {
-          await netlifyBlobs.putText(
+          // Replaced netlifyBlobs with blobStore
+          await blobStore.putText(
             CACHE_BLOB_KEY,
             JSON.stringify({ timestamp: now, coins })
           )
@@ -319,9 +348,10 @@ export const handler: Handler = async (event) => {
       const coins = mapCryptoRates(fallbackData)
 
       // Cache fallback data
-      if (netlifyBlobs) {
+      if (blobStore) {
         try {
-          await netlifyBlobs.putText(
+          // Replaced netlifyBlobs with blobStore
+          await blobStore.putText(
             CACHE_BLOB_KEY,
             JSON.stringify({ timestamp: now, coins })
           )
