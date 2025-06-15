@@ -36,7 +36,7 @@ export const GraphContextProvider = ({ children }: Props) => {
 
   const preloadDataForSevenDayView = useCallback(async () => {
     try {
-      const response = await fetch('/.netlify/functions/getHistoryH6') // ✅ Calls Netlify function
+      const response = await fetch('/.netlify/functions/getHistoryH6')
       await response.json()
     } catch (error) {
       console.error('Error preloading 7-day data:', error)

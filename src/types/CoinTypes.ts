@@ -67,6 +67,7 @@ export type CoinHistoryData = {
   [symbol: string]: CoinHistoryEntry[]
 }
 
+/////// NEEDED?
 export type HistoryPoint = {
   time: number
   priceUsd: number
