@@ -1,3 +1,4 @@
+import { Handler } from '@netlify/functions'
 import type {
   Coins,
   RawCoinCapType,
@@ -10,7 +11,25 @@ const API_KEY =
   process.env.VITE_API_KEY
 const USE_CRYPTORATES = process.env.USE_CRYPTORATES === 'true'
 
-//  Map CoinCap API response to expected shape
+// Safe global scope detection for environments without globalThis
+const globalScope =
+  typeof globalThis !== 'undefined'
+    ? /* eslint-disable-next-line no-undef */
+      globalThis
+    : typeof global !== 'undefined'
+    ? global
+    : typeof self !== 'undefined'
+    ? self
+    : {}
+
+const netlifyBlobs = (globalScope as any).netlify?.blobs
+const CACHE_BLOB_KEY = 'cache_coins_data'
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
+// Added new cache key for 1-day history blob
+const CACHE_HISTORY_BLOB_KEY = 'cache_history_h1'
+
+// Map CoinCap API response to expected shape
 function mapCoinCap(data: RawCoinCapType[]): Coins[] {
   return data
     .map(
@@ -122,20 +141,105 @@ async function notifyAdmin(message: string): Promise<boolean | void> {
   })
 }
 
-export async function handler(event): Promise<{
-  statusCode: number
-  body: string
-  headers?: Record<string, string>
-}> {
+export const handler: Handler = async (event) => {
+  // Handler for 1-day history query param: ?id=coinId&interval=h1
+  if (
+    event.queryStringParameters?.id &&
+    event.queryStringParameters?.interval === 'h1'
+  ) {
+    const coinId = event.queryStringParameters.id
+    try {
+      if (netlifyBlobs) {
+        const blobText = await netlifyBlobs.getText(CACHE_HISTORY_BLOB_KEY)
+        if (!blobText) throw new Error('History blob is missing')
+        const { history } = JSON.parse(blobText)
+
+        if (!history?.[coinId]) {
+          return {
+            statusCode: 404,
+            body: JSON.stringify({
+              error: `No 1-day history found for ${coinId}`,
+            }),
+          }
+        }
+
+        return {
+          statusCode: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: history[coinId] }),
+        }
+      } else {
+        throw new Error('Netlify Blobs unavailable')
+      }
+    } catch (err) {
+      console.error(`[❌] Error serving 1-day history for ${coinId}:`, err)
+      return {
+        statusCode: 500,
+        body: JSON.stringify({
+          error: `Failed to get 1-day history for ${coinId}`,
+        }),
+      }
+    }
+  }
+
   try {
     const useCryptoRates =
       USE_CRYPTORATES || event?.queryStringParameters?.source === 'cryptorates'
 
+    // Try to read cached data from Netlify Blob storage
+    let cachedData: { timestamp: number; coins: Coins[] } | null = null
+    try {
+      if (netlifyBlobs) {
+        const blobText = await netlifyBlobs.getText(CACHE_BLOB_KEY)
+        cachedData = blobText ? JSON.parse(blobText) : null
+      } else {
+        console.warn('[⚠️] Netlify blobs API not available')
+      }
+    } catch (e) {
+      console.warn('[⚠️] Failed to read cache blob:', e)
+    }
+
+    const now = Date.now()
+    const cacheIsFresh =
+      cachedData !== null &&
+      cachedData.timestamp !== undefined &&
+      now - cachedData.timestamp < ONE_DAY_MS
+
+    if (cacheIsFresh && !useCryptoRates) {
+      console.log('[📦] Using cached data from blob storage')
+      return successResponse(cachedData!.coins, 'cache')
+    }
+
     if (useCryptoRates) {
       console.log('[🔄] Using CryptoRates (param or fallback mode)')
-      const res = await fetch('https://cryptorates.ai/v1/coins/100')
-      const data = await res.json()
+      const response = await fetch('https://cryptorates.ai/v1/coins/100')
+      const data = await response.json()
       const coins = mapCryptoRates(data)
+
+      // Cache updated data
+      if (netlifyBlobs) {
+        try {
+          await netlifyBlobs.putText(
+            CACHE_BLOB_KEY,
+            JSON.stringify({ timestamp: now, coins })
+          )
+          console.log('[💾] Cached CryptoRates data in blob storage')
+        } catch (e) {
+          console.warn('[⚠️] Failed to write cache blob:', e)
+        }
+      }
+      /////////////
+      if (response.status === 200) {
+        console.log('✅ CoinCap fetch test passed')
+        process.exit(0)
+      } else {
+        console.log(`❌ CoinCap fetch failed with status ${response.status}`)
+        process.exit(1)
+      } /////////////////////
+
       return successResponse(coins, 'cryptorates')
     }
 
@@ -162,6 +266,59 @@ export async function handler(event): Promise<{
       const { data } = await response.json()
       const coins = mapCoinCap(data)
 
+      // Fetch 1-day history for each coin and cache it in a separate blob
+      if (netlifyBlobs) {
+        try {
+          const historyBlob: Record<string, any[]> = {}
+          const now = Date.now()
+          const start = now - ONE_DAY_MS
+
+          // CoinCap allows fetching hourly history by coin ID
+          const historyFetches = coins.map(async (coin) => {
+            // Create coin id slug (same as CoinCap expects)
+            const id = coin.name.toLowerCase().replace(/\s+/g, '-')
+            try {
+              const res = await fetch(
+                `https://rest.coincap.io/v3/assets/${id}/history?interval=h1&start=${start}&end=${now}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${API_KEY}`,
+                  },
+                }
+              )
+              if (res.ok) {
+                const json = await res.json()
+                historyBlob[id] = json.data
+              }
+            } catch (e) {
+              console.warn(`⚠️ Failed to fetch history for ${id}:`, e)
+            }
+          })
+
+          await Promise.all(historyFetches)
+
+          await netlifyBlobs.putText(
+            CACHE_HISTORY_BLOB_KEY,
+            JSON.stringify({ timestamp: now, history: historyBlob })
+          )
+
+          console.log('[💾] Cached 1-day history for all coins')
+        } catch (e) {
+          console.warn('[⚠️] Failed to cache 1-day history:', e)
+        }
+
+        // Cache coins data as usual
+        try {
+          await netlifyBlobs.putText(
+            CACHE_BLOB_KEY,
+            JSON.stringify({ timestamp: now, coins })
+          )
+          console.log('[💾] Cached CoinCap data in blob storage')
+        } catch (e) {
+          console.warn('[⚠️] Failed to write cache blob:', e)
+        }
+      }
+
       console.log('[✅] Successfully fetched from CoinCap')
       return successResponse(coins, 'coincap')
     } catch (error) {
@@ -169,6 +326,20 @@ export async function handler(event): Promise<{
       const fallbackRes = await fetch('https://cryptorates.ai/v1/coins/100')
       const fallbackData = await fallbackRes.json()
       const coins = mapCryptoRates(fallbackData)
+
+      // Cache fallback data
+      if (netlifyBlobs) {
+        try {
+          await netlifyBlobs.putText(
+            CACHE_BLOB_KEY,
+            JSON.stringify({ timestamp: now, coins })
+          )
+          console.log('[💾] Cached fallback CryptoRates data in blob storage')
+        } catch (e) {
+          console.warn('[⚠️] Failed to write fallback cache blob:', e)
+        }
+      }
+
       return successResponse(coins, 'cryptorates (fallback)')
     }
   } catch (error) {

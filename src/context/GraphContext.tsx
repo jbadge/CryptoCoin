@@ -13,6 +13,7 @@ export type GraphContextType = {
   checked: boolean
   setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
+  preloadDataForSevenDayView: () => void
 }
 
 export const GraphContext = createContext<null | GraphContextType>(null)
@@ -33,9 +34,28 @@ export const GraphContextProvider = ({ children }: Props) => {
     }
   }, [])
 
+  const preloadDataForSevenDayView = useCallback(async () => {
+    try {
+      const response = await fetch('/.netlify/functions/getHistoryH6') // ✅ Calls Netlify function
+      await response.json()
+    } catch (error) {
+      console.error('Error preloading 7-day data:', error)
+    }
+  }, [])
+
   const memoizedContextValue = useMemo(() => {
-    return { checked, setChecked, preloadDataForRealTimeView }
-  }, [checked, setChecked, preloadDataForRealTimeView])
+    return {
+      checked,
+      setChecked,
+      preloadDataForRealTimeView,
+      preloadDataForSevenDayView,
+    }
+  }, [
+    checked,
+    setChecked,
+    preloadDataForRealTimeView,
+    preloadDataForSevenDayView,
+  ])
 
   return (
     <GraphContext.Provider value={memoizedContextValue}>

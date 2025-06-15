@@ -66,3 +66,8 @@ export type RawHistoryItem = {
 export type CoinHistoryData = {
   [symbol: string]: CoinHistoryEntry[]
 }
+
+export type HistoryPoint = {
+  time: number
+  priceUsd: number
+}

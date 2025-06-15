@@ -22,6 +22,8 @@
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.14",
     "@mui/x-charts": "^7.0.0",
+    "@netlify/blobs": "^10.0.0",
+    "@netlify/functions": "^4.1.5",
     "axios": "^1.6.8",
     "cryptocurrency-icons": "^0.18.1",
     "decimal.js": "^10.0.0",

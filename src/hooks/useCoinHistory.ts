@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Interval } from '../types/CoinTypes'
 import coinAssets from '../data/index.json'
-import { calculateStartTime, debugMode, getFileId, resolveCoinId } from '../lib'
-
-const API_KEY =
-  import.meta.env.VITE_API_KEY || import.meta.env.REACT_APP_API_KEY
+import { debugMode, resolveCoinId } from '../lib' // ⬅️ Removed unused `calculateStartTime` and `getFileId`
 
 export function useCoinHistory(
   symbol: string,
@@ -21,8 +18,8 @@ export function useCoinHistory(
 
   useEffect(() => {
     let isMounted = true
+
     async function fetchAndLoadHistory() {
-      let fetchUrl = ''
       try {
         const resolvedId = resolveCoinId(symbol, coinAssets)
         if (!resolvedId) {
@@ -35,52 +32,30 @@ export function useCoinHistory(
         }
 
         let response
-        const fileId = getFileId(symbol, resolvedId)
-        const numericRank = Number(rank)
 
-        if (resolvedId === 'bitcoi') {
-          if (debugMode) {
-            console.log('rank:', rank, 'name:', name)
-            console.log(typeof rank)
-          }
-          const currentTime = Date.now()
-          const count = 28 // or adjust as needed
-          const startTime = calculateStartTime(interval, count)
-
+        if (interval === 'h1') {
+          // Fetch 7-day history from getHistory7d Netlify function
           response = await fetch(
-            `https://rest.coincap.io/v3/assets/bitcoin/history?interval=${interval}&start=${startTime}&end=${currentTime}`,
-            {
-              headers: {
-                Authorization: `Bearer ${API_KEY}`,
-              },
-            }
+            `/.netlify/functions/getCoins?id=${resolvedId}&interval=h1`
           )
-        } else if (interval && numericRank >= 1 && numericRank <= 13) {
-          if (debugMode) {
-            if (symbol === 'BNB' || symbol === 'bnb') {
-              console.log(
-                `Symbol is ${symbol} and ID is ${resolvedId} and rank is ${rank}`
-              )
-              console.log(`/data/${interval}/${fileId}.json`)
-            }
-          }
-          fetchUrl = `/data/${interval}/${fileId}.json`
-          response = await fetch(fetchUrl)
+        } else if (interval === 'h6') {
+          // Fetch 1-day history from getCoins (which reads from blob)
+          response = await fetch(
+            `/.netlify/functions/getHistory7d?id=${resolvedId}&interval=h6`
+          )
         } else {
-          fetchUrl = `/data/${fileId}.json`
-          response = await fetch(fetchUrl)
+          onError()
+          return
         }
 
         if (response.ok) {
           const { data } = await response.json()
-          const mapData = data.flatMap((coin: any) => [
-            {
-              symbol,
-              time: `${coin.time}`,
-              value: Number(coin.priceUsd),
-              rank,
-            },
-          ])
+          const mapData = data.map((coin: any) => ({
+            symbol,
+            time: `${coin.time}`,
+            value: Number(coin.priceUsd),
+            rank,
+          }))
           if (isMounted) {
             setHistory(mapData)
             setIsDataLoaded(true)
@@ -91,12 +66,12 @@ export function useCoinHistory(
         }
       } catch (error) {
         console.error('Error fetching data:', error)
-        console.log(fetchUrl)
         onError()
       }
     }
 
     fetchAndLoadHistory()
+
     return () => {
       isMounted = false
     }
