@@ -1,24 +1,26 @@
 import type { HistoryPoint } from '../../src/types/CoinTypes'
+import { getStore } from '@netlify/blobs'
 
 const API_KEY =
   process.env.API_KEY ||
   process.env.REACT_APP_API_KEY ||
   process.env.VITE_API_KEY
 
-// Safe global scope detection for environments without globalThis
-const globalScope =
-  typeof globalThis !== 'undefined'
-    ? /* eslint-disable-next-line no-undef */
-      globalThis
-    : typeof global !== 'undefined'
-    ? global
-    : typeof self !== 'undefined'
-    ? self
-    : {}
-
-const netlifyBlobs = (globalScope as any).netlify?.blobs
 const CACHE_H6_KEY = 'history_h6_data'
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24 hours
+
+// Initialize blob store once
+let blobStore
+
+try {
+  blobStore = getStore('default')
+  console.log('[ℹ️] Initialized Netlify Blob Store in getHistoryh6')
+} catch (e) {
+  console.warn(
+    '[⚠️] Failed to initialize Netlify Blob Store in getHistoryh6:',
+    e
+  )
+}
 
 function getStartEndTimestamps(): { start: number; end: number } {
   const end = Date.now()
@@ -28,10 +30,10 @@ function getStartEndTimestamps(): { start: number; end: number } {
 
 export async function handler() {
   try {
-    // 🧠 Check for cached history data first
     let cached: { timestamp: number; history: HistoryPoint[] } | null = null
-    if (netlifyBlobs) {
-      const blobText = await netlifyBlobs.getText(CACHE_H6_KEY)
+
+    if (blobStore) {
+      const blobText = await blobStore.getText(CACHE_H6_KEY)
       cached = blobText ? JSON.parse(blobText) : null
     }
 
@@ -44,7 +46,7 @@ export async function handler() {
       }
     }
 
-    // 📡 Fetch from CoinCap
+    // Fetch from CoinCap
     console.log('[🔄] Fetching 7-day history from CoinCap...')
     const { start, end } = getStartEndTimestamps()
     const url = `https://api.coincap.io/v2/assets/bitcoin/history?interval=h6&start=${start}&end=${end}`
@@ -67,13 +69,12 @@ export async function handler() {
       priceUsd: Number(point.priceUsd),
     }))
 
-    // 💾 Cache result
-    if (netlifyBlobs) {
-      await netlifyBlobs.putText(
+    if (blobStore) {
+      await blobStore.putText(
         CACHE_H6_KEY,
         JSON.stringify({ timestamp: now, history })
       )
-      console.log('[💾] Cached h6 history data in blob')
+      console.log('[💾] Cached h6 history data in blob store')
     }
 
     return {

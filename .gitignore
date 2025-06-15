@@ -8,5 +8,6 @@ src/scratchpad.md
 # Local Netlify folder
 .netlify
 .env
+netlify.toml
 src/test
 scratchpad.txt
