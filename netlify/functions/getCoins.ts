@@ -231,15 +231,6 @@ export const handler: Handler = async (event) => {
           console.warn('[⚠️] Failed to write cache blob:', e)
         }
       }
-      /////////////
-      if (response.status === 200) {
-        console.log('✅ CoinCap fetch test passed')
-        process.exit(0)
-      } else {
-        console.log(`❌ CoinCap fetch failed with status ${response.status}`)
-        process.exit(1)
-      } /////////////////////
-
       return successResponse(coins, 'cryptorates')
     }
 
