@@ -16,14 +16,14 @@ const CACHE_BLOB_KEY = 'cache_coins_data'
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
 const CACHE_HISTORY_BLOB_KEY = 'cache_history_h1'
 
-let blobStore
+// let blobStore
 
-try {
-  blobStore = getStore('default')
-  console.log('[ℹ️] Initialized Netlify Blob Store')
-} catch (e) {
-  console.warn('[⚠️] Failed to initialize Netlify Blob Store:', e)
-}
+// try {
+//   blobStore = getStore('default')
+//   console.log('[ℹ️] Initialized Netlify Blob Store')
+// } catch (e) {
+//   console.warn('[⚠️] Failed to initialize Netlify Blob Store:', e)
+// }
 
 function mapCoinCap(data: RawCoinCapType[]): Coins[] {
   return data
@@ -133,6 +133,15 @@ async function notifyAdmin(message: string): Promise<boolean | void> {
 }
 
 export default async function handler(event) {
+  let blobStore
+
+  try {
+    blobStore = getStore('default')
+    console.log('[ℹ️] Initialized Netlify Blob Store')
+  } catch (e) {
+    console.warn('[⚠️] Failed to initialize Netlify Blob Store:', e)
+  }
+
   if (
     event.queryStringParameters?.id &&
     event.queryStringParameters?.interval === 'h1'
