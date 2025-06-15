@@ -1,4 +1,4 @@
-const { getStore } = require('@netlify/blobs')
+// const { getStore } = require('@netlify/blobs')
 
 import type {
   Coins,
@@ -136,6 +136,7 @@ export default async function handler(event) {
   let blobStore
 
   try {
+    const { getStore } = await import('@netlify/blobs')
     blobStore = getStore('default')
     console.log('[ℹ️] Initialized Netlify Blob Store')
   } catch (e) {
