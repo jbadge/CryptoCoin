@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions'
-import { getStore } from '@netlify/blobs'
+const { getStore } = require('@netlify/blobs')
 
 import type {
   Coins,
@@ -40,6 +40,9 @@ const CACHE_HISTORY_BLOB_KEY = 'cache_history_h1'
 
 // Optionally set your token here (if needed for permissions)
 // const BLOB_STORE_TOKEN = process.env.NETLIFY_BLOB_STORE_TOKEN || '########' // <-- Replace as needed
+
+console.log('ENV.NETLIFY:', process.env.NETLIFY)
+console.log('Running on Netlify:', process.env.NETLIFY === 'true')
 
 let blobStore
 
