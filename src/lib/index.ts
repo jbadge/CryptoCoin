@@ -9,6 +9,6 @@ export * from './fetchUtils'
 export * from './formatters'
 export * from './coinMappers'
 export * from './initBlobStore'
-export * from './notifications'
+// export * from './notifications'
 
 export { default as PriceUpdater } from './PriceUpdater'

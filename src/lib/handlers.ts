@@ -1,4 +1,4 @@
-import { MinimalEvent } from '../types/CoinTypes'
+import { BlobStore, MinimalEvent, NotifyAdminFn } from '../types/CoinTypes'
 import { getJsonBlob, isCacheFresh, logCacheStatus } from './cacheUtils'
 import {
   API_KEY,
@@ -21,8 +21,9 @@ import {
 
 export async function handleCoinAssetRequest(
   event: MinimalEvent,
-  blobStore: ReturnType<typeof import('@netlify/blobs').getStore> | null,
-  now: number
+  blobStore: BlobStore,
+  now: number,
+  notifyAdmin: NotifyAdminFn
 ): Promise<
   | {
       statusCode: number
@@ -75,6 +76,7 @@ export async function handleCoinAssetRequest(
           blobStore,
           CACHE_BLOB_KEY,
           CACHE_HISTORY_BLOB_KEY,
+          notifyAdmin,
         })
 
         return successResponse(coins, SOURCE_COINCAP)

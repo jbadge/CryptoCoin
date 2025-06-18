@@ -4,6 +4,7 @@ import {
   Coins,
   FetchAndCacheAllProps,
   FetchAndCacheHistoryProps,
+  NotifyAdminFn,
 } from '../types/CoinTypes'
 import {
   cacheCryptoRates,
@@ -13,9 +14,11 @@ import {
 import { mapCoinCap, mapCryptoRates } from './coinMappers'
 import { resolveCoinId } from './coinUtils'
 import { CACHE_TTL_MS } from './env'
-import { notifyAdmin } from './notifications'
 
-export async function fetchCoinCapData(API_KEY: string) {
+export async function fetchCoinCapData(
+  API_KEY: string,
+  notifyAdmin?: NotifyAdminFn
+) {
   console.log('[🔄] Fetching from CoinCap...')
   const response = await fetch(`https://rest.coincap.io/v3/assets`, {
     headers: {
@@ -24,9 +27,14 @@ export async function fetchCoinCapData(API_KEY: string) {
     },
   })
 
+  // if (response.status === 403) {
+  //   console.warn('[🚫] CoinCap 403: Access Denied — quota or key issue')
+  //   await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
+  //   throw new Error('CoinCap 403 - Access denied')
+  // }
   if (response.status === 403) {
-    console.warn('[🚫] CoinCap 403: Access Denied — quota or key issue')
-    await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
+    if (notifyAdmin)
+      await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
     throw new Error('CoinCap 403 - Access denied')
   }
 
@@ -45,8 +53,11 @@ export async function fetchFreshCoinCapData({
   blobStore,
   CACHE_BLOB_KEY,
   CACHE_HISTORY_BLOB_KEY,
-}: FetchAndCacheAllProps): Promise<Coins[]> {
-  const data = await fetchCoinCapData(API_KEY)
+  notifyAdmin,
+}: FetchAndCacheAllProps & {
+  notifyAdmin?: NotifyAdminFn
+}): Promise<Coins[]> {
+  const data = await fetchCoinCapData(API_KEY, notifyAdmin)
   const coins = mapCoinCap(data)
 
   const start = now - CACHE_TTL_MS

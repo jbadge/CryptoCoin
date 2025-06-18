@@ -23,7 +23,7 @@ export function logCacheStatus(useCryptoRates: boolean, isFresh: boolean) {
 
 export async function cacheCryptoRates(
   coins: Coins[],
-  blobStore: ReturnType<typeof import('@netlify/blobs').getStore> | null,
+  blobStore: BlobStore,
   now: number
 ) {
   if (blobStore) {

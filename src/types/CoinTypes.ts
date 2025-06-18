@@ -87,7 +87,7 @@ type FetchAndCacheProps = {
   now: number
   start?: number
   API_KEY: string
-  blobStore: ReturnType<typeof import('@netlify/blobs').getStore> | null
+  blobStore: BlobStore
 }
 
 type BlobKeys = {
@@ -128,3 +128,5 @@ export type MinimalEvent = {
     source?: string
   }
 }
+
+export type NotifyAdminFn = (_message: string) => Promise<boolean | void>
