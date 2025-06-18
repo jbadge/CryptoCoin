@@ -120,7 +120,7 @@ export function App() {
                 symbol={cryptoItem.symbol}
                 price={cryptoItem.price}
                 change24h={cryptoItem.change24h}
-                marketcap={cryptoItem.marketcap}
+                marketCap={cryptoItem.marketCap}
                 volume24h={cryptoItem.volume24h}
               />
             ))}

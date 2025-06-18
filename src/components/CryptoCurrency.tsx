@@ -21,7 +21,7 @@ const CryptoCurrency = ({
   symbol,
   price,
   change24h,
-  marketcap,
+  marketCap: marketcap,
   volume24h,
 }: Coins) => {
   const previousPrice = useRef(0)

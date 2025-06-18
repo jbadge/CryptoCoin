@@ -1,8 +1,12 @@
+// ---------------------
+// Coin Types
+// ---------------------
+
 export type Coins = {
   rank: string
   symbol: string
   name: string
-  marketcap: number
+  marketCap: number
   volume24h: number
   price: number
   change24h: number
@@ -28,6 +32,10 @@ export type RawCryptoRatesType = {
   change24h: number
 }
 
+// ---------------------
+// Chart & History
+// ---------------------
+
 export type Interval =
   | 'm1'
   | 'm5'
@@ -48,8 +56,8 @@ export type CoinChartProps = {
 }
 
 export type IconProps = {
-  name: string | undefined
-  symbol: string | undefined
+  name?: string
+  symbol?: string
 }
 
 export type CoinHistoryEntry = {
@@ -67,8 +75,56 @@ export type CoinHistoryData = {
   [symbol: string]: CoinHistoryEntry[]
 }
 
-/////// NEEDED?
-export type HistoryPoint = {
-  time: number
-  priceUsd: number
+// ---------------------
+// Fetch / Cache Types
+// ---------------------
+
+export type BlobStore = ReturnType<
+  typeof import('@netlify/blobs').getStore
+> | null
+
+type FetchAndCacheProps = {
+  now: number
+  start?: number
+  API_KEY: string
+  blobStore: ReturnType<typeof import('@netlify/blobs').getStore> | null
+}
+
+type BlobKeys = {
+  CACHE_BLOB_KEY: string
+  CACHE_HISTORY_BLOB_KEY: string
+}
+
+export type FetchAndCacheHistoryProps = FetchAndCacheProps & {
+  coins: Coins[]
+  CACHE_HISTORY_BLOB_KEY: string
+}
+
+export type FetchAndCacheAllProps = FetchAndCacheProps & BlobKeys
+
+type WriteProps = {
+  blobStore: BlobStore
+  now: number
+}
+
+export type WriteHistoryProps = WriteProps & {
+  CACHE_HISTORY_BLOB_KEY: string
+  historyBlob: Record<string, any[]>
+}
+
+export type WriteCoinsProps = WriteProps & {
+  CACHE_BLOB_KEY: string
+  coins: Coins[]
+}
+
+// ---------------------
+// API / Event Types
+// ---------------------
+
+export type MinimalEvent = {
+  queryStringParameters?: {
+    id?: string
+    interval?: string
+    source?: string
+  }
 }

@@ -1,5 +1,5 @@
-import coinAssets from '../data/index.json'
 import { debugMode } from './config'
+import coinAssets from '../../src/data/index.json'
 
 export function resolveCoinId(
   symbol: string,

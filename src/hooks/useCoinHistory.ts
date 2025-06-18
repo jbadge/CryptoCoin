@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Interval } from '../types/CoinTypes'
 import coinAssets from '../data/index.json'
-import { debugMode, resolveCoinId } from '../lib' // ⬅️ Removed unused `calculateStartTime` and `getFileId`
+import { resolveCoinId } from '../lib/coinUtils'
+import { Interval } from '../types/CoinTypes'
+import { debugMode } from '../lib/config'
 
 export function useCoinHistory(
   symbol: string,

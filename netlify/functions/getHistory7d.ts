@@ -1,3 +1,4 @@
+import { mapCryptoRates } from '../../src/lib/coinMappers'
 import type { Coins } from '../../src/types/CoinTypes'
 
 const API_KEY =
