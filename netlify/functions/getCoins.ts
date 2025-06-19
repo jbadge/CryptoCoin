@@ -66,10 +66,12 @@ export async function handler(event) {
   if (!isHistoryRequest) {
     return await handleCoinAssetRequest(event, blobStore, now, notifyAdmin)
   }
-
+  console.log('This is a history request:', isHistoryRequest)
   // Determine cache key based on interval: 1 Day or 7 Day history
   const cacheKey =
-    interval === 'h6' ? CACHE_HISTORY_BLOB_KEY_7D : CACHE_HISTORY_BLOB_KEY_1D
+    interval === 'h1' ? CACHE_HISTORY_BLOB_KEY_1D : CACHE_HISTORY_BLOB_KEY_7D
+  console.log(`Checking for ${interval === 'h1' ? '1-day' : '7-day'} history`)
+  console.log('BlobStore: ', blobStore)
 
   // Get 1 Day history from cache
   try {
