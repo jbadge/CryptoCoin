@@ -51,7 +51,7 @@ const notifyAdmin: NotifyAdminFn = async (message) => {
 
 export async function handler(event) {
   const now = Date.now()
-  console.log('🔥 getCoins.ts - LIVE HANDLER RUNNING')
+  console.log('🔥 getCoins.ts: LIVE HANDLER RUNNING')
 
   // Initialize store
   const blobStore = await initializeBlobStore()
