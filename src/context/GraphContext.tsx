@@ -34,7 +34,6 @@ export const GraphContextProvider = ({ children }: Props) => {
     }
   }, [])
 
-  //better name
   const preloadDataForSevenDayView = useCallback(async () => {
     try {
       const response = await fetch('/.netlify/functions/getHistoryH6')

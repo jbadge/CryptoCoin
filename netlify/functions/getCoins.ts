@@ -2,11 +2,10 @@ import {
   CACHE_HISTORY_BLOB_KEY_1D,
   CACHE_HISTORY_BLOB_KEY_7D,
   initializeBlobStore,
-  tryReadFromCache,
 } from '../../src/lib'
 import {
   errorResponse,
-  // getJsonBlob,
+  getJsonBlob,
   handleCoinAssetRequest,
   successResponse,
 } from '../../src/lib'
@@ -80,8 +79,7 @@ export async function handler(event) {
     }
 
     // Read cached history blob as JSON for interval (1d or 7d)
-    const cachedHistory = await tryReadFromCache(blobStore, cacheKey, 'history')
-    // const cachedHistory = await getJsonBlob(blobStore, cacheKey)
+    const cachedHistory = await getJsonBlob(blobStore, cacheKey)
 
     if (
       !cachedHistory ||
