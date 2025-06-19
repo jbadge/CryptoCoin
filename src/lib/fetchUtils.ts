@@ -99,21 +99,30 @@ export async function fetchAndCacheHistory({
         if (!resolvedId) {
           return
         }
-        try {
-          const response = await fetch(
-            `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=h1&start=${start}&end=${now}`,
-            {
-              headers: {
-                Authorization: `Bearer ${API_KEY}`,
-              },
+
+        let retries = 3
+        let success = false
+
+        while (retries > 0 && !success) {
+          try {
+            const response = await fetch(
+              `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=h1&start=${start}&end=${now}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${API_KEY}`,
+                },
+              }
+            )
+            if (response.ok) {
+              const json = await response.json()
+              historyBlob[resolvedId] = json.data
+              success = true
+            } else {
+              retries--
             }
-          )
-          if (response.ok) {
-            const json = await response.json()
-            historyBlob[resolvedId] = json.data
+          } catch (error) {
+            console.warn(`⚠️ Failed to fetch history for ${resolvedId}:`, error)
           }
-        } catch (error) {
-          console.warn(`⚠️ Failed to fetch history for ${resolvedId}:`, error)
         }
       })
     )
