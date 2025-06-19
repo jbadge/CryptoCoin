@@ -99,6 +99,11 @@ export async function fetchAndCacheHistory({
         if (!resolvedId) {
           return
         }
+
+        let retries = 3
+        let success = false
+        
+        while (retries > 0 && !success) {
         try {
           const response = await fetch(
             `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=h1&start=${start}&end=${now}`,
@@ -111,7 +116,8 @@ export async function fetchAndCacheHistory({
           if (response.ok) {
             const json = await response.json()
             historyBlob[resolvedId] = json.data
-          }
+            success = true
+          } else { retries-- }
         } catch (error) {
           console.warn(`⚠️ Failed to fetch history for ${resolvedId}:`, error)
         }

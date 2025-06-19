@@ -1,5 +1,10 @@
 import { BlobStore, MinimalEvent, NotifyAdminFn } from '../types/CoinTypes'
-import { getJsonBlob, isCacheFresh, logCacheStatus } from './cacheUtils'
+import {
+  // getJsonBlob,
+  isCacheFresh,
+  logCacheStatus,
+  tryReadFromCache,
+} from './cacheUtils'
 import {
   API_KEY,
   CACHE_TTL_MS,
@@ -41,7 +46,12 @@ export async function handleCoinAssetRequest(
 
     // Get cache
     if (!useCryptoRates) {
-      const cachedData = await getJsonBlob(blobStore, CACHE_BLOB_KEY)
+      const cachedData = await tryReadFromCache(
+        blobStore,
+        CACHE_BLOB_KEY,
+        'coins'
+      )
+      // const cachedData = await getJsonBlob(blobStore, CACHE_BLOB_KEY)
 
       const cacheIsFresh = isCacheFresh(
         cachedData?.timestamp,

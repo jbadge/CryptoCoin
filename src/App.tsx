@@ -36,15 +36,19 @@ export function App() {
 
       if (response.ok) {
         const { data, source } = await response.json()
-
+        console.log('Fetched coins:', data)
         if (debugMode) {
           console.log('Data source:', source)
         }
         const tempCoins = [...data]
         setCoins(tempCoins)
 
-        if (!useCryptoRatesOnly) {
+        if (source === 'coincap') {
+          // Only CoinCap results are cached
           localStorage.setItem('coins', JSON.stringify(tempCoins))
+          setInitialLoadDone(true)
+        } else if (source === 'cryptorates (fallback)') {
+          // CryptoRates fallback used — don’t cache
           setInitialLoadDone(true)
         }
       }

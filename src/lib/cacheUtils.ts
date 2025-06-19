@@ -55,6 +55,22 @@ export async function getJsonBlob(
   }
 }
 
+export async function tryReadFromCache(
+  blobStore: BlobStore,
+  key: string,
+  fallbackKey: 'coins' | 'history'
+): Promise<any | null> {
+  let blobData = await getJsonBlob(blobStore, key)
+  if (blobData) return blobData
+
+  try {
+    const localData = localStorage.getItem(fallbackKey)
+    return localData ? JSON.parse(localData) : null
+  } catch {
+    return null
+  }
+}
+
 export async function writeCoinCache({
   blobStore,
   CACHE_BLOB_KEY,
@@ -63,6 +79,7 @@ export async function writeCoinCache({
 }: WriteCoinsProps): Promise<void> {
   if (!blobStore) {
     console.warn('[⚠️] No blob store available, skipping caching')
+    localStorage.setItem('coins', JSON.stringify(coins))
     return
   }
 
@@ -74,6 +91,7 @@ export async function writeCoinCache({
     console.log('[💾] Cached CoinCap data in blob storage')
   } catch (error) {
     console.warn('[⚠️] Failed to write cache blob:', error)
+    localStorage.setItem('coins', JSON.stringify(coins))
   }
 }
 
@@ -85,6 +103,7 @@ export async function writeHistoryCache({
 }: WriteHistoryProps): Promise<void> {
   if (!blobStore) {
     console.warn('[⚠️] No blob store available, skipping caching')
+    localStorage.setItem('history', JSON.stringify(historyBlob))
     return
   }
 
@@ -96,5 +115,6 @@ export async function writeHistoryCache({
     console.log('[💾] Cached 1-day history for all coins')
   } catch (error) {
     console.warn('[⚠️] Failed to cache 1-day history:', error)
+    localStorage.setItem('history', JSON.stringify(historyBlob))
   }
 }
