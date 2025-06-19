@@ -86,8 +86,13 @@ export async function handler(event) {
 
     // Read cached history blob as JSON for interval (1d or 7d)
     const cachedHistory = await getJsonBlob(blobStore, cacheKey)
+    if (!cachedHistory || typeof cachedHistory !== 'object') {
+      console.error('⚠️ getJsonBlob result is invalid:', cachedHistory)
+    }
     console.log(
-      '[🔑] Cached history keys:',
+      '[🔑] Cached keys for',
+      interval,
+      ':',
       Object.keys(cachedHistory?.history || {})
     )
 
