@@ -63,10 +63,13 @@ export async function handler(event) {
   const interval = event.queryStringParameters?.interval
   const isHistoryRequest = !!coinId && (interval === 'h1' || interval === 'h6')
 
+  console.log('This is a history request:', isHistoryRequest)
+  console.log('coinId: ', coinId)
+  console.log('interval: ', interval)
+
   if (!isHistoryRequest) {
     return await handleCoinAssetRequest(event, blobStore, now, notifyAdmin)
   }
-  console.log('This is a history request:', isHistoryRequest)
   // Determine cache key based on interval: 1 Day or 7 Day history
   const cacheKey =
     interval === 'h1' ? CACHE_HISTORY_BLOB_KEY_1D : CACHE_HISTORY_BLOB_KEY_7D
@@ -91,24 +94,24 @@ export async function handler(event) {
       return errorResponse(
         404,
         `No ${
-          interval === 'h6' ? '7-day' : '1-day'
+          interval === 'h1' ? '1-day' : '7-day'
         } history found for ${coinId}`
       )
     }
     return successResponse(
       cachedHistory.history[coinId],
-      `history (${interval === 'h6' ? '7-day' : '1-day'}) (cached)`
+      `history (${interval === 'h1' ? '1-day' : '7-day'}) (cached)`
     )
   } catch (error) {
     console.error(
       `[❌] Error serving ${
-        interval === 'h6' ? '7-day' : '1-day'
+        interval === 'h1' ? '1-day' : '7-day'
       } history for ${coinId}:`,
       error
     )
     return errorResponse(
       500,
-      `Failed to get ${interval === 'h6' ? '7-day' : '1-day'} history`
+      `Failed to get ${interval === 'h1' ? '1-day' : '7-day'} history`
     )
   }
 }

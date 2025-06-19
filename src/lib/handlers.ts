@@ -1,3 +1,12 @@
+const originalLog = console.log
+let currentCoinId: string | undefined = undefined
+
+console.log = (...args: any[]) => {
+  if (currentCoinId === 'bitcoin') {
+    originalLog(...args)
+  }
+}
+
 import { BlobStore, MinimalEvent, NotifyAdminFn } from '../types/CoinTypes'
 import { getJsonBlob, isCacheFresh, logCacheStatus } from './cacheUtils'
 import {
@@ -32,13 +41,14 @@ export async function handleCoinAssetRequest(
   | ReturnType<typeof successResponse>
   | void
 > {
+  console.log('#############################################')
   // Get assets. Determine whether to use CryptoRates or not based on param or fallback flag
   try {
     const useCryptoRates = shouldUseCryptoRates(
       USE_CRYPTORATES,
       event?.queryStringParameters?.source
     )
-
+    console.log(useCryptoRates)
     // Get cache
     if (!useCryptoRates) {
       const cachedData = await getJsonBlob(blobStore, CACHE_BLOB_KEY)

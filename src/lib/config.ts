@@ -10,3 +10,4 @@ export const CACHE_HISTORY_BLOB_KEY_7D = 'cache_history_7d'
 export const CACHE_BLOB_KEY = 'cache_coins_data'
 export const SOURCE_CRYPTORATES = 'cryptorates'
 export const SOURCE_COINCAP = 'coincap'
+export const NETLIFY_DEV = true
