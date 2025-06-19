@@ -86,6 +86,10 @@ export async function handler(event) {
 
     // Read cached history blob as JSON for interval (1d or 7d)
     const cachedHistory = await getJsonBlob(blobStore, cacheKey)
+    console.log(
+      '[🔑] Cached history keys:',
+      Object.keys(cachedHistory?.history || {})
+    )
 
     if (
       !cachedHistory ||
