@@ -1,7 +1,7 @@
 import {
   initializeBlobStore,
   getJsonBlob,
-  CACHE_HISTORY_BLOB_KEY_1D,
+  CACHE_HISTORY_BLOB_KEY,
 } from '../../src/lib'
 
 export async function handler() {
@@ -15,7 +15,7 @@ export async function handler() {
     }
   }
 
-  const cached = await getJsonBlob(blobStore, CACHE_HISTORY_BLOB_KEY_1D)
+  const cached = await getJsonBlob(blobStore, CACHE_HISTORY_BLOB_KEY)
 
   console.log('[🐛] Full blob content:', cached)
 

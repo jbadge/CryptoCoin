@@ -1,8 +1,4 @@
-import {
-  CACHE_HISTORY_BLOB_KEY_1D,
-  CACHE_HISTORY_BLOB_KEY_7D,
-  initializeBlobStore,
-} from '../../src/lib'
+import { CACHE_HISTORY_BLOB_KEY, initializeBlobStore } from '../../src/lib'
 import {
   errorResponse,
   getJsonBlob,
@@ -62,22 +58,24 @@ export async function handler(event) {
 
   const coinId = event.queryStringParameters?.id
   const interval = event.queryStringParameters?.interval
-  const isHistoryRequest = !!coinId && (interval === 'h1' || interval === 'h6')
+  const isGraphRequest = !!coinId && (interval === 'h1' || interval === 'h6')
 
-  console.log('This is a history request:', isHistoryRequest)
+  console.log('This is a history request:', isGraphRequest)
   console.log('coinId: ', coinId)
   console.log('interval: ', interval)
-
-  if (!isHistoryRequest) {
+  // If
+  if (!isGraphRequest) {
     return await handleCoinAssetRequest(event, blobStore, now, notifyAdmin)
   }
   // Determine cache key based on interval: 1 Day or 7 Day history
-  const cacheKey =
-    interval === 'h1' ? CACHE_HISTORY_BLOB_KEY_1D : CACHE_HISTORY_BLOB_KEY_7D
-  console.log(`Checking for ${interval === 'h1' ? '1-day' : '7-day'} history`)
+  // const cacheKey =
+  //   interval === 'h1' ? CACHE_HISTORY_BLOB_KEY_1D : CACHE_HISTORY_BLOB_KEY_7D
+  const intervalKey = interval === 'h1' ? '1d' : '7d'
+
+  console.log(`Checking for ${intervalKey} history in unified cache`)
   console.log('BlobStore: ', blobStore)
 
-  // Get 1 Day history from cache
+  // Get history from cache
   try {
     if (!blobStore) {
       console.error('[❌] Netlify Blobs unavailable')
@@ -85,7 +83,8 @@ export async function handler(event) {
     }
 
     // Read cached history blob as JSON for interval (1d or 7d)
-    const cachedHistory = await getJsonBlob(blobStore, cacheKey)
+    const cachedHistory = await getJsonBlob(blobStore, CACHE_HISTORY_BLOB_KEY)
+
     if (!cachedHistory || typeof cachedHistory !== 'object') {
       console.error('⚠️ getJsonBlob result is invalid:', cachedHistory)
     }
@@ -98,30 +97,35 @@ export async function handler(event) {
 
     if (
       !cachedHistory ||
-      !cachedHistory.history ||
-      !cachedHistory.history[coinId]
+      typeof cachedHistory !== 'object' ||
+      !cachedHistory[intervalKey] ||
+      !cachedHistory.timestamp ||
+      typeof cachedHistory.timestamp[intervalKey] !== 'number'
     ) {
+      console.error(
+        '⚠️ Cached history blob is missing required interval data or timestamps:',
+        cachedHistory
+      )
       return errorResponse(
         404,
-        `No ${
-          interval === 'h1' ? '1-day' : '7-day'
-        } history found for ${coinId}`
+        `No cached ${intervalKey} history or timestamp found`
+      )
+    }
+    if (!cachedHistory[intervalKey][coinId]) {
+      return errorResponse(
+        404,
+        `No ${intervalKey} history found for coin ${coinId}`
       )
     }
     return successResponse(
-      cachedHistory.history[coinId],
-      `history (${interval === 'h1' ? '1-day' : '7-day'}) (cached)`
+      cachedHistory[intervalKey][coinId],
+      `history (${intervalKey}) (cached)`
     )
   } catch (error) {
     console.error(
-      `[❌] Error serving ${
-        interval === 'h1' ? '1-day' : '7-day'
-      } history for ${coinId}:`,
+      `[❌] Error serving ${intervalKey} history for ${coinId}:`,
       error
     )
-    return errorResponse(
-      500,
-      `Failed to get ${interval === 'h1' ? '1-day' : '7-day'} history`
-    )
+    return errorResponse(500, `Failed to get ${intervalKey} history`)
   }
 }

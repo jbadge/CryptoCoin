@@ -4,6 +4,7 @@ import {
   WriteCoinsProps,
   WriteHistoryProps,
 } from '../types/CoinTypes'
+import { CACHE_BLOB_KEY } from './config'
 
 export function isCacheFresh(
   timestamp: number | undefined,
@@ -28,7 +29,7 @@ export async function cacheCryptoRates(
 ) {
   if (blobStore) {
     try {
-      await blobStore.setJSON('cache_coins_data', { timestamp: now, coins })
+      await blobStore.setJSON(`${CACHE_BLOB_KEY}`, { timestamp: now, coins })
       console.log('[💾] Cached CryptoRates data in blob storage')
     } catch (error) {
       console.warn('[⚠️] Failed to write CryptoRates cache blob:', error)

@@ -44,6 +44,7 @@ export function App() {
         setCoins(tempCoins)
 
         if (!useCryptoRatesOnly) {
+          // MOVE all the localstorage stuff to read/write blobs fallback?
           localStorage.setItem('coins', JSON.stringify(tempCoins))
           setInitialLoadDone(true)
         }

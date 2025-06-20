@@ -23,7 +23,7 @@ import {
 import {
   allowCachingFallback,
   CACHE_BLOB_KEY,
-  CACHE_HISTORY_BLOB_KEY_1D,
+  CACHE_HISTORY_BLOB_KEY,
   SOURCE_COINCAP,
   SOURCE_CRYPTORATES,
 } from './config'
@@ -67,18 +67,14 @@ export async function handleCoinAssetRequest(
         return successResponse(cachedData!.coins, 'cache')
       }
 
-      // Fetch fresh asset list from CoinCap because cache is stale and CryptoRates is not forced
+      // If stale cache and Crypto is not being forced
+      // Fetch fresh asset list from CoinCap
       try {
         if (!API_KEY) {
           console.error('[❌] Missing API_KEY; cannot fetch from CoinCap')
-          // return {
-          //   statusCode: 500,
-          //   body: JSON.stringify({ error: 'Missing API Key' }),
-          // }
           return errorResponse(500, 'Missing API Key')
         }
 
-        const CACHE_HISTORY_BLOB_KEY = CACHE_HISTORY_BLOB_KEY_1D
         // Fetch 1-day price history for each coin from CoinCap and save it in blob storage
         const coins = await fetchFreshCoinCapData({
           now,
