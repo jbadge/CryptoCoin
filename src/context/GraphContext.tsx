@@ -15,6 +15,7 @@ export type GraphContextType = {
   setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
   fetch7dHistoryData: () => void
+  cachedHistory: CachedHistoryType
 }
 
 export const GraphContext = createContext<null | GraphContextType>(null)

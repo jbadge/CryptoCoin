@@ -166,9 +166,9 @@ export async function fetchAndCacheHistory({
           if (response.ok) {
             const { data } = await response.json()
             historyBlob[resolvedId] = data.map((coin: any) => ({
-              value: Number(coin.priceUsd),
-              time: `${coin.time}`,
-              date: `${coin.date}`,
+              price: coin.priceUsd,
+              time: coin.time,
+              date: coin.date,
             }))
             break
           }
