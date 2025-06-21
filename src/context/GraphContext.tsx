@@ -8,12 +8,14 @@ import React, {
   useMemo,
   useState,
 } from 'react'
+import { CoinHistoryEntry } from '../types/CoinTypes'
 
 export type GraphContextType = {
   checked: boolean
   setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
-  preloadDataForSevenDayView: () => void
+  fetch7dHistoryData: () => void
+  cachedHistory: Record<'1d' | '7d', Record<string, CoinHistoryEntry[]>> | null
 }
 
 export const GraphContext = createContext<null | GraphContextType>(null)
@@ -24,6 +26,8 @@ type Props = {
 
 export const GraphContextProvider = ({ children }: Props) => {
   const [checked, setChecked] = useState<boolean>(false)
+  const [cachedHistory, setCachedHistory] =
+    useState<GraphContextType['cachedHistory']>(null)
 
   const preloadDataForRealTimeView = useCallback(async () => {
     try {
@@ -34,12 +38,18 @@ export const GraphContextProvider = ({ children }: Props) => {
     }
   }, [])
 
-  const preloadDataForSevenDayView = useCallback(async () => {
+  const fetch7dHistoryData = useCallback(async () => {
     try {
-      const response = await fetch('/.netlify/functions/getHistoryH6')
-      await response.json()
+      const response = await fetch('/.netlify/functions/getCoins?interval=h6')
+      const data = await response.json()
+      if (data?.['1d'] || data?.['7d']) {
+        setCachedHistory({
+          '1d': data['1d'] || {},
+          '7d': data['7d'] || {},
+        })
+      }
     } catch (error) {
-      console.error('Error preloading 7-day data:', error)
+      console.error('Error fetching 7-day data:', error)
     }
   }, [])
 
@@ -48,13 +58,15 @@ export const GraphContextProvider = ({ children }: Props) => {
       checked,
       setChecked,
       preloadDataForRealTimeView,
-      preloadDataForSevenDayView,
+      fetch7dHistoryData,
+      cachedHistory,
     }
   }, [
     checked,
     setChecked,
     preloadDataForRealTimeView,
-    preloadDataForSevenDayView,
+    fetch7dHistoryData,
+    cachedHistory,
   ])
 
   return (

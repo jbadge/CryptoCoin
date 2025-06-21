@@ -11,3 +11,4 @@ src/scratchpad.md
 netlify.toml
 src/test
 scratchpad.txt
+*.tsignore

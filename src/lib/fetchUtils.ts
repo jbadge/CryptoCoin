@@ -27,11 +27,6 @@ export async function fetchCoinCapData(
     },
   })
 
-  // if (response.status === 403) {
-  //   console.warn('[🚫] CoinCap 403: Access Denied — quota or key issue')
-  //   await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
-  //   throw new Error('CoinCap 403 - Access denied')
-  // }
   if (response.status === 403) {
     if (notifyAdmin)
       await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
@@ -81,60 +76,126 @@ export async function fetchFreshCoinCapData({
   return coins
 }
 
-// Make one for fetchCoinCapList
+// // Make one for fetchCoinCapList
+// export async function fetchAndCacheHistory({
+//   coins,
+//   now,
+//   start,
+//   API_KEY,
+//   blobStore,
+//   CACHE_HISTORY_BLOB_KEY,
+// }: FetchAndCacheHistoryProps): Promise<Record<string, any[]>> {
+//   const historyBlob: Record<string, any[]> = {}
+
+//   if (blobStore) {
+//     await Promise.all(
+//       coins.map(async (coin) => {
+//         const resolvedId = resolveCoinId(coin.symbol, coinAssets)
+//         if (!resolvedId) {
+//           return
+//         }
+
+//         let retries = 3
+//         let success = false
+
+//         while (retries > 0 && !success) {
+//           try {
+//             const response = await fetch(
+//               `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=h1&start=${start}&end=${now}`,
+//               {
+//                 headers: {
+//                   Authorization: `Bearer ${API_KEY}`,
+//                 },
+//               }
+//             )
+//             if (response.ok) {
+//               const json = await response.json()
+//               historyBlob[resolvedId] = json.data
+//               success = true
+//             } else {
+//               retries--
+//             }
+//           } catch (error) {
+//             console.warn(`⚠️ Failed to fetch history for ${resolvedId}:`, error)
+//           }
+//         }
+//       })
+//     )
+//   }
+//   await writeHistoryCache({
+//     blobStore,
+//     CACHE_HISTORY_BLOB_KEY,
+//     now,
+//     historyBlob,
+//   })
+
+//   return historyBlob
+// }
+
+import { calculateStartTime } from './timeUtils'
+
 export async function fetchAndCacheHistory({
   coins,
   now,
-  start,
   API_KEY,
   blobStore,
   CACHE_HISTORY_BLOB_KEY,
-}: FetchAndCacheHistoryProps): Promise<Record<string, any[]>> {
+  interval = 'h1',
+  count = 24,
+}: FetchAndCacheHistoryProps & { interval?: 'h1' | 'h6'; count?: number }) {
+  const start = calculateStartTime(interval, count)
+
+  const intervalKey = interval === 'h1' ? '1d' : '7d'
   const historyBlob: Record<string, any[]> = {}
 
-  if (blobStore) {
-    await Promise.all(
-      coins.map(async (coin) => {
-        const resolvedId = resolveCoinId(coin.symbol, coinAssets)
-        if (!resolvedId) {
-          return
-        }
+  await Promise.all(
+    coins.map(async (coin) => {
+      const resolvedId = resolveCoinId(coin.symbol, coinAssets)
+      if (!resolvedId) return
 
-        let retries = 3
-        let success = false
-
-        while (retries > 0 && !success) {
-          try {
-            const response = await fetch(
-              `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=h1&start=${start}&end=${now}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${API_KEY}`,
-                },
-              }
-            )
-            if (response.ok) {
-              const json = await response.json()
-              historyBlob[resolvedId] = json.data
-              success = true
-            } else {
-              retries--
+      let retries = 3
+      while (retries-- > 0) {
+        try {
+          const response = await fetch(
+            `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=${interval}&start=${start}&end=${now}`,
+            {
+              headers: {
+                Authorization: `Bearer ${API_KEY}`,
+              },
             }
-          } catch (error) {
-            console.warn(`⚠️ Failed to fetch history for ${resolvedId}:`, error)
+          )
+          if (response.ok) {
+            const json = await response.json()
+            historyBlob[resolvedId] = json.data
+            break
           }
+        } catch (err) {
+          if (retries === 0)
+            console.warn(`⚠️ Final fail for ${resolvedId}`, err)
         }
-      })
-    )
-  }
+      }
+    })
+  )
+
+  const existing =
+    (await blobStore?.get(CACHE_HISTORY_BLOB_KEY, { type: 'json' })) || {}
+
   await writeHistoryCache({
     blobStore,
     CACHE_HISTORY_BLOB_KEY,
     now,
-    historyBlob,
+    historyBlob: {
+      ...existing,
+      [intervalKey]: {
+        ...(existing?.[intervalKey] || {}),
+        ...historyBlob,
+      },
+      timestamp: {
+        ...(existing?.timestamp || {}),
+        [intervalKey]: now,
+      },
+    },
   })
-
-  return historyBlob
 }
 
 export async function fetchFallbackFromCryptoRates(

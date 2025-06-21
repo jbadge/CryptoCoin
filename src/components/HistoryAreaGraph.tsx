@@ -1,7 +1,10 @@
 import React, { CSSProperties, useEffect, useState } from 'react'
+
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts'
-import { useCoinHistory } from '../hooks/useCoinHistory'
 import { CoinChartProps } from '../types/CoinTypes'
+import { resolveCoinId } from '../lib'
+import coinAssets from '../data/index.json'
+import { useGraphContext } from '../context/GraphContext'
 
 const HistoryAreaGraph = ({
   name,
@@ -16,17 +19,41 @@ const HistoryAreaGraph = ({
   onError: () => void
   style: CSSProperties
 }) => {
-  const { history, isDataLoaded } = useCoinHistory(
-    symbol,
-    rank,
-    name,
-    interval,
-    onLoad,
-    onError
-  )
+  const { cachedHistory } = useGraphContext()
+  const [history, setHistory] = useState<
+    { symbol: string; time: string; value: number; rank: string }[]
+  >([])
+  const [isBlobLoaded, setIsBlobLoaded] = useState(false)
 
   const [firstValue, setFirstValue] = useState<number | null>(null)
   const [lastValue, setLastValue] = useState<number | null>(null)
+
+  useEffect(() => {
+    const resolvedId = resolveCoinId(symbol, coinAssets)
+    if (!resolvedId || !cachedHistory) {
+      onError()
+      return
+    }
+
+    const intervalKey = interval === 'h1' ? '1d' : '7d'
+    const entries = cachedHistory[intervalKey]?.[resolvedId] || []
+
+    if (entries.length === 0) {
+      onError()
+      return
+    }
+    console.log(entries)
+    const mapped = entries.map((coin) => ({
+      symbol,
+      time: `${coin.time}`,
+      value: Number(coin.priceUsd),
+      rank,
+    }))
+
+    setHistory(mapped)
+    setIsBlobLoaded(true)
+    onLoad()
+  }, [symbol, rank, name, interval, onLoad, onError, cachedHistory])
 
   useEffect(() => {
     if (history.length === 0) {
@@ -45,7 +72,7 @@ const HistoryAreaGraph = ({
 
   return (
     <ResponsiveContainer width="100%" height={70} style={style}>
-      {isDataLoaded &&
+      {isBlobLoaded &&
       history.length > 0 &&
       firstValue !== null &&
       lastValue !== null ? (

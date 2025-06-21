@@ -42,7 +42,7 @@ export function useCoinHistory(
         } else if (interval === 'h6') {
           // Fetch 1-day history from getCoins (which reads from blob)
           response = await fetch(
-            `/.netlify/functions/getHistory7d?id=${resolvedId}&interval=h6`
+            `/.netlify/functions/getCoins?id=${resolvedId}&interval=h6`
           )
         } else {
           onError()

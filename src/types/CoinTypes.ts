@@ -98,6 +98,8 @@ type BlobKeys = {
 export type FetchAndCacheHistoryProps = FetchAndCacheProps & {
   coins: Coins[]
   CACHE_HISTORY_BLOB_KEY: string
+  // interval?: string
+  // count?: number
 }
 
 export type FetchAndCacheAllProps = FetchAndCacheProps & BlobKeys

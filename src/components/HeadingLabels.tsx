@@ -4,15 +4,15 @@ import { useGraphContext } from '../context/GraphContext'
 
 function HeadingLabels() {
   const graphContext = useGraphContext()
-  const { checked, setChecked, preloadDataForSevenDayView } = graphContext
+  const { checked, setChecked, fetch7dHistoryData } = graphContext
 
   /////// NEED TO CHECK THIS
   const handleClick = useCallback(() => {
     setChecked((prev) => !prev)
     if (!checked) {
-      preloadDataForSevenDayView()
+      fetch7dHistoryData()
     }
-  }, [checked, setChecked, preloadDataForSevenDayView])
+  }, [checked, setChecked, fetch7dHistoryData])
 
   const heading = useMemo(() => {
     return (
