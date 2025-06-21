@@ -92,7 +92,7 @@ export async function writeHistoryCache({
   try {
     await blobStore.setJSON(CACHE_HISTORY_BLOB_KEY, {
       timestamp: now,
-      history: historyBlob,
+      ...historyBlob,
     })
     console.log('[💾] Cached 1-day history for all coins')
   } catch (error) {

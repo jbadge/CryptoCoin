@@ -92,15 +92,14 @@ export async function handler(event) {
       '[🔑] Cached keys for',
       interval,
       ':',
-      Object.keys(cachedHistory?.history || {})
+      Object.keys(cachedHistory || {})
     )
 
     if (
       !cachedHistory ||
       typeof cachedHistory !== 'object' ||
       !cachedHistory[intervalKey] ||
-      !cachedHistory.timestamp ||
-      typeof cachedHistory.timestamp[intervalKey] !== 'number'
+      typeof cachedHistory.timestamp !== 'number'
     ) {
       console.error(
         '⚠️ Cached history blob is missing required interval data or timestamps:',

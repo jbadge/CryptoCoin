@@ -145,6 +145,8 @@ export async function fetchAndCacheHistory({
   const start = calculateStartTime(interval, count)
 
   const intervalKey = interval === 'h1' ? '1d' : '7d'
+  console.log('[🚨] fetchAndCacheHistory() called with', intervalKey)
+
   const historyBlob: Record<string, any[]> = {}
 
   await Promise.all(
