@@ -61,7 +61,7 @@ export type IconProps = {
 }
 
 export type CoinHistoryEntry = {
-  priceUsd: string
+  price: string
   time: number
   date: string
 }
@@ -71,9 +71,16 @@ export type RawHistoryItem = {
   entries: CoinHistoryEntry[]
 }
 
-export type CoinHistoryData = {
-  [symbol: string]: CoinHistoryEntry[]
-}
+/// Make into
+export type CachedHistoryType = {
+  timestamp: number
+  '1d': Record<string, CoinHistoryEntry[]>
+  '7d': Record<string, CoinHistoryEntry[]>
+} | null
+
+// export type CoinHistoryData = {
+//   [symbol: string]: CoinHistoryEntry[]
+// }
 
 // ---------------------
 // Fetch / Cache Types

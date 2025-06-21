@@ -1,7 +1,7 @@
 import React, { CSSProperties, useEffect, useState } from 'react'
 
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts'
-import { CoinChartProps } from '../types/CoinTypes'
+import { CoinChartProps, CoinHistoryEntry } from '../types/CoinTypes'
 import { resolveCoinId } from '../lib'
 import coinAssets from '../data/index.json'
 import { useGraphContext } from '../context/GraphContext'
@@ -43,10 +43,10 @@ const HistoryAreaGraph = ({
       return
     }
     console.log(entries)
-    const mapped = entries.map((coin) => ({
+    const mapped = entries.map((coin: CoinHistoryEntry) => ({
       symbol,
       time: `${coin.time}`,
-      value: Number(coin.priceUsd),
+      value: Number(coin.price),
       rank,
     }))
 

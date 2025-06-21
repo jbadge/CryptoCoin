@@ -8,14 +8,13 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { CoinHistoryEntry } from '../types/CoinTypes'
+import { CachedHistoryType } from '../types/CoinTypes'
 
 export type GraphContextType = {
   checked: boolean
   setChecked: Dispatch<SetStateAction<boolean>>
   preloadDataForRealTimeView: () => void
   fetch7dHistoryData: () => void
-  cachedHistory: Record<'1d' | '7d', Record<string, CoinHistoryEntry[]>> | null
 }
 
 export const GraphContext = createContext<null | GraphContextType>(null)
@@ -25,9 +24,8 @@ type Props = {
 }
 
 export const GraphContextProvider = ({ children }: Props) => {
+  const [cachedHistory, setCachedHistory] = useState<CachedHistoryType>(null)
   const [checked, setChecked] = useState<boolean>(false)
-  const [cachedHistory, setCachedHistory] =
-    useState<GraphContextType['cachedHistory']>(null)
 
   const preloadDataForRealTimeView = useCallback(async () => {
     try {
@@ -42,8 +40,9 @@ export const GraphContextProvider = ({ children }: Props) => {
     try {
       const response = await fetch('/.netlify/functions/getCoins?interval=h6')
       const data = await response.json()
-      if (data?.['1d'] || data?.['7d']) {
+      if (data?.timestamp && (data?.['1d'] || data?.['7d'])) {
         setCachedHistory({
+          timestamp: data.timestamp,
           '1d': data['1d'] || {},
           '7d': data['7d'] || {},
         })

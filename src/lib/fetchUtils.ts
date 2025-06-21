@@ -1,4 +1,5 @@
 import coinAssets from '../../src/data/index.json'
+import { calculateStartTime } from './timeUtils'
 import {
   BlobStore,
   Coins,
@@ -132,8 +133,6 @@ export async function fetchFreshCoinCapData({
 //   return historyBlob
 // }
 
-import { calculateStartTime } from './timeUtils'
-
 export async function fetchAndCacheHistory({
   coins,
   now,
@@ -165,8 +164,12 @@ export async function fetchAndCacheHistory({
             }
           )
           if (response.ok) {
-            const json = await response.json()
-            historyBlob[resolvedId] = json.data
+            const { data } = await response.json()
+            historyBlob[resolvedId] = data.map((coin: any) => ({
+              value: Number(coin.priceUsd),
+              time: `${coin.time}`,
+              date: `${coin.date}`,
+            }))
             break
           }
         } catch (err) {
@@ -186,13 +189,10 @@ export async function fetchAndCacheHistory({
     now,
     historyBlob: {
       ...existing,
+      timestamp: now,
       [intervalKey]: {
         ...(existing?.[intervalKey] || {}),
         ...historyBlob,
-      },
-      timestamp: {
-        ...(existing?.timestamp || {}),
-        [intervalKey]: now,
       },
     },
   })
