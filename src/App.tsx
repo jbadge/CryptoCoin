@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import HeadingLabels from './components/HeadingLabels'
 import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
 // Context
-import { GraphContextProvider } from './context/GraphContext'
-import { DatasetContextProvider } from './context/DatasetContext'
+
 /////////// Debug
 import { debugMode } from './lib'
+import { useGraphContext } from './context/GraphContext'
 
+//something is running twice, getting 440 credits on api instead of 220
 export function App() {
   const [coins, setCoins] = useState<Coins[]>([])
   const [initialLoadDone, setInitialLoadDone] = useState(false)
-  const [apiAccessIssue, setApiAccessIssue] = useState(false)
+  const hasFetchedOnce = useRef(false)
+
+  const { setCachedHistory } = useGraphContext()
 
   async function fetchCoins(useCryptoRatesOnly = false) {
     if (debugMode) {
@@ -20,6 +23,7 @@ export function App() {
         useCryptoRatesOnly
       )
     }
+
     try {
       const response = await fetch(
         useCryptoRatesOnly
@@ -29,13 +33,17 @@ export function App() {
 
       if (!response.ok) {
         if (!useCryptoRatesOnly && response.status === 403) {
-          setApiAccessIssue(true)
           console.warn('CoinCap API access denied.')
         }
       }
 
       if (response.ok) {
-        const { data, source } = await response.json()
+        const {
+          data,
+          source,
+          timestamp,
+          ['1d']: oneDayHistory,
+        } = await response.json()
 
         if (debugMode) {
           console.log('Data source:', source)
@@ -44,8 +52,14 @@ export function App() {
         setCoins(tempCoins)
 
         if (!useCryptoRatesOnly) {
-          // MOVE all the localstorage stuff to read/write blobs fallback?
-          localStorage.setItem('coins', JSON.stringify(tempCoins))
+          if (timestamp && oneDayHistory) {
+            setCachedHistory({
+              timestamp,
+              '1d': oneDayHistory,
+              '7d': {},
+            })
+          }
+
           setInitialLoadDone(true)
         }
       }
@@ -62,25 +76,38 @@ export function App() {
       }, 10000)
       return () => clearInterval(interval)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialLoadDone])
 
   useEffect(() => {
-    const cachedCoins = localStorage.getItem('coins')
+    if (hasFetchedOnce.current) return
+    hasFetchedOnce.current = true
+    // debugMode, caches and reads from localCache instead of blob
+    if (debugMode) {
+      try {
+        const localData = localStorage.getItem('coins')
+        const localHistory = localStorage.getItem('coin_history_cache')
 
-    if (!cachedCoins) {
-      // Inital loading from CoinCap. Caches
-      fetchCoins(false)
-    } else if (!initialLoadDone) {
-      // If CoinCap cache exists, load from it once
-      if (debugMode) {
-        console.log('Data source: cache')
+        if (localData && localHistory) {
+          console.log('🧪 Using localStorage fallback')
+          setCoins(JSON.parse(localData))
+          setCachedHistory(JSON.parse(localHistory))
+          setInitialLoadDone(true)
+          return
+        }
+      } catch (error) {
+        console.warn('🧪 Failed to parse localStorage fallback:', error)
       }
-      setCoins(JSON.parse(cachedCoins))
-      setInitialLoadDone(true)
+    }
+
+    // Should this look to blob instead? is all this being handled in backend now?
+    if (!initialLoadDone) {
+      fetchCoins(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Load table after all elements are ready, preventing skipping/jumping elements
   useEffect(() => {
     const handleLoad = () => {
       const table = document.querySelector('table')
@@ -95,39 +122,28 @@ export function App() {
   }, [])
 
   return (
-    <GraphContextProvider>
-      <DatasetContextProvider>
-        {apiAccessIssue && (
-          <div className="alert alert-warning">
-            ⚠️ CoinCap API access is currently restricted. Showing fallback
-            data.
-          </div>
-        )}
-
-        <table className="crypto-list">
-          <caption className="table-heading">
-            <h1>CryptoCoin</h1>
-            <div className="sub-heading">A CryptoCurrency Tracker</div>
-          </caption>
-          <thead>
-            <HeadingLabels />
-          </thead>
-          <tbody>
-            {coins.map((cryptoItem) => (
-              <CryptoCurrency
-                key={cryptoItem.rank}
-                rank={String(cryptoItem.rank)}
-                name={cryptoItem.name}
-                symbol={cryptoItem.symbol}
-                price={cryptoItem.price}
-                change24h={cryptoItem.change24h}
-                marketCap={cryptoItem.marketCap}
-                volume24h={cryptoItem.volume24h}
-              />
-            ))}
-          </tbody>
-        </table>
-      </DatasetContextProvider>
-    </GraphContextProvider>
+    <table className="crypto-list">
+      <caption className="table-heading">
+        <h1>CryptoCoin</h1>
+        <div className="sub-heading">A CryptoCurrency Tracker</div>
+      </caption>
+      <thead>
+        <HeadingLabels />
+      </thead>
+      <tbody>
+        {coins.map((cryptoItem) => (
+          <CryptoCurrency
+            key={cryptoItem.rank}
+            rank={String(cryptoItem.rank)}
+            name={cryptoItem.name}
+            symbol={cryptoItem.symbol}
+            price={cryptoItem.price}
+            change24h={cryptoItem.change24h}
+            marketCap={cryptoItem.marketCap}
+            volume24h={cryptoItem.volume24h}
+          />
+        ))}
+      </tbody>
+    </table>
   )
 }

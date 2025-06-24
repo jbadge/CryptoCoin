@@ -15,32 +15,49 @@ import {
 import { mapCoinCap, mapCryptoRates } from './coinMappers'
 import { resolveCoinId } from './coinUtils'
 import { CACHE_TTL_MS } from './env'
+import { debugMode } from './config'
+let isFetchingCoins = false
+let isFetchingHistory = false
+let isFetchingFreshData = false
+let isFetchingFallbackFromCryptoRates = false
 
 export async function fetchCoinCapData(
   API_KEY: string,
   notifyAdmin?: NotifyAdminFn
 ) {
-  console.log('[🔄] Fetching from CoinCap...')
-  const response = await fetch(`https://rest.coincap.io/v3/assets`, {
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
-    },
-  })
-
-  if (response.status === 403) {
-    if (notifyAdmin)
-      await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
-    throw new Error('CoinCap 403 - Access denied')
+  if (isFetchingCoins) {
+    console.log(
+      '[⚠️] fetchCoinCapData already running — skipping duplicate call'
+    )
+    return []
   }
+  isFetchingCoins = true
 
-  if (!response.ok) {
-    const errorBody = await response.text()
-    throw new Error(`CoinCap error: ${response.status} - ${errorBody}`)
+  try {
+    console.log('[🔄] Fetching from CoinCap...')
+    const response = await fetch(`https://rest.coincap.io/v3/assets`, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${API_KEY}`,
+      },
+    })
+
+    if (response.status === 403) {
+      if (notifyAdmin)
+        await notifyAdmin('CoinCap API returned 403. Check API key or usage.')
+      throw new Error('CoinCap 403 - Access denied')
+    }
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      throw new Error(`CoinCap error: ${response.status} - ${errorBody}`)
+    }
+
+    const { data } = await response.json()
+    return data
+  } finally {
+    isFetchingCoins = false
   }
-
-  const { data } = await response.json()
-  return data
 }
 
 export async function fetchFreshCoinCapData({
@@ -53,85 +70,43 @@ export async function fetchFreshCoinCapData({
 }: FetchAndCacheAllProps & {
   notifyAdmin?: NotifyAdminFn
 }): Promise<Coins[]> {
-  const data = await fetchCoinCapData(API_KEY, notifyAdmin)
-  const coins = mapCoinCap(data)
+  if (isFetchingFreshData) {
+    console.log(
+      '[⚠️] fetchFreshCoinCapData already running — skipping duplicate call'
+    )
+    return []
+  }
+  isFetchingFreshData = true
 
-  const start = now - CACHE_TTL_MS
+  try {
+    const data = await fetchCoinCapData(API_KEY, notifyAdmin)
+    const coins = mapCoinCap(data)
 
-  await fetchAndCacheHistory({
-    coins,
-    now,
-    start,
-    API_KEY,
-    blobStore,
-    CACHE_HISTORY_BLOB_KEY,
-  })
+    const start = now - CACHE_TTL_MS
 
-  await writeCoinCache({
-    blobStore,
-    CACHE_BLOB_KEY,
-    now,
-    coins,
-  })
-  console.log('[✅] Successfully fetched from CoinCap')
-  return coins
+    await fetchAndCacheHistory({
+      coins,
+      now,
+      start,
+      API_KEY,
+      blobStore,
+      CACHE_HISTORY_BLOB_KEY,
+    })
+
+    await writeCoinCache({
+      blobStore,
+      CACHE_BLOB_KEY,
+      now,
+      coins,
+    })
+    console.log('[✅] Successfully fetched from CoinCap')
+    return coins
+  } finally {
+    isFetchingFreshData = false
+  }
 }
 
-// // Make one for fetchCoinCapList
-// export async function fetchAndCacheHistory({
-//   coins,
-//   now,
-//   start,
-//   API_KEY,
-//   blobStore,
-//   CACHE_HISTORY_BLOB_KEY,
-// }: FetchAndCacheHistoryProps): Promise<Record<string, any[]>> {
-//   const historyBlob: Record<string, any[]> = {}
-
-//   if (blobStore) {
-//     await Promise.all(
-//       coins.map(async (coin) => {
-//         const resolvedId = resolveCoinId(coin.symbol, coinAssets)
-//         if (!resolvedId) {
-//           return
-//         }
-
-//         let retries = 3
-//         let success = false
-
-//         while (retries > 0 && !success) {
-//           try {
-//             const response = await fetch(
-//               `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=h1&start=${start}&end=${now}`,
-//               {
-//                 headers: {
-//                   Authorization: `Bearer ${API_KEY}`,
-//                 },
-//               }
-//             )
-//             if (response.ok) {
-//               const json = await response.json()
-//               historyBlob[resolvedId] = json.data
-//               success = true
-//             } else {
-//               retries--
-//             }
-//           } catch (error) {
-//             console.warn(`⚠️ Failed to fetch history for ${resolvedId}:`, error)
-//           }
-//         }
-//       })
-//     )
-//   }
-//   await writeHistoryCache({
-//     blobStore,
-//     CACHE_HISTORY_BLOB_KEY,
-//     now,
-//     historyBlob,
-//   })
-
-//   return historyBlob
-// }
+// Make one for fetchCoinCapList
 
 export async function fetchAndCacheHistory({
   coins,
@@ -142,62 +117,123 @@ export async function fetchAndCacheHistory({
   interval = 'h1',
   count = 24,
 }: FetchAndCacheHistoryProps & { interval?: 'h1' | 'h6'; count?: number }) {
-  const start = calculateStartTime(interval, count)
+  if (isFetchingHistory) {
+    console.log(
+      '[⚠️] fetchAndCacheHistory already running — skipping duplicate call'
+    )
+    return
+  }
+  isFetchingHistory = true
 
-  const intervalKey = interval === 'h1' ? '1d' : '7d'
-  console.log('[🚨] fetchAndCacheHistory() called with', intervalKey)
+  try {
+    const start = calculateStartTime(interval, count)
 
-  const historyBlob: Record<string, any[]> = {}
+    const intervalKey = interval === 'h1' ? '1d' : '7d'
+    const isFullFetch = interval === 'h1'
+    const historyBlob: Record<string, any[]> = {}
 
-  await Promise.all(
-    coins.map(async (coin) => {
-      const resolvedId = resolveCoinId(coin.symbol, coinAssets)
-      if (!resolvedId) return
+    await Promise.all(
+      coins.map(async (coin) => {
+        const resolvedId = resolveCoinId(coin.symbol, coinAssets)
+        if (!resolvedId) return
 
-      let retries = 3
-      while (retries-- > 0) {
-        try {
-          const response = await fetch(
-            `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=${interval}&start=${start}&end=${now}`,
-            {
-              headers: {
-                Authorization: `Bearer ${API_KEY}`,
-              },
-            }
-          )
-          if (response.ok) {
-            const { data } = await response.json()
-            historyBlob[resolvedId] = data.map((coin: any) => ({
-              price: coin.priceUsd,
-              time: coin.time,
-              date: coin.date,
-            }))
-            break
-          }
-        } catch (err) {
-          if (retries === 0)
-            console.warn(`⚠️ Final fail for ${resolvedId}`, err)
+        // Skip all coins except bitcoin when debugging
+        if (debugMode && resolvedId !== 'bitcoin') {
+          return
         }
+
+        let retries = 3
+        while (retries-- > 0) {
+          try {
+            const response = await fetch(
+              `https://rest.coincap.io/v3/assets/${resolvedId}/history?interval=${interval}&start=${start}&end=${now}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${API_KEY}`,
+                },
+              }
+            )
+
+            if (!response.ok) {
+              console.warn(
+                `⚠️ CoinCap history fetch failed for ${resolvedId} status: ${response.status}`
+              )
+            }
+
+            if (response.ok) {
+              const { data } = await response.json()
+              historyBlob[resolvedId] = data.map((coin: any) => ({
+                price: coin.priceUsd,
+                time: coin.time,
+                date: coin.date,
+              }))
+              break
+            }
+          } catch (error) {
+            if (retries === 0)
+              console.warn(`⚠️ Final fail for ${resolvedId}`, error)
+          }
+        }
+      })
+    )
+    const existing =
+      (await blobStore?.get(CACHE_HISTORY_BLOB_KEY, { type: 'json' })) || {}
+
+    if (debugMode) {
+      if (coins.some((c) => c.symbol.toLowerCase() === 'btc')) {
+        console.log('historyBlob:', {
+          bitcoin: historyBlob.bitcoin ? historyBlob.bitcoin[0] : undefined,
+        })
+        console.log(`Keys for ${intervalKey}:`, {
+          keys: Object.keys(historyBlob),
+          timestamp: isFullFetch ? now : existing.timestamp,
+        })
       }
-    })
-  )
-
-  const existing =
-    (await blobStore?.get(CACHE_HISTORY_BLOB_KEY, { type: 'json' })) || {}
-
-  await writeHistoryCache({
-    blobStore,
-    CACHE_HISTORY_BLOB_KEY,
-    now,
-    historyBlob: {
-      ...existing,
-      timestamp: now,
-      [intervalKey]: {
-        ...(existing?.[intervalKey] || {}),
-        ...historyBlob,
+    }
+    await writeHistoryCache({
+      blobStore,
+      CACHE_HISTORY_BLOB_KEY,
+      now,
+      historyBlob: {
+        timestamp: isFullFetch ? now : existing.timestamp,
+        [intervalKey]: {
+          ...(existing?.[intervalKey] || {}),
+          ...historyBlob,
+        },
       },
-    },
-  })
+    })
+
+    if (debugMode && historyBlob['bitcoin']) {
+      console.log(`[💾 BACKEND WRITE] Cache write for ${intervalKey}`, {
+        keys: Object.keys(historyBlob),
+        timestamp: isFullFetch ? now : existing.timestamp,
+        entriesForBitcoin: historyBlob['bitcoin'][0],
+      })
+    }
+
+    //  await writeHistoryCache({
+    //   blobStore,
+    //   CACHE_HISTORY_BLOB_KEY,
+    //   now,
+    //   historyBlob: {
+    //     ...existing,
+    //     timestamp: isFullFetch ? now : existing.timestamp,
+    //     [intervalKey]: {
+    //       ...(existing?.[intervalKey] || {}),
+    //       ...historyBlob,
+    //     },
+    //   },
+    // })
+
+    // REMOVE AFTER WORKING
+    console.log(
+      `[💾] Wrote history cache key "${CACHE_HISTORY_BLOB_KEY}" with ${
+        Object.keys(historyBlob).length
+      } coins for interval ${intervalKey}`
+    )
+  } finally {
+    isFetchingHistory = false
+  }
 }
 
 export async function fetchFallbackFromCryptoRates(
@@ -205,13 +241,25 @@ export async function fetchFallbackFromCryptoRates(
   now: number,
   allowCaching: boolean
 ): Promise<Coins[]> {
-  const response = await fetch('https://cryptorates.ai/v1/coins/100')
-  const data = await response.json()
-  const coins = mapCryptoRates(data)
-
-  // If CoinCap fails, fallback data from CryptoRates is fetched and cached
-  if (allowCaching) {
-    await cacheCryptoRates(coins, blobStore, now)
+  if (isFetchingFallbackFromCryptoRates) {
+    console.log(
+      '[⚠️] fetchFallbackFromCryptoRates already running — skipping duplicate call'
+    )
+    return []
   }
-  return coins
+  isFetchingFallbackFromCryptoRates = true
+
+  try {
+    const response = await fetch('https://cryptorates.ai/v1/coins/100')
+    const data = await response.json()
+    const coins = mapCryptoRates(data)
+
+    // If CoinCap fails, fallback data from CryptoRates is fetched and cached
+    if (allowCaching) {
+      await cacheCryptoRates(coins, blobStore, now)
+    }
+    return coins
+  } finally {
+    isFetchingFallbackFromCryptoRates = false
+  }
 }

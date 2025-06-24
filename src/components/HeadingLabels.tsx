@@ -55,9 +55,6 @@ function HeadingLabels() {
       <th scope="col" className="name-heading">
         Name
       </th>
-      {/* <th scope="col" className="ticker-heading">
-        Symbol
-      </th> */}
       <th scope="col" className="price-heading">
         Price
       </th>

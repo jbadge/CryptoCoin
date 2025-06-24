@@ -1,4 +1,9 @@
-import { CACHE_HISTORY_BLOB_KEY, initializeBlobStore } from '../../src/lib'
+import {
+  CACHE_HISTORY_BLOB_KEY,
+  debugMode,
+  getBlobStore,
+  SOURCE_COINCAP,
+} from '../../src/lib'
 import {
   errorResponse,
   getJsonBlob,
@@ -47,33 +52,27 @@ const notifyAdmin: NotifyAdminFn = async (message) => {
 
 export async function handler(event) {
   const now = Date.now()
-  console.log('🔥 getCoins.ts: LIVE HANDLER RUNNING')
-
-  // Initialize store
-  const blobStore = await initializeBlobStore()
+  if (debugMode) {
+    console.log('🔥 getCoins.ts: LIVE HANDLER RUNNING')
+  }
+  const blobStore = await getBlobStore()
 
   if (!blobStore) {
-    console.warn('[⚠️] BlobStore unavailable; proceeding without cache writes')
+    console.warn('[⚠️] BlobStore unavailable; skipping cache')
   }
 
   const coinId = event.queryStringParameters?.id
   const interval = event.queryStringParameters?.interval
-  const isGraphRequest = !!coinId && (interval === 'h1' || interval === 'h6')
+  const isSingleCoinHistoryRequest =
+    !!coinId && (interval === 'h1' || interval === 'h6')
 
-  console.log('This is a history request:', isGraphRequest)
-  console.log('coinId: ', coinId)
-  console.log('interval: ', interval)
-  // If
-  if (!isGraphRequest) {
+  // Main handler, not fetching a single coin`
+  if (!isSingleCoinHistoryRequest) {
     return await handleCoinAssetRequest(event, blobStore, now, notifyAdmin)
   }
   // Determine cache key based on interval: 1 Day or 7 Day history
-  // const cacheKey =
-  //   interval === 'h1' ? CACHE_HISTORY_BLOB_KEY_1D : CACHE_HISTORY_BLOB_KEY_7D
   const intervalKey = interval === 'h1' ? '1d' : '7d'
-
-  console.log(`Checking for ${intervalKey} history in unified cache`)
-  console.log('BlobStore: ', blobStore)
+  console.log('######## DEBUG ######## getCoins intervalKey: ', intervalKey)
 
   // Get history from cache
   try {
@@ -88,12 +87,6 @@ export async function handler(event) {
     if (!cachedHistory || typeof cachedHistory !== 'object') {
       console.error('⚠️ getJsonBlob result is invalid:', cachedHistory)
     }
-    console.log(
-      '[🔑] Cached keys for',
-      interval,
-      ':',
-      Object.keys(cachedHistory || {})
-    )
 
     if (
       !cachedHistory ||
@@ -116,9 +109,14 @@ export async function handler(event) {
         `No ${intervalKey} history found for coin ${coinId}`
       )
     }
+
+    // May need to do more with this if using single coin fetching
     return successResponse(
       cachedHistory[intervalKey][coinId],
-      `history (${intervalKey}) (cached)`
+      SOURCE_COINCAP,
+      cachedHistory.timestamp,
+      cachedHistory?.[intervalKey]
+      // `history (${intervalKey}) (cached)`
     )
   } catch (error) {
     console.error(

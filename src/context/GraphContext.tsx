@@ -9,13 +9,14 @@ import React, {
   useState,
 } from 'react'
 import { CachedHistoryType } from '../types/CoinTypes'
+// import { debugMode } from '../lib'
 
 export type GraphContextType = {
   checked: boolean
   setChecked: Dispatch<SetStateAction<boolean>>
-  preloadDataForRealTimeView: () => void
   fetch7dHistoryData: () => void
   cachedHistory: CachedHistoryType
+  setCachedHistory: Dispatch<SetStateAction<CachedHistoryType>>
 }
 
 export const GraphContext = createContext<null | GraphContextType>(null)
@@ -28,26 +29,54 @@ export const GraphContextProvider = ({ children }: Props) => {
   const [cachedHistory, setCachedHistory] = useState<CachedHistoryType>(null)
   const [checked, setChecked] = useState<boolean>(false)
 
-  const preloadDataForRealTimeView = useCallback(async () => {
-    try {
-      const response = await fetch('/netlify/functions/getCoins')
-      await response.json()
-    } catch (error) {
-      console.error('Error fetching real-time data:', error)
-    }
-  }, [])
-
   const fetch7dHistoryData = useCallback(async () => {
     try {
       const response = await fetch('/.netlify/functions/getCoins?interval=h6')
       const data = await response.json()
-      if (data?.timestamp && (data?.['1d'] || data?.['7d'])) {
-        setCachedHistory({
-          timestamp: data.timestamp,
-          '1d': data['1d'] || {},
-          '7d': data['7d'] || {},
-        })
+
+      if (
+        !data?.timestamp ||
+        !data?.['7d'] ||
+        Object.keys(data['7d']).length === 0
+      ) {
+        return
       }
+      setCachedHistory((prev) => {
+        const has7d = !!Object.keys(prev?.['7d'] || {}).length
+        if (has7d) return prev // Already have 7d; skip overwrite
+
+        return {
+          timestamp: data.timestamp,
+          '1d': prev?.['1d'] || {},
+          '7d': data['7d'],
+        }
+      })
+
+      // this worked (below)
+      // if (
+      //   data?.timestamp &&
+      //   data?.['7d'] &&
+      //   Object.keys(data['7d']).length > 0
+      // ) {
+      //   setCachedHistory((prev) => {
+      //     if (!prev) {
+      //       return {
+      //         timestamp: data.timestamp,
+      //         '1d': {},
+      //         '7d': data['7d'],
+      //       }
+      //     }
+      //     const hasExisting7d = !!Object.keys(prev?.['7d'] || {}).length
+      //     if (hasExisting7d) return prev
+      //     if (!data['7d'] || Object.keys(data['7d']).length === 0) return prev
+
+      //     return {
+      //       timestamp: data.timestamp,
+      //       '1d': prev?.['1d'] || {},
+      //       '7d': data['7d'],
+      //     }
+      //   })
+      // }
     } catch (error) {
       console.error('Error fetching 7-day data:', error)
     }
@@ -57,17 +86,11 @@ export const GraphContextProvider = ({ children }: Props) => {
     return {
       checked,
       setChecked,
-      preloadDataForRealTimeView,
       fetch7dHistoryData,
       cachedHistory,
+      setCachedHistory,
     }
-  }, [
-    checked,
-    setChecked,
-    preloadDataForRealTimeView,
-    fetch7dHistoryData,
-    cachedHistory,
-  ])
+  }, [checked, setChecked, fetch7dHistoryData, cachedHistory, setCachedHistory])
 
   return (
     <GraphContext.Provider value={memoizedContextValue}>

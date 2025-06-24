@@ -30,26 +30,27 @@ const HistoryAreaGraph = ({
 
   useEffect(() => {
     const resolvedId = resolveCoinId(symbol, coinAssets)
+
     if (!resolvedId || !cachedHistory) {
       onError()
       return
     }
 
     const intervalKey = interval === 'h1' ? '1d' : '7d'
+
     const entries = cachedHistory[intervalKey]?.[resolvedId] || []
 
     if (entries.length === 0) {
       onError()
       return
     }
-    console.log(entries)
+
     const mapped = entries.map((coin: CoinHistoryEntry) => ({
       symbol,
       time: `${coin.time}`,
       value: Number(coin.price),
       rank,
     }))
-
     setHistory(mapped)
     setIsBlobLoaded(true)
     onLoad()

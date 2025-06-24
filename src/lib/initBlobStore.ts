@@ -1,3 +1,5 @@
+import { debugMode } from './config'
+
 export async function initializeBlobStore() {
   const isServer = typeof process !== 'undefined' && !!process.env
 
@@ -17,7 +19,9 @@ export async function initializeBlobStore() {
       token: process.env.NETLIFY_BLOB_STORE_TOKEN,
     })
 
-    console.log('[ℹ️] Initialized Netlify Blob Store')
+    if (debugMode) {
+      console.log('[ℹ️] Initialized Netlify Blob Store')
+    }
     return blobStore
   } catch (error) {
     console.warn('[⚠️] Failed to initialize Netlify Blob Store:', error)
