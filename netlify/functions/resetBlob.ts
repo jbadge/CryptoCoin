@@ -3,7 +3,11 @@ import { getStore } from '@netlify/blobs'
 import { BLOB_KEYS_TO_DELETE, BLOB_PREFIXES_TO_DELETE } from '../../src/lib'
 
 export const handler: Handler = async (event) => {
-  const blobStore = getStore('default')
+  const blobStore = getStore({
+    name: 'default',
+    siteID: process.env.NETLIFY_SITE_ID,
+    token: process.env.NETLIFY_BLOB_STORE_TOKEN,
+  })
 
   const results: Record<string, string> = {}
 
