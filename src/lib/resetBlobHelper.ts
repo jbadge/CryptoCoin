@@ -1,7 +1,3 @@
-export const BLOB_KEYS_TO_DELETE = [
-  'cache_coins_data',
-  'cache_history_h1',
-  'coin_history_cache',
-]
+export const BLOB_KEYS_TO_DELETE = ['cache_coins', 'cache_history']
 
-export const BLOB_PREFIXES_TO_DELETE = ['cache_history_1d/', 'coin-history/']
+export const BLOB_PREFIXES_TO_DELETE = ['']
