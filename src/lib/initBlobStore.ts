@@ -5,7 +5,7 @@ export async function initializeBlobStore() {
 
   if (!isServer) {
     console.warn(
-      '[⚠️] Skipping Blob Store initialization: not running in server environment'
+      '[⚠️] initBlobStore: Skipping Blob Store initialization: not running in server environment'
     )
     return null
   }
@@ -20,11 +20,14 @@ export async function initializeBlobStore() {
     })
 
     if (debugMode) {
-      console.log('[ℹ️] Initialized Netlify Blob Store')
+      console.log('[ℹ️ ] initBlobStore: Initialized Netlify Blob Store')
     }
     return blobStore
   } catch (error) {
-    console.warn('[⚠️] Failed to initialize Netlify Blob Store:', error)
+    console.warn(
+      '[⚠️] initBlobStore: Failed to initialize Netlify Blob Store:',
+      error
+    )
     return null
   }
 }

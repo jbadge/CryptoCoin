@@ -40,3 +40,21 @@ export async function fallbackResponse(blobStore: BlobStore, now: number) {
   )
   return successResponse(coins, SOURCE_CRYPTORATES)
 }
+
+export function logSuccessResponseDebug(
+  data: { [key: string]: any; timestamp?: number },
+  source: string,
+  intervalKey: '1d' | '7d'
+) {
+  const entries = data?.[intervalKey] || {}
+  const keys = Object.keys(entries)
+  const firstKey = keys[0]
+  const firstHistory = entries[firstKey] || []
+
+  console.log(`[📤 BACKEND RESPONSE] Sending ${source} response:`)
+  console.log('[⏱️] Timestamp:', data.timestamp)
+  console.log('[📚] Interval:', intervalKey)
+  console.log('[🔢] Coin count:', keys.length)
+  console.log(`[🔑] First coin key: ${firstKey}`)
+  console.log(`[📊] Entry count for ${firstKey}: ${firstHistory.length}`)
+}

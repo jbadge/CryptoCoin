@@ -6,7 +6,6 @@ function HeadingLabels() {
   const graphContext = useGraphContext()
   const { checked, setChecked, fetch7dHistoryData } = graphContext
 
-  /////// NEED TO CHECK THIS
   const handleClick = useCallback(() => {
     setChecked((prev) => !prev)
     if (!checked) {

@@ -53,12 +53,12 @@ const notifyAdmin: NotifyAdminFn = async (message) => {
 export async function handler(event) {
   const now = Date.now()
   if (debugMode) {
-    console.log('🔥 getCoins.ts: LIVE HANDLER RUNNING')
+    console.log('[🔥] getCoins.ts: LIVE HANDLER RUNNING')
   }
   const blobStore = await getBlobStore()
 
   if (!blobStore) {
-    console.warn('[⚠️] BlobStore unavailable; skipping cache')
+    console.warn('[⚠️] getCoins: BlobStore unavailable; skipping cache')
   }
 
   const coinId = event.queryStringParameters?.id
@@ -66,26 +66,31 @@ export async function handler(event) {
   const isSingleCoinHistoryRequest =
     !!coinId && (interval === 'h1' || interval === 'h6')
 
-  // Main handler, not fetching a single coin`
+  // Main handler, batch requests
   if (!isSingleCoinHistoryRequest) {
     return await handleCoinAssetRequest(event, blobStore, now, notifyAdmin)
   }
+
+  // REVIEW all code below
+  // Single coin requests
   // Determine cache key based on interval: 1 Day or 7 Day history
   const intervalKey = interval === 'h1' ? '1d' : '7d'
-  console.log('######## DEBUG ######## getCoins intervalKey: ', intervalKey)
 
   // Get history from cache
   try {
     if (!blobStore) {
-      console.error('[❌] Netlify Blobs unavailable')
-      return errorResponse(500, 'Netlify Blobs unavailable')
+      console.error('[❌] getCoins: Netlify Blobs unavailable')
+      return errorResponse(500, 'getCoins: Netlify Blobs unavailable')
     }
 
-    // Read cached history blob as JSON for interval (1d or 7d)
+    // Read cached history blob as JSON for 1d or 7d history
     const cachedHistory = await getJsonBlob(blobStore, CACHE_HISTORY_BLOB_KEY)
 
     if (!cachedHistory || typeof cachedHistory !== 'object') {
-      console.error('⚠️ getJsonBlob result is invalid:', cachedHistory)
+      console.error(
+        '⚠️ getCoins: getJsonBlob result is invalid:',
+        cachedHistory
+      )
     }
 
     if (
@@ -95,18 +100,18 @@ export async function handler(event) {
       typeof cachedHistory.timestamp !== 'number'
     ) {
       console.error(
-        '⚠️ Cached history blob is missing required interval data or timestamps:',
+        '⚠️ getCoins: Cached history blob is missing required interval data or timestamps:',
         cachedHistory
       )
       return errorResponse(
         404,
-        `No cached ${intervalKey} history or timestamp found`
+        `getCoins: No cached ${intervalKey} history or timestamp found`
       )
     }
     if (!cachedHistory[intervalKey][coinId]) {
       return errorResponse(
         404,
-        `No ${intervalKey} history found for coin ${coinId}`
+        `getCoins: No ${intervalKey} history found for coin ${coinId}`
       )
     }
 
@@ -115,14 +120,14 @@ export async function handler(event) {
       cachedHistory[intervalKey][coinId],
       SOURCE_COINCAP,
       cachedHistory.timestamp,
-      cachedHistory?.[intervalKey]
-      // `history (${intervalKey}) (cached)`
+      cachedHistory?.[intervalKey],
+      intervalKey
     )
   } catch (error) {
     console.error(
-      `[❌] Error serving ${intervalKey} history for ${coinId}:`,
+      `[❌] getCoins: Error serving ${intervalKey} history for ${coinId}:`,
       error
     )
-    return errorResponse(500, `Failed to get ${intervalKey} history`)
+    return errorResponse(500, `getCoins: Failed to get ${intervalKey} history`)
   }
 }

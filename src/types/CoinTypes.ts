@@ -78,10 +78,6 @@ export type CachedHistoryType = {
   '7d': Record<string, CoinHistoryEntry[]>
 } | null
 
-// export type CoinHistoryData = {
-//   [symbol: string]: CoinHistoryEntry[]
-// }
-
 // ---------------------
 // Fetch / Cache Types
 // ---------------------

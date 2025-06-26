@@ -34,12 +34,3 @@ export async function handler() {
     }),
   }
 }
-
-// const originalLog = console.log
-// let currentCoinId: string | undefined = undefined
-
-// console.log = (...args: any[]) => {
-//   if (currentCoinId === 'bitcoin') {
-//     originalLog(...args)
-//   }
-// }

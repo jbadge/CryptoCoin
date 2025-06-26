@@ -1,12 +1,17 @@
 import { BlobStore, MinimalEvent, NotifyAdminFn } from '../types/CoinTypes'
-import { getJsonBlob, isCacheFresh, logCacheStatus } from './cacheUtils'
+import { getJsonBlob, isCacheFresh, logBlobStatus } from './cacheUtils'
 import {
   API_KEY,
   CACHE_TTL_MS,
   shouldUseCryptoRates,
   USE_CRYPTORATES,
 } from './env'
-import { errorResponse, fallbackResponse, successResponse } from './responses'
+import {
+  errorResponse,
+  fallbackResponse,
+  logSuccessResponseDebug,
+  successResponse,
+} from './responses'
 import {
   fetchAndCacheHistory,
   fetchFallbackFromCryptoRates,
@@ -17,7 +22,6 @@ import {
   CACHE_BLOB_KEY,
   CACHE_HISTORY_BLOB_KEY,
   debugMode,
-  NETLIFY_DEV,
   SOURCE_COINCAP,
 } from './config'
 
@@ -44,7 +48,7 @@ export async function handleCoinAssetRequest(
     const is7dRequest = interval === 'h6'
     const intervalKey = interval === 'h1' ? '1d' : '7d'
 
-    // Fetch cache
+    // Fetch blob
     if (!useCryptoRates) {
       const cachedCoinData = await getJsonBlob(blobStore, CACHE_BLOB_KEY)
       const cachedCoins = cachedCoinData?.coins || []
@@ -55,14 +59,20 @@ export async function handleCoinAssetRequest(
         CACHE_TTL_MS
       )
 
-      // Require API key only if calling CoinCap (not for CryptoRates)
+      // Require API key when calling CoinCap
       if (!API_KEY) {
-        console.error('[❌] Missing API_KEY; cannot fetch from CoinCap')
-        return errorResponse(500, 'Missing API Key')
+        console.error(
+          '[❌] handlers: Missing API_KEY; cannot fetch from CoinCap'
+        )
+        return errorResponse(500, 'handlers: Missing API Key')
       }
 
       // 7d toggle: fetch and cache only 7d history, no coin list or 1d fetch
       if (is7dRequest) {
+        if (debugMode) {
+          console.log('[❌][❌][❌]in the 7d request')
+        }
+
         await fetchAndCacheHistory({
           coins: cachedCoins,
           now,
@@ -89,28 +99,31 @@ export async function handleCoinAssetRequest(
       }
 
       // If fresh cache
-      // REMOVE AFTER WORKING
-      // IGNORE COMBINING THESE TWO IFs. I AM DELETING TOP ONE SOON SO NOT COMBINING
-      if (!NETLIFY_DEV) {
-        if (cacheIsFresh) {
-          const cachedHistory = await getJsonBlob(
-            blobStore,
-            CACHE_HISTORY_BLOB_KEY
-          )
-
-          if (debugMode) {
-            console.log('[📦] Using cached data from blob storage')
-            logCacheStatus(useCryptoRates, cacheIsFresh)
-          }
-
-          return successResponse(
-            cachedCoins,
-            'cache',
-            cachedHistory.timestamp,
-            cachedHistory?.[intervalKey],
-            intervalKey
-          )
+      if (cacheIsFresh) {
+        if (debugMode) {
+          console.log('[📦] handlers: cacheIsFresh')
         }
+        const cachedHistory = await getJsonBlob(
+          blobStore,
+          CACHE_HISTORY_BLOB_KEY
+        )
+
+        if (debugMode) {
+          console.log('[📦] handlers: Using cached data from blob storage')
+          logBlobStatus(useCryptoRates, cacheIsFresh)
+        }
+
+        if (debugMode) {
+          logSuccessResponseDebug(cachedHistory, 'blobCache', intervalKey)
+        }
+
+        return successResponse(
+          cachedCoins,
+          'blobCache',
+          cachedHistory.timestamp,
+          cachedHistory?.[intervalKey],
+          intervalKey
+        )
       }
 
       // Fetch fresh asset list from CoinCap
@@ -138,28 +151,30 @@ export async function handleCoinAssetRequest(
         )
       } catch (error) {
         // If CoinCap fails, fallback data from CryptoRates is fetched and cached
-        console.warn('[⚠️] CoinCap failed — Falling back to CryptoRates')
+        console.warn(
+          '[⚠️] handlers: CoinCap failed — Falling back to CryptoRates'
+        )
         const coins = await fetchFallbackFromCryptoRates(
           blobStore,
           now,
           allowCachingFallback
         )
-        return successResponse(coins, 'cryptorates (fallback)')
+        return successResponse(coins, 'handlers: cryptorates (fallback)')
       }
     } else {
       // If using CryptoRates, then no need to worry about CoinCap Histories or assets
       if (debugMode) {
-        console.log('[🔄] Using CryptoRates (param or fallback mode)')
+        console.log('[🔄] handlers: Using CryptoRates (param or fallback mode)')
       }
       return fallbackResponse(blobStore, now)
     }
   } catch (error) {
     if (error instanceof Error) {
-      console.error('[❌] Handler crashed:', error.message)
-      return errorResponse(500, `${error.message}`)
+      console.error('[❌] handlers: Handler crashed:', error.message)
+      return errorResponse(500, `handlers: ${error.message}`)
     } else {
-      console.error('[❌] Handler crashed with unknown error:', error)
-      return errorResponse(500, 'Unknown error occurred')
+      console.error('[❌] handlers: Handler crashed with unknown error:', error)
+      return errorResponse(500, 'handlers: Unknown error occurred')
     }
   }
 }

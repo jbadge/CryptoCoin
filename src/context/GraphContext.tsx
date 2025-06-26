@@ -9,7 +9,6 @@ import React, {
   useState,
 } from 'react'
 import { CachedHistoryType } from '../types/CoinTypes'
-// import { debugMode } from '../lib'
 
 export type GraphContextType = {
   checked: boolean
@@ -51,32 +50,6 @@ export const GraphContextProvider = ({ children }: Props) => {
           '7d': data['7d'],
         }
       })
-
-      // this worked (below)
-      // if (
-      //   data?.timestamp &&
-      //   data?.['7d'] &&
-      //   Object.keys(data['7d']).length > 0
-      // ) {
-      //   setCachedHistory((prev) => {
-      //     if (!prev) {
-      //       return {
-      //         timestamp: data.timestamp,
-      //         '1d': {},
-      //         '7d': data['7d'],
-      //       }
-      //     }
-      //     const hasExisting7d = !!Object.keys(prev?.['7d'] || {}).length
-      //     if (hasExisting7d) return prev
-      //     if (!data['7d'] || Object.keys(data['7d']).length === 0) return prev
-
-      //     return {
-      //       timestamp: data.timestamp,
-      //       '1d': prev?.['1d'] || {},
-      //       '7d': data['7d'],
-      //     }
-      //   })
-      // }
     } catch (error) {
       console.error('Error fetching 7-day data:', error)
     }

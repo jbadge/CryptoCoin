@@ -1,6 +1,4 @@
 export const debugMode = false
-// export const debugMode = true
-
 const HOUR = 60 * 60 * 1000
 export const ONE_DAY_MS = 24 * HOUR
 export const SEVEN_DAYS_MS = 7 * ONE_DAY_MS

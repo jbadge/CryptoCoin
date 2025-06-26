@@ -2,13 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import HeadingLabels from './components/HeadingLabels'
 import CryptoCurrency from './components/CryptoCurrency'
 import { Coins } from './types/CoinTypes'
-// Context
-
 /////////// Debug
 import { debugMode } from './lib'
 import { useGraphContext } from './context/GraphContext'
 
-//something is running twice, getting 440 credits on api instead of 220
 export function App() {
   const [coins, setCoins] = useState<Coins[]>([])
   const [initialLoadDone, setInitialLoadDone] = useState(false)
@@ -19,7 +16,7 @@ export function App() {
   async function fetchCoins(useCryptoRatesOnly = false) {
     if (debugMode) {
       console.log(
-        'fetchCoins called with useCryptoRatesOnly:',
+        'App: fetchCoins called with useCryptoRatesOnly:',
         useCryptoRatesOnly
       )
     }
@@ -33,7 +30,7 @@ export function App() {
 
       if (!response.ok) {
         if (!useCryptoRatesOnly && response.status === 403) {
-          console.warn('CoinCap API access denied.')
+          console.warn('App: CoinCap API access denied.')
         }
       }
 
@@ -46,25 +43,33 @@ export function App() {
         } = await response.json()
 
         if (debugMode) {
-          console.log('Data source:', source)
+          console.log('App: Data source:', source)
+          console.log('App: Timestamp:', timestamp)
+          console.log('App: Has 1d history:', ['1d'])
+          console.log('App: Coins sample:', data?.slice?.(0, 1))
         }
         const tempCoins = [...data]
         setCoins(tempCoins)
 
         if (!useCryptoRatesOnly) {
           if (timestamp && oneDayHistory) {
-            setCachedHistory({
+            const tempHistory = {
               timestamp,
               '1d': oneDayHistory,
               '7d': {},
-            })
+            }
+            setCachedHistory(tempHistory)
+            localStorage.setItem('coins', JSON.stringify(tempCoins))
+            localStorage.setItem(
+              'coin_history_cache',
+              JSON.stringify(tempHistory)
+            )
           }
-
-          setInitialLoadDone(true)
         }
+        setInitialLoadDone(true)
       }
     } catch (error) {
-      console.error('Error fetching data from API:', error)
+      console.error('App: Error fetching data from API:', error)
     }
   }
 
@@ -89,14 +94,14 @@ export function App() {
         const localHistory = localStorage.getItem('coin_history_cache')
 
         if (localData && localHistory) {
-          console.log('🧪 Using localStorage fallback')
+          console.log('App: Using localStorage fallback')
           setCoins(JSON.parse(localData))
           setCachedHistory(JSON.parse(localHistory))
           setInitialLoadDone(true)
           return
         }
       } catch (error) {
-        console.warn('🧪 Failed to parse localStorage fallback:', error)
+        console.warn('App: Failed to parse localStorage fallback:', error)
       }
     }
 

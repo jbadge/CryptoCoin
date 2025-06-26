@@ -17,18 +17,18 @@ export function isCacheFresh(
   return typeof timestamp === 'number' && now - timestamp < ttl
 }
 
-export function logCacheStatus(useCryptoRates: boolean, isFresh: boolean) {
+export function logBlobStatus(useCryptoRates: boolean, isFresh: boolean) {
   console.log(
-    `[📡] Source: ${useCryptoRates ? 'cryptorates' : 'coincap'}  | Cache: ${
-      isFresh ? 'HIT' : 'MISS'
-    }`
+    `[📡] logBlobStatus: Source: ${
+      useCryptoRates ? 'cryptorates' : 'coincap'
+    }  | Blob: ${isFresh ? 'HIT' : 'MISS'}`
   )
 }
 
 export async function getBlobStore(): Promise<BlobStore | null> {
   if (!blobStorePromise) {
     blobStorePromise = initializeBlobStore().catch((error) => {
-      console.error('[❌] Blob Store init failed:', error)
+      console.error('[❌] getBlobStore: Blob Store init failed:', error)
       blobStorePromise = null
       return null
     })
@@ -41,18 +41,18 @@ export async function getJsonBlob(
   key: string
 ): Promise<any | null> {
   if (!blobStore) {
-    console.warn('[⚠️] BlobStore unavailable')
+    console.warn('[⚠️] getJsonBlob: BlobStore unavailable')
     return null
   }
 
   try {
     const data = await blobStore.get(key, { type: 'json' })
     if (debugMode) {
-      console.log(`[✅] Successfully loaded blob: ${key}`)
+      console.log(`[✅] getJsonBlob: Successfully loaded blob: ${key}`)
     }
     return data
   } catch (error) {
-    console.warn(`[⚠️] Failed to read blob: ${key}`, error)
+    console.warn(`[⚠️] getJsonBlob: Failed to read blob: ${key}`, error)
     return null
   }
 }
@@ -64,7 +64,9 @@ export async function writeCoinCache({
   coins,
 }: WriteCoinsProps): Promise<void> {
   if (!blobStore) {
-    console.warn('[⚠️] No blob store available, skipping caching')
+    console.warn(
+      '[⚠️] writeCoinCache: No blob store available, skipping caching'
+    )
     return
   }
 
@@ -74,10 +76,12 @@ export async function writeCoinCache({
       coins,
     })
     if (debugMode) {
-      console.log('[💾] Cached CoinCap asset list in blob storage')
+      console.log(
+        '[💾] writeCoinCache: Cached CoinCap asset list in blob storage'
+      )
     }
   } catch (error) {
-    console.warn('[⚠️] Failed to write cache blob:', error)
+    console.warn('[⚠️] writeCoinCache: Failed to write cache blob:', error)
   }
 }
 
@@ -88,7 +92,9 @@ export async function writeHistoryCache({
   historyBlob,
 }: WriteHistoryProps): Promise<void> {
   if (!blobStore) {
-    console.warn('[⚠️] No blob store available, skipping caching')
+    console.warn(
+      '[⚠️] writeHistoryCache: No blob store available, skipping caching'
+    )
     return
   }
 
@@ -98,10 +104,18 @@ export async function writeHistoryCache({
       ...historyBlob,
     })
     if (debugMode) {
-      console.log('[💾] Cached 1-day history for all coins')
+      const intervalKeys = Object.keys(historyBlob).filter(
+        (k) => k === '1d' || k === '7d'
+      )
+      console.log(
+        `[💾] writeHistoryCache: Writing to blob ${intervalKeys[0]} history for all coins`
+      )
     }
   } catch (error) {
-    console.warn('[⚠️] Failed to cache 1-day history:', error)
+    console.warn(
+      '[⚠️] writeHistoryCache: Failed to cache 1-day history:',
+      error
+    )
   }
 }
 
@@ -114,14 +128,21 @@ export async function cacheCryptoRates(
     try {
       await blobStore.setJSON(`${CACHE_BLOB_KEY}`, { timestamp: now, coins })
       if (debugMode) {
-        console.log('[💾] Cached CryptoRates data in blob storage')
+        console.log(
+          '[💾] cacheCryptoRates: Cached CryptoRates data in blob storage'
+        )
       }
     } catch (error) {
-      console.warn('[⚠️] Failed to write CryptoRates cache blob:', error)
+      console.warn(
+        '[⚠️] cacheCryptoRates: Failed to write CryptoRates cache blob:',
+        error
+      )
     }
   } else {
     if (debugMode) {
-      console.log('[⚠️] Skipping cache: CryptoRates data not stored')
+      console.log(
+        '[⚠️] cacheCryptoRates: Skipping cache: CryptoRates data not stored'
+      )
     }
   }
 }
